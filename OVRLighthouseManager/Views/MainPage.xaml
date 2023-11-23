@@ -7,6 +7,13 @@
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
-        
+        <Button
+            x:Name="ScanButton"
+            Content="Click Me"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Command="{x:Bind ViewModel.ClickScanCommand}"
+            IsEnabled="{x:Bind ViewModel.CanStartScan, Mode=OneWay}"
+        />
     </Grid>
 </Page>
