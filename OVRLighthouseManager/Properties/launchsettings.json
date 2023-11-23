@@ -1,0 +1,10 @@
+﻿{
+    "profiles": {
+      "OVRLighthouseManager (Unpackaged)": {
+        "commandName": "Project"
+      },
+      "OVRLighthouseManager (Package)": {
+        "commandName": "MsixPackage"
+      }
+    }
+}
