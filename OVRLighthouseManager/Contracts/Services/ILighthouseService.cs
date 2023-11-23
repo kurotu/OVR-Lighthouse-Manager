@@ -12,4 +12,5 @@ public interface ILighthouseService
 
     public void StartScan();
     public void StopScan();
+    public Task StopScanAsync();
 }

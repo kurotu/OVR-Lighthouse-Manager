@@ -94,6 +94,12 @@ public class LighthouseService : ILighthouseService
         Task.WaitAll(_checkingTasks.ToArray());
     }
 
+    public async Task StopScanAsync()
+    {
+        _watcher.Stop();
+        await Task.WhenAll(_checkingTasks.ToArray());
+    }
+
     internal static async Task<bool> PowerOn(ulong address)
     {
         CheckBluetoothAdapter();

@@ -66,6 +66,7 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
 
             services.AddSingleton<ILighthouseService, LighthouseService>();
+            services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

@@ -10,24 +10,28 @@ namespace OVRLighthouseManager.ViewModels;
 public partial class MainViewModel : ObservableRecipient
 {
     private readonly ILighthouseService _lighthouseService;
+    private readonly ILighthouseSettingsService _lighthouseSettingsService;
 
     [ObservableProperty]
     private bool _canStartScan = true;
 
     [ObservableProperty]
-    private LighthouseListItem[] _devices = { };
+    private LighthouseListItem[] _devices = Array.Empty<LighthouseListItem>();
 
     public ICommand ClickScanCommand
     {
         get;
     }
 
-    public MainViewModel(ILighthouseService lighthouseService)
+    public MainViewModel(ILighthouseService lighthouseService, ILighthouseSettingsService lighthouseSettingsService)
     {
         _lighthouseService = lighthouseService;
-        _lighthouseService.OnFound += (sender, arg) =>
+        _lighthouseSettingsService = lighthouseSettingsService;
+
+        _lighthouseService.OnFound += async (sender, arg) =>
         {
-            if (Devices.FirstOrDefault(d => d.BluetoothAddress == arg.BluetoothAddress) == null)
+            var existing = Devices.FirstOrDefault(d => d.BluetoothAddress == arg.BluetoothAddress);
+            if (existing == null)
             {
                 var item = new LighthouseListItem()
                 {
@@ -37,8 +41,15 @@ public partial class MainViewModel : ObservableRecipient
                 };
                 Devices = Devices.Append(item).ToArray();
             }
+            else
+            {
+                existing.Name = arg.Name;
+            }
+            await _lighthouseSettingsService.SetDevicesAsync(Devices);
             System.Diagnostics.Debug.WriteLine($"Found: {arg.Name} ({arg.BluetoothAddress.ToString("x012")})");
         };
+
+        Devices = _lighthouseSettingsService.Devices.ToArray();
 
         ClickScanCommand = new RelayCommand(OnClickScan);
     }
@@ -49,7 +60,7 @@ public partial class MainViewModel : ObservableRecipient
         CanStartScan = false;
         _lighthouseService.StartScan();
         await Task.Delay(10000);
-        _lighthouseService.StopScan();
+        await _lighthouseService.StopScanAsync();
         CanStartScan = true;
     }
 
