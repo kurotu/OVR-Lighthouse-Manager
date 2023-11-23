@@ -4,16 +4,87 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:OVRLighthouseManager.Models"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <DataTemplate x:Key="ContactListViewTemplate" x:DataType="models:LighthouseListItem">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <FontIcon
+                    Grid.RowSpan="2"
+                    Glyph="&#xF191;"
+                    Width="32"
+                    Height="32"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                />
+                <TextBlock Grid.Column="1"
+                    Text="{x:Bind Name}"
+                    x:Phase="1"
+                    Style="{ThemeResource BaseTextBlockStyle}"
+                    Margin="12,6,0,0"/>
+                <TextBlock  Grid.Column="1"
+                    Grid.Row="1"
+                    Text="{x:Bind BluetoothAddressString}"
+                    x:Phase="2"
+                    Style="{ThemeResource BodyTextBlockStyle}"
+                    Margin="12,0,0,6"/>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid x:Name="ContentArea">
-        <Button
-            x:Name="ScanButton"
-            Content="Click Me"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Command="{x:Bind ViewModel.ClickScanCommand}"
-            IsEnabled="{x:Bind ViewModel.CanStartScan, Mode=OneWay}"
-        />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <ToggleSwitch>
+                <ToggleSwitch.Header>
+                    <TextBlock Text="Manage Base Stations" />
+                </ToggleSwitch.Header>
+            </ToggleSwitch>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="12"
+                    >
+            <TextBlock Text="Base Stations" VerticalAlignment="Center" />
+            <Button
+                Grid.Column="0"
+                Grid.Row="1"
+                x:Name="ScanButton"
+                Content="Scan"
+                Command="{x:Bind ViewModel.ClickScanCommand}"
+                IsEnabled="{x:Bind ViewModel.CanStartScan, Mode=OneWay}"
+            />
+        </StackPanel>
+
+        <ListView
+            Grid.Column="0"
+            Grid.Row="2"
+                x:Name="BaseStationListView"
+                ItemsSource="{x:Bind ViewModel.Devices, Mode=OneWay}"
+                IsItemClickEnabled="True"
+                SelectionMode="None"
+                ItemTemplate="{StaticResource ContactListViewTemplate}"
+                ItemClick="{x:Bind ViewModel.OnClickDevice}"
+            >
+        </ListView>
     </Grid>
 </Page>

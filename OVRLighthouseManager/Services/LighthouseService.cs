@@ -17,11 +17,11 @@ public class LighthouseService : ILighthouseService
     private readonly HashSet<ulong> _knownAddresses = new();
     private readonly List<Task> _checkingTasks = new();
 
-    public void StartScan()
+    private readonly SynchronizationContext? _context;
+
+    public LighthouseService()
     {
-        CheckBluetoothAdapter();
-        _knownAddresses.Clear();
-        _checkingTasks.Clear();
+        _context = SynchronizationContext.Current;
         _watcher.ScanningMode = BluetoothLEScanningMode.Active;
         _watcher.Received += (sender, arg) =>
         {
@@ -33,29 +33,58 @@ public class LighthouseService : ILighthouseService
 
             var task = Task.Run(async () =>
             {
-                var device = await BluetoothLEDevice.FromBluetoothAddressAsync(arg.BluetoothAddress);
-                if (device == null)
+                try
                 {
-                    _knownAddresses.Remove(arg.BluetoothAddress);
-                    return;
-                }
-
-                if (await IsLightHouse(device))
-                {
-                    var d = new LighthouseDevice()
+                    var device = await BluetoothLEDevice.FromBluetoothAddressAsync(arg.BluetoothAddress);
+                    if (device == null)
                     {
-                        BluetoothAddress = arg.BluetoothAddress,
-                        Name = device.Name
-                    };
-                    OnFound(arg.BluetoothAddress, d);
+                        _knownAddresses.Remove(arg.BluetoothAddress);
+                        return;
+                    }
+
+                    if (await IsLightHouse(device))
+                    {
+                        var d = new LighthouseDevice()
+                        {
+                            BluetoothAddress = arg.BluetoothAddress,
+                            Name = device.Name
+                        };
+                        _context?.Post((d2) =>
+                        {
+                            OnFound(this, d2 as LighthouseDevice);
+                        }, d);
+                    }
+                    else
+                    {
+                        _knownAddresses.Remove(arg.BluetoothAddress);
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    _knownAddresses.Remove(arg.BluetoothAddress);
+                    System.Diagnostics.Debug.WriteLine(e.Message);
                 }
             });
             _checkingTasks.Add(task);
         };
+    }
+
+    public void StartScan()
+    {
+        /*
+        OnFound(this, new LighthouseDevice() { Name = "Test", BluetoothAddress = 0x123456789AB });
+        OnFound(this, new LighthouseDevice() { Name = "Test2", BluetoothAddress = 0x23456789ABC });
+        OnFound(this, new LighthouseDevice() { Name = "Test3", BluetoothAddress = 0x3456789ABCD });
+        OnFound(this, new LighthouseDevice() { Name = "Test4", BluetoothAddress = 0x456789ABCDE });
+        OnFound(this, new LighthouseDevice() { Name = "Test5", BluetoothAddress = 0x56789ABCDEF });
+        OnFound(this, new LighthouseDevice() { Name = "Test6", BluetoothAddress = 0x6789ABCDEF0 });
+        OnFound(this, new LighthouseDevice() { Name = "Test7", BluetoothAddress = 0x789ABCDEF01 });
+        OnFound(this, new LighthouseDevice() { Name = "Test8", BluetoothAddress = 0x89ABCDEF012 });
+        OnFound(this, new LighthouseDevice() { Name = "Test9", BluetoothAddress = 0x9ABCDEF0123 });
+        return;
+        */
+        CheckBluetoothAdapter();
+        _knownAddresses.Clear();
+        _checkingTasks.Clear();
         _watcher.Start();
     }
 
