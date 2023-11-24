@@ -42,6 +42,11 @@ public class LighthouseService : ILighthouseService
                         return;
                     }
 
+                    if (device.Name == string.Empty)
+                    {
+                        return;
+                    }
+
                     if (await IsLightHouse(device))
                     {
                         var d = new LighthouseDevice()

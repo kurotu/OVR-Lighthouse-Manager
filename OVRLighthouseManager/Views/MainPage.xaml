@@ -4,11 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:OVRLighthouseManager.Models"
+    xmlns:models="using:OVRLighthouseManager.ViewModels"
     mc:Ignorable="d">
 
     <Page.Resources>
-        <DataTemplate x:Key="ContactListViewTemplate" x:DataType="models:LighthouseListItem">
+        <DataTemplate x:Key="ContactListViewTemplate" x:DataType="models:LighthouseListItemViewModel">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -17,16 +17,19 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <FontIcon
                     Grid.RowSpan="2"
-                    Glyph="&#xF191;"
+                    Glyph="{x:Bind Glyph, Mode=OneWay}"
                     Width="32"
                     Height="32"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
+                    Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                 />
+
                 <TextBlock Grid.Column="1"
                     Text="{x:Bind Name}"
                     x:Phase="1"
@@ -34,10 +37,43 @@
                     Margin="12,6,0,0"/>
                 <TextBlock  Grid.Column="1"
                     Grid.Row="1"
-                    Text="{x:Bind BluetoothAddressString}"
+                    Text="{x:Bind BluetoothAddress}"
                     x:Phase="2"
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Margin="12,0,0,6"/>
+                <Button
+                    Grid.Column="2"
+                    Grid.RowSpan="2"
+                    Style="{StaticResource TextBlockButtonStyle}"
+                    >
+                    <Button.Content>
+                        <FontIcon
+                            Glyph="&#xE712;"
+                            Width="32"
+                            Height="32"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            />
+                    </Button.Content>
+                    <Button.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem
+                                Text="Power On"
+                                Command="{x:Bind ClickPowerOn}"/>
+                            <MenuFlyoutItem
+                                Text="Sleep"
+                                Command="{x:Bind ClickSleep}"/>
+                            <MenuFlyoutItem
+                                Text="Standby"
+                                Command="{x:Bind ClickStandby}"/>
+                            <MenuFlyoutSeparator />
+                            <MenuFlyoutItem
+                                Text="Remove"
+                                Command="{x:Bind ClickRemoveDeviceCommand}"
+                                />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
             </Grid>
         </DataTemplate>
     </Page.Resources>
@@ -53,7 +89,10 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0">
-            <ToggleSwitch>
+            <ToggleSwitch
+                IsOn="{x:Bind ViewModel.PowerManagement, Mode=OneWay}"
+                Toggled="{x:Bind ViewModel.OnTogglePowerManagement}"
+                >
                 <ToggleSwitch.Header>
                     <TextBlock Text="Manage Base Stations" />
                 </ToggleSwitch.Header>

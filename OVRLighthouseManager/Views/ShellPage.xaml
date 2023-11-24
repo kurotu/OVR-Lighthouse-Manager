@@ -45,7 +45,7 @@
                 -->
                 <NavigationViewItem x:Uid="Shell_Main" helpers:NavigationHelper.NavigateTo="OVRLighthouseManager.ViewModels.MainViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7e8;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
