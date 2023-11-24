@@ -11,6 +11,7 @@ using OVRLighthouseManager.Models;
 using OVRLighthouseManager.Services;
 using OVRLighthouseManager.ViewModels;
 using OVRLighthouseManager.Views;
+using Valve.VR;
 
 namespace OVRLighthouseManager;
 
@@ -67,6 +68,7 @@ public partial class App : Application
 
             services.AddSingleton<ILighthouseService, LighthouseService>();
             services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
+            services.AddSingleton<IOverlayAppService, OverlayAppService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -84,6 +86,25 @@ public partial class App : Application
         }).
         Build();
 
+        var mainContext = SynchronizationContext.Current;
+        var vr = App.GetService<IOverlayAppService>();
+        vr.OnVRMonitorConnected += async (sender, args) =>
+        {
+            System.Diagnostics.Debug.WriteLine("VRMonitorConnected");
+            await OnVRLaunch();
+        };
+        vr.OnVRSystemQuit += (sender, args) =>
+        {
+            mainContext?.Post((o) =>
+            {
+                Task.Run(async () => {
+                    System.Diagnostics.Debug.WriteLine("VRSystemQuit");
+                    await OnExit();
+                }).Wait();
+                Exit();
+            }, null);
+        };
+
         UnhandledException += App_UnhandledException;
     }
 
@@ -98,5 +119,34 @@ public partial class App : Application
         base.OnLaunched(args);
 
         await App.GetService<IActivationService>().ActivateAsync(args);
+        var vr = App.GetService<IOverlayAppService>();
+        if (vr.IsVRMonitorConnected)
+        {
+            await OnVRLaunch();
+        }
+    }
+
+    private async Task OnVRLaunch()
+    {
+        var devices = App.GetService<ILighthouseSettingsService>().Devices.Where(d => d.IsManaged).ToArray();
+        foreach (var device in devices)
+        {
+            System.Diagnostics.Debug.WriteLine($"Power On {device.Name}");
+            var result = await LighthouseService.PowerOn(AddressToStringConverter.StringToAddress(device.BluetoothAddress));
+            System.Diagnostics.Debug.WriteLine($"Done {device.Name}: {result}");
+        }
+    }
+
+    private async Task OnExit()
+    {
+        App.GetService<IOverlayAppService>().Shutdown();
+        await App.GetService<ILighthouseService>().StopScanAsync();
+        var devices = App.GetService<ILighthouseSettingsService>().Devices.Where(d => d.IsManaged);
+        foreach (var device in devices)
+        {
+            System.Diagnostics.Debug.WriteLine($"Sleeping {device.Name}");
+            var result = await LighthouseService.Sleep(AddressToStringConverter.StringToAddress(device.BluetoothAddress));
+            System.Diagnostics.Debug.WriteLine($"Done {device.Name}: {result}");
+        }
     }
 }

@@ -85,8 +85,8 @@ public partial class MainViewModel : ObservableRecipient
     {
         if (e.ClickedItem is LighthouseListItemViewModel device)
         {
-            System.Diagnostics.Debug.WriteLine($"Clicked: {device.Name} ({device.BluetoothAddress}) : {device.IsManaged}");
             device.SetManaged(!device.IsManaged);
+            System.Diagnostics.Debug.WriteLine($"Clicked: {device.Name} ({device.BluetoothAddress}) : {device.IsManaged}");
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
         }
         else

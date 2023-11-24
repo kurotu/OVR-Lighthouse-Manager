@@ -1,0 +1,16 @@
+{
+	"source" : "builtin",
+	"applications": [{
+		"app_key": "com.github.kurotu.ovr-lighthouse-manager",
+		"launch_type": "binary",
+		"binary_path_windows": "OVRLighthouseManager.exe",
+		"is_dashboard_overlay": true,
+
+		"strings": {
+			"en_us": {
+				"name": "OVR Lighthouse Manager",
+				"description": "Base Station Power Management"
+			}
+		}
+	}]
+}

@@ -109,21 +109,21 @@ public class LighthouseService : ILighthouseService
     {
         CheckBluetoothAdapter();
         var device = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
-        return await WritePowerCharacteristic(device, 1);
+        return await WritePowerCharacteristic(device, 1, 5);
     }
 
     internal static async Task<bool> Sleep(ulong address)
     {
         CheckBluetoothAdapter();
         var device = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
-        return await WritePowerCharacteristic(device, 0);
+        return await WritePowerCharacteristic(device, 0, 5);
     }
 
     internal static async Task<bool> Standby(ulong address)
     {
         CheckBluetoothAdapter();
         var device = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
-        return await WritePowerCharacteristic(device, 2);
+        return await WritePowerCharacteristic(device, 2, 5);
     }
 
     internal static void CheckBluetoothAdapter()
@@ -146,7 +146,7 @@ public class LighthouseService : ILighthouseService
             return false;
         }
 
-        var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(PowerCharacteristic);
+        var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(PowerCharacteristic, BluetoothCacheMode.Cached);
         if (characteristics.Status != GattCommunicationStatus.Success)
         {
             return false;
@@ -164,25 +164,47 @@ public class LighthouseService : ILighthouseService
         var services = await device.GetGattServicesForUuidAsync(ControlService);
         if (services.Status != GattCommunicationStatus.Success)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to get services: {services.Status}");
             return false;
         }
         if (services.Services.Count == 0)
         {
+            System.Diagnostics.Debug.WriteLine($"No services");
             return false;
         }
 
-        var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(PowerCharacteristic);
+        var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(PowerCharacteristic, BluetoothCacheMode.Cached);
         if (characteristics.Status != GattCommunicationStatus.Success)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to get characteristics: {characteristics.Status}");
             return false;
         }
         if (characteristics.Characteristics.Count == 0)
         {
+            System.Diagnostics.Debug.WriteLine($"No characteristics");
             return false;
         }
 
         var characteristic = characteristics.Characteristics[0];
-        await characteristic.WriteValueAsync(new byte[1] { value }.AsBuffer());
+        var writeStatus = await characteristic.WriteValueAsync(new byte[1] { value }.AsBuffer());
+        if (writeStatus != GattCommunicationStatus.Success)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to write: {writeStatus}");
+            return false;
+        }
         return true;
+    }
+
+    private static async Task<bool> WritePowerCharacteristic(BluetoothLEDevice device, byte value, int retry)
+    {
+        for (var i = 0; i < retry; i++)
+        {
+            if (await WritePowerCharacteristic(device, value))
+            {
+                return true;
+            }
+            await Task.Delay(200);
+        }
+        return false;
     }
 }

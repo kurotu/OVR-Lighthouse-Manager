@@ -90,18 +90,21 @@ public partial class LighthouseListItemViewModel : ObservableRecipient
     private async void OnClickPowerOn()
     {
         System.Diagnostics.Debug.WriteLine($"Powering on {Name}");
-        await LighthouseService.PowerOn(AddressToStringConverter.StringToAddress(BluetoothAddress));
+        var result = await LighthouseService.PowerOn(AddressToStringConverter.StringToAddress(BluetoothAddress));
+        System.Diagnostics.Debug.WriteLine($"Done {Name}: {result}");
     }
 
     private async void OnClickSleep()
     {
         System.Diagnostics.Debug.WriteLine($"Sleeping {Name}");
-        await LighthouseService.Sleep(AddressToStringConverter.StringToAddress(BluetoothAddress));
+        var result = await LighthouseService.Sleep(AddressToStringConverter.StringToAddress(BluetoothAddress));
+        System.Diagnostics.Debug.WriteLine($"Done {Name}: {result}");
     }
 
     private async void OnClickStandby()
     {
         System.Diagnostics.Debug.WriteLine($"Standing by {Name}");
-        await LighthouseService.Standby(AddressToStringConverter.StringToAddress(BluetoothAddress));
+        var result = await LighthouseService.Standby(AddressToStringConverter.StringToAddress(BluetoothAddress));
+        System.Diagnostics.Debug.WriteLine($"Done {Name}: {result}");
     }
 }
