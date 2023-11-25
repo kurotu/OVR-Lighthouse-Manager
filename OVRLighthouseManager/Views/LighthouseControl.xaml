@@ -61,23 +61,23 @@
             <Button.Flyout>
                 <MenuFlyout Placement="Bottom">
                     <MenuFlyoutItem
-                        Text="Power On"
+                        x:Uid="Menu_PowerOn"
                         Command="{StaticResource powerOnCommand}"
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutItem
-                        Text="Sleep"
+                        x:Uid="Menu_Sleep"
                         Command="{StaticResource sleepCommand}"
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutItem
-                        Text="Standby"
+                        x:Uid="Menu_Standby"
                         Command="{StaticResource standbyCommand}"
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutItem
-                                Text="Remove"
+                        x:Uid="Menu_Remove"
                         />
                 </MenuFlyout>
             </Button.Flyout>

@@ -24,7 +24,7 @@
                 Toggled="{x:Bind ViewModel.OnTogglePowerManagement}"
                 >
                 <ToggleSwitch.Header>
-                    <TextBlock Text="Manage Base Stations" />
+                    <TextBlock x:Uid="Shell_Main_PowerManagementToggle" />
                 </ToggleSwitch.Header>
             </ToggleSwitch>
         </StackPanel>
@@ -33,12 +33,12 @@
                     Orientation="Horizontal"
                     Spacing="12"
                     >
-            <TextBlock Text="Base Stations" VerticalAlignment="Center" />
+            <TextBlock x:Uid="Shell_Main_BaseStationsLabel" VerticalAlignment="Center" />
             <Button
                 Grid.Column="0"
                 Grid.Row="1"
                 x:Name="ScanButton"
-                Content="Scan"
+                x:Uid="Shell_Main_ScanButton"
                 Command="{x:Bind ViewModel.ClickScanCommand}"
                 IsEnabled="{x:Bind ViewModel.CanStartScan, Mode=OneWay}"
             />

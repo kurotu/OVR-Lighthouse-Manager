@@ -124,7 +124,7 @@
     <value>OVRLighthouseManager</value>
   </data>
   <data name="Shell_Main.Content" xml:space="preserve">
-    <value>電源管理</value>
+    <value>電源の管理</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
@@ -152,5 +152,26 @@
   </data>
   <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://YourPrivacyUrlGoesHere/</value>
+  </data>
+  <data name="Menu_PowerOn.Text" xml:space="preserve">
+    <value>電源オン</value>
+  </data>
+  <data name="Menu_Remove.Text" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Menu_Sleep.Text" xml:space="preserve">
+    <value>スリープ</value>
+  </data>
+  <data name="Menu_Standby.Text" xml:space="preserve">
+    <value>スタンバイ</value>
+  </data>
+  <data name="Shell_Main_BaseStationsLabel.Text" xml:space="preserve">
+    <value>ベースステーション</value>
+  </data>
+  <data name="Shell_Main_PowerManagementToggle.Text" xml:space="preserve">
+    <value>ベースステーションの電源を管理する</value>
+  </data>
+  <data name="Shell_Main_ScanButton.Content" xml:space="preserve">
+    <value>スキャン</value>
   </data>
 </root>
