@@ -5,7 +5,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:OVRLighthouseManager.Helpers"
     mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <helpers:PowerOnCommand x:Key="powerOnCommand" />
+        <helpers:SleepCommand x:Key="sleepCommand" />
+        <helpers:StandbyCommand x:Key="standbyCommand" />
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -54,13 +61,19 @@
             <Button.Flyout>
                 <MenuFlyout Placement="Bottom">
                     <MenuFlyoutItem
-                                Text="Power On"
+                        Text="Power On"
+                        Command="{StaticResource powerOnCommand}"
+                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutItem
-                                Text="Sleep"
+                        Text="Sleep"
+                        Command="{StaticResource sleepCommand}"
+                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutItem
-                                Text="Standby"
+                        Text="Standby"
+                        Command="{StaticResource standbyCommand}"
+                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutItem

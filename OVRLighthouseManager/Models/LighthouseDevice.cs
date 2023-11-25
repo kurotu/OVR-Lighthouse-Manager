@@ -1,4 +1,5 @@
 ﻿
+using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
@@ -111,8 +112,59 @@ public class LighthouseDevice : IDisposable
         }
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         _controlService?.Dispose();
         _device?.Dispose();
+    }
+
+    public async Task<bool> PowerOnAsync()
+    {
+        if (_powerCharacteristic == null)
+        {
+            throw new Exception("Power characteristic is null");
+        }
+        return await WriteCharacteristicAsync(_powerCharacteristic, 0x01);
+    }
+
+    public async Task<bool> SleepAsync()
+    {
+        if (_powerCharacteristic == null)
+        {
+            throw new Exception("Power characteristic is null");
+        }
+        return await WriteCharacteristicAsync(_powerCharacteristic, 0x00);
+    }
+
+    public async Task<bool> StandbyAsync()
+    {
+        if (_powerCharacteristic == null)
+        {
+            throw new Exception("Power characteristic is null");
+        }
+        return await WriteCharacteristicAsync(_powerCharacteristic, 0x02);
+    }
+
+
+    private async Task<bool> WriteCharacteristicAsync(GattCharacteristic characteristic, byte data)
+    {
+        const int retryCount = 5;
+        for (var i = 0; i < retryCount; i++)
+        {
+            var result = await characteristic.WriteValueAsync(new byte[] { data }.AsBuffer());
+            switch (result)
+            {
+                case GattCommunicationStatus.Success:
+                    return true;
+                case GattCommunicationStatus.Unreachable:
+                    System.Diagnostics.Debug.WriteLine($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
+                    continue;
+                case GattCommunicationStatus.ProtocolError:
+                case GattCommunicationStatus.AccessDenied:
+                    System.Diagnostics.Debug.WriteLine($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
+                    return false;
+            }
+        }
+        return false;
     }
 }

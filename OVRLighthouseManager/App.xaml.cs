@@ -41,7 +41,10 @@ public partial class App : Application
 
     public static WindowEx MainWindow { get; } = new MainWindow();
 
-    public static UIElement? AppTitlebar { get; set; }
+    public static UIElement? AppTitlebar
+    {
+        get; set;
+    }
 
     public App()
     {
@@ -97,12 +100,18 @@ public partial class App : Application
         {
             mainContext?.Post((o) =>
             {
-                Task.Run(async () => {
+                Task.Run(async () =>
+                {
                     System.Diagnostics.Debug.WriteLine("VRSystemQuit");
                     await OnExit();
                 }).Wait();
+                System.Diagnostics.Debug.WriteLine("VRSystemQuit Done, Exit.");
                 Exit();
             }, null);
+        };
+        MainWindow.AppWindow.Closing += (_, __) =>
+        {
+            vr.Shutdown();
         };
 
         UnhandledException += App_UnhandledException;
@@ -128,25 +137,40 @@ public partial class App : Application
 
     private async Task OnVRLaunch()
     {
-        var devices = App.GetService<ILighthouseSettingsService>().Devices.Where(d => d.IsManaged).ToArray();
+        var lighthouseSettings = App.GetService<ILighthouseSettingsService>();
+        if (!lighthouseSettings.PowerManagement)
+        {
+            return;
+        }
+        var devices = lighthouseSettings.Devices.Where(d => d.IsManaged).ToArray();
+        var lighthouse = App.GetService<ILighthouseService>();
         foreach (var device in devices)
         {
             System.Diagnostics.Debug.WriteLine($"Power On {device.Name}");
-            var result = await LighthouseService.PowerOn(AddressToStringConverter.StringToAddress(device.BluetoothAddress));
-            System.Diagnostics.Debug.WriteLine($"Done {device.Name}: {result}");
+            var d = await lighthouse.GetDeviceAsync(device.BluetoothAddress);
+            var result = await d.PowerOnAsync();
+            System.Diagnostics.Debug.WriteLine($"Done: {result}");
         }
     }
 
     private async Task OnExit()
     {
         App.GetService<IOverlayAppService>().Shutdown();
-        await App.GetService<ILighthouseService>().StopScanAsync();
-        var devices = App.GetService<ILighthouseSettingsService>().Devices.Where(d => d.IsManaged);
+
+        var lighthouseSettings = App.GetService<ILighthouseSettingsService>();
+        if (!lighthouseSettings.PowerManagement)
+        {
+            return;
+        }
+        var lighthouse = App.GetService<ILighthouseService>();
+        await lighthouse.StopScanAsync();
+        var devices = lighthouseSettings.Devices.Where(d => d.IsManaged);
         foreach (var device in devices)
         {
             System.Diagnostics.Debug.WriteLine($"Sleeping {device.Name}");
-            var result = await LighthouseService.Sleep(AddressToStringConverter.StringToAddress(device.BluetoothAddress));
-            System.Diagnostics.Debug.WriteLine($"Done {device.Name}: {result}");
+            var d = await lighthouse.GetDeviceAsync(device.BluetoothAddress);
+            var result = await d.SleepAsync();
+            System.Diagnostics.Debug.WriteLine($"Done: {result}");
         }
     }
 }
