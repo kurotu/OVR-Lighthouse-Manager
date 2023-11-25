@@ -1,4 +1,6 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
@@ -20,8 +22,9 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     private bool _canStartScan = true;
 
-    [ObservableProperty]
-    private LighthouseListItemViewModel[] _devices = Array.Empty<LighthouseListItemViewModel>();
+    public ObservableCollection<LighthouseObject> Devices = new();
+
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
     public ICommand ClickScanCommand
     {
@@ -30,6 +33,7 @@ public partial class MainViewModel : ObservableRecipient
 
     public MainViewModel(ILighthouseService lighthouseService, ILighthouseSettingsService lighthouseSettingsService)
     {
+        dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseService = lighthouseService;
         _lighthouseSettingsService = lighthouseSettingsService;
 
@@ -38,26 +42,28 @@ public partial class MainViewModel : ObservableRecipient
             var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == arg.BluetoothAddress);
             if (existing == null)
             {
-                var item = new LighthouseListItemViewModel(arg);
-                item.OnClickRemove += OnClickRemoveDevice;
-                Devices = Devices.Append(item).OrderBy(i => i.BluetoothAddress).ToArray();
+                dispatcherQueue.TryEnqueue(async () =>
+                {
+                    var item = LighthouseObject.FromLighthouseDevice(arg);
+                    Devices.Add(item);
+                    var devices = Devices.Select(d => d.ToListItem()).ToArray();
+                    await _lighthouseSettingsService.SetDevicesAsync(devices);
+                });
             }
             else
             {
                 existing.Name = arg.Name;
             }
-            var devices = Devices.Select(d => d.ToListItem()).ToArray();
-            await _lighthouseSettingsService.SetDevicesAsync(devices);
             System.Diagnostics.Debug.WriteLine($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddress)})");
         };
 
         PowerManagement = _lighthouseSettingsService.PowerManagement;
-        Devices = _lighthouseSettingsService.Devices.Select(d =>
+        var devices = _lighthouseSettingsService.Devices.Select(d =>
         {
-            var vm = new LighthouseListItemViewModel(d);
-            vm.OnClickRemove += OnClickRemoveDevice;
+            var vm = LighthouseObject.FromLighthouseListItem(d);
             return vm;
         }).ToArray();
+        Devices = new(devices);
 
         ClickScanCommand = new RelayCommand(OnClickScan);
     }
@@ -83,7 +89,7 @@ public partial class MainViewModel : ObservableRecipient
 
     public async void OnClickDevice(object sender, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is LighthouseListItemViewModel device)
+        if (e.ClickedItem is LighthouseObject device)
         {
             device.SetManaged(!device.IsManaged);
             System.Diagnostics.Debug.WriteLine($"Clicked: {device.Name} ({device.BluetoothAddress}) : {device.IsManaged}");
@@ -97,10 +103,10 @@ public partial class MainViewModel : ObservableRecipient
 
     public async void OnClickRemoveDevice(object? sender, EventArgs args)
     {
-        if (sender is LighthouseListItemViewModel device)
+        if (sender is LighthouseObject device)
         {
             System.Diagnostics.Debug.WriteLine($"Remove: {device.Name} ({device.BluetoothAddress})");
-            Devices = Devices.Where(d => d != device).ToArray();
+            Devices.Remove(device);
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
         }
         else
