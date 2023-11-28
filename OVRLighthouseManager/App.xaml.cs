@@ -73,6 +73,7 @@ public partial class App : Application
             services.AddSingleton<ILighthouseService, LighthouseService>();
             services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
             services.AddSingleton<IOverlayAppService, OverlayAppService>();
+            services.AddSingleton<IAppLifecycleService, AppLifeCycleService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -90,31 +91,6 @@ public partial class App : Application
         }).
         Build();
 
-        var mainContext = SynchronizationContext.Current;
-        var vr = App.GetService<IOverlayAppService>();
-        vr.OnVRMonitorConnected += async (sender, args) =>
-        {
-            Log.Information("VRMonitorConnected");
-            await OnVRLaunch();
-        };
-        vr.OnVRSystemQuit += (sender, args) =>
-        {
-            mainContext?.Post((o) =>
-            {
-                Task.Run(async () =>
-                {
-                    Log.Information("VRSystemQuit");
-                    await OnExit();
-                }).Wait();
-                Log.Information("VRSystemQuit Done, Exit.");
-                Exit();
-            }, null);
-        };
-        MainWindow.AppWindow.Closing += (_, __) =>
-        {
-            vr.Shutdown();
-        };
-
         UnhandledException += App_UnhandledException;
     }
 
@@ -122,6 +98,7 @@ public partial class App : Application
     {
         // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+        Log.Error(e.Exception, "UnhandledException");
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
@@ -129,49 +106,5 @@ public partial class App : Application
         base.OnLaunched(args);
 
         await App.GetService<IActivationService>().ActivateAsync(args);
-        var vr = App.GetService<IOverlayAppService>();
-        if (vr.IsVRMonitorConnected)
-        {
-            await OnVRLaunch();
-        }
-    }
-
-    private async Task OnVRLaunch()
-    {
-        var lighthouseSettings = App.GetService<ILighthouseSettingsService>();
-        if (!lighthouseSettings.PowerManagement)
-        {
-            return;
-        }
-        var devices = lighthouseSettings.Devices.Where(d => d.IsManaged).ToArray();
-        var lighthouse = App.GetService<ILighthouseService>();
-        foreach (var device in devices)
-        {
-            Log.Information($"Power On {device.Name}");
-            var d = await lighthouse.GetDeviceAsync(device.BluetoothAddress);
-            var result = await d.PowerOnAsync();
-            Log.Information($"Done: {result}");
-        }
-    }
-
-    private async Task OnExit()
-    {
-        App.GetService<IOverlayAppService>().Shutdown();
-
-        var lighthouseSettings = App.GetService<ILighthouseSettingsService>();
-        if (!lighthouseSettings.PowerManagement)
-        {
-            return;
-        }
-        var lighthouse = App.GetService<ILighthouseService>();
-        await lighthouse.StopScanAsync();
-        var devices = lighthouseSettings.Devices.Where(d => d.IsManaged);
-        foreach (var device in devices)
-        {
-            Log.Information($"Sleeping {device.Name}");
-            var d = await lighthouse.GetDeviceAsync(device.BluetoothAddress);
-            var result = await d.SleepAsync();
-            Log.Information($"Done: {result}");
-        }
     }
 }

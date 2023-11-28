@@ -7,13 +7,14 @@ using System.Windows.Input;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Services;
 using OVRLighthouseManager.ViewModels;
+using Serilog;
 
 namespace OVRLighthouseManager.Helpers;
 
 public class PowerOnCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
-    private Task? _task;
+    private Task<bool>? _task;
 
     public bool CanExecute(object? parameter)
     {
@@ -24,10 +25,16 @@ public class PowerOnCommand : ICommand
     {
         if (parameter is LighthouseObject lighthouse)
         {
-            var device = await App.GetService<ILighthouseService>().GetDeviceAsync(lighthouse.BluetoothAddress);
+            Log.Information("Powering on {@lighthouse}", lighthouse);
+            var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
+            if (device == null)
+            {
+                throw new Exception("Device not found");
+            }
             _task = device.PowerOnAsync();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-            await _task;
+            var result = await _task;
+            Log.Information("PowerOn result: {result}", result);
             _task = null;
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -42,7 +49,7 @@ public class SleepCommand : ICommand
 {
 
     public event EventHandler? CanExecuteChanged;
-    private Task? _task;
+    private Task<bool>? _task;
 
     public bool CanExecute(object? parameter)
     {
@@ -53,11 +60,16 @@ public class SleepCommand : ICommand
     {
         if (parameter is LighthouseObject lighthouse)
         {
-
-            var device = await App.GetService<ILighthouseService>().GetDeviceAsync(lighthouse.BluetoothAddress);
+            Log.Information("Sleeping {@lighthouse}", lighthouse);
+            var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
+            if (device == null)
+            {
+                           throw new Exception("Device not found");
+                       }
             _task = device.SleepAsync();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-            await _task;
+            var reulst = await _task;
+            Log.Information("Sleep result: {result}", reulst);
             _task = null;
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -71,7 +83,7 @@ public class SleepCommand : ICommand
 public class StandbyCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
-    private Task? _task;
+    private Task<bool>? _task;
 
     public bool CanExecute(object? parameter)
     {
@@ -83,10 +95,16 @@ public class StandbyCommand : ICommand
 
         if (parameter is LighthouseObject lighthouse)
         {
-            var device = await App.GetService<ILighthouseService>().GetDeviceAsync(lighthouse.BluetoothAddress);
+            Log.Information("Standby {@lighthouse}", lighthouse);
+            var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
+            if (device == null)
+            {
+                throw new Exception("Device not found");
+            }
             _task = device.StandbyAsync();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-            await _task;
+            var result = await _task;
+            Log.Information("Standby result: {result}", result);
             _task = null;
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }

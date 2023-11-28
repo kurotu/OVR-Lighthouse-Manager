@@ -38,24 +38,32 @@ public partial class MainViewModel : ObservableRecipient
         _lighthouseService = lighthouseService;
         _lighthouseSettingsService = lighthouseSettingsService;
 
-        _lighthouseService.OnFound += async (sender, arg) =>
+        _lighthouseService.OnFound += (sender, arg) =>
         {
-            var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == arg.BluetoothAddress);
-            if (existing == null)
-            {
-                dispatcherQueue.TryEnqueue(async () =>
+                var address = arg.BluetoothAddress;
+                var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == address);
+                if (existing == null)
                 {
-                    var item = LighthouseObject.FromLighthouseDevice(arg);
-                    Devices.Add(item);
-                    var devices = Devices.Select(d => d.ToListItem()).ToArray();
-                    await _lighthouseSettingsService.SetDevicesAsync(devices);
-                });
-            }
-            else
-            {
-                existing.Name = arg.Name;
-            }
-            Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddress)})");
+                    dispatcherQueue.TryEnqueue(async () =>
+                    {
+                        var d = _lighthouseService.GetLighthouse(address);
+                        if (d == null)
+                        {
+                            Log.Information($"{arg.Name} is not a Lighthouse");
+                            return;
+                        }
+                        var item = LighthouseObject.FromLighthouseDevice(d);
+                        Devices.Add(item);
+                        var devices = Devices.Select(d => d.ToListItem()).ToArray();
+                        await _lighthouseSettingsService.SetDevicesAsync(devices);
+                        Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
+                    });
+                }
+                else
+                {
+                    Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
+                    existing.Name = arg.Name;
+                }
         };
 
         PowerManagement = _lighthouseSettingsService.PowerManagement;
@@ -84,7 +92,7 @@ public partial class MainViewModel : ObservableRecipient
         CanStartScan = false;
         _lighthouseService.StartScan();
         await Task.Delay(10000);
-        await _lighthouseService.StopScanAsync();
+        _lighthouseService.StopScan();
         CanStartScan = true;
     }
 

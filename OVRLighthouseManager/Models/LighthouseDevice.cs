@@ -6,117 +6,82 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
 namespace OVRLighthouseManager.Models;
 
-public class LighthouseDevice : IDisposable
+public class LighthouseDevice
 {
+    public enum DeviceType
+    {
+        Unknown,
+        Lighthouse,
+        NotLighthouse,
+    };
+
     public string Name => _device?.Name ?? "(Unknown)";
     public ulong BluetoothAddress => _device?.BluetoothAddress ?? 0;
 
-    private BluetoothLEDevice? _device;
+    public bool IsInitialized => _powerCharacteristic != null;
+
+    private readonly BluetoothLEDevice _device;
     private GattDeviceService? _controlService;
     private GattCharacteristic? _powerCharacteristic;
 
     private static readonly Guid ControlService = new("00001523-1212-efde-1523-785feabcd124");
     private static readonly Guid PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
 
-    internal static async Task<LighthouseDevice?> FromBluetoothAddressAsync(ulong bluetoothAddress)
+    private LighthouseDevice(BluetoothLEDevice device)
     {
-        var device = new LighthouseDevice();
-
-        const int retryCount = 5;
-
-        device._device = await BluetoothLEDevice.FromBluetoothAddressAsync(bluetoothAddress);
-        if (device._device == null)
-        {
-            Log.Information($"Failed to get device from address {bluetoothAddress:X012})");
-            return null;
-        }
-
-        {
-            GattDeviceServicesResult? servicesResult = null;
-            for (var i = 0; i < retryCount; i++)
-            {
-                var shouldBreak = false;
-                servicesResult = await device._device.GetGattServicesForUuidAsync(ControlService);
-                switch (servicesResult.Status)
-                {
-                    case GattCommunicationStatus.Success:
-                        {
-                            shouldBreak = true;
-                            var services = servicesResult.Services;
-                            if (services.Count == 0)
-                            {
-                                Log.Information($"No control services found for {device.Name} ({bluetoothAddress:X012})");
-                                return null;
-                            }
-                            device._controlService = services[0];
-                        }
-                        break;
-                    case GattCommunicationStatus.Unreachable:
-                        continue;
-                    case GattCommunicationStatus.ProtocolError:
-                    case GattCommunicationStatus.AccessDenied:
-                        Log.Information($"Unknown error getting control service for {device.Name} ({bluetoothAddress:X012}) : {servicesResult.Status}");
-                        return null;
-                }
-                if (shouldBreak)
-                {
-                    break;
-                }
-            }
-            if (device._controlService == null)
-            {
-                Log.Information($"Failed to get control service for {device.Name} ({bluetoothAddress:X012}) : {servicesResult?.Status}");
-                device.Dispose();
-                return null;
-            }
-        }
-
-        {
-            GattCharacteristicsResult? characteristicsResult = null;
-            for (var i = 0; i < retryCount; i++)
-            {
-                var shouldBreak = false;
-                characteristicsResult = await device._controlService.GetCharacteristicsForUuidAsync(PowerCharacteristic);
-                switch (characteristicsResult.Status)
-                {
-                    case GattCommunicationStatus.Success:
-                        {
-                            shouldBreak = true;
-                            var characteristics = characteristicsResult.Characteristics;
-                            if (characteristics.Count == 0)
-                            {
-                                Log.Information($"No power characteristics found for {device.Name} ({bluetoothAddress:X012})");
-                                return null;
-                            }
-                            device._powerCharacteristic = characteristics[0];
-                        }
-                        break;
-                    case GattCommunicationStatus.Unreachable:
-                        continue;
-                    case GattCommunicationStatus.ProtocolError:
-                    case GattCommunicationStatus.AccessDenied:
-                        Log.Information($"Unknown error getting power characteristic for {device.Name} ({bluetoothAddress:X012}) : {characteristicsResult?.Status}");
-                        return null;
-                }
-                if (shouldBreak)
-                {
-                    break;
-                }
-            }
-            if (device._powerCharacteristic == null)
-            {
-                Log.Information($"Failed to get power characteristic for {device.Name} ({bluetoothAddress:X012}) : {characteristicsResult?.Status}");
-                device.Dispose();
-                return null;
-            }
-            return device;
-        }
+        _device = device;
     }
 
-    public void Dispose()
+    internal static async Task<LighthouseDevice> FromBluetoothAddressAsync(ulong bluetoothAddress)
     {
-        _controlService?.Dispose();
-        _device?.Dispose();
+        var device = await BluetoothLEDevice.FromBluetoothAddressAsync(bluetoothAddress);
+        return new LighthouseDevice(device);
+    }
+
+    internal static async Task<LighthouseDevice> FromIdAsync(string deviceId)
+    {
+        var device = await BluetoothLEDevice.FromIdAsync(deviceId);
+        return new LighthouseDevice(device);
+    }
+
+    public async Task<DeviceType> Identify()
+    {
+        if (_controlService == null)
+        {
+            var result = await _device.GetGattServicesAsync(BluetoothCacheMode.Cached);
+            if (result.Status == GattCommunicationStatus.Success)
+            {
+                _controlService = result.Services.FirstOrDefault(s => s.Uuid == ControlService);
+            } else
+            {
+                return DeviceType.Unknown;
+            }
+
+            if (_controlService == null)
+            {
+                return DeviceType.NotLighthouse;
+            }
+        }
+
+        if (_powerCharacteristic == null)
+        {
+            var result = await _controlService.GetCharacteristicsAsync(BluetoothCacheMode.Cached);
+            if (result.Status == GattCommunicationStatus.Success)
+            {
+                _powerCharacteristic = result.Characteristics.FirstOrDefault(c => c.Uuid == PowerCharacteristic);
+            }
+            else
+            {
+                return DeviceType.Unknown;
+            }
+
+            if (_powerCharacteristic == null)
+            {
+                return DeviceType.NotLighthouse;
+            }
+        }
+
+        return DeviceType.Lighthouse;
     }
 
     public async Task<bool> PowerOnAsync()

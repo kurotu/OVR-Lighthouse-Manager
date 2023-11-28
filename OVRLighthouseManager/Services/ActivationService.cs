@@ -14,14 +14,25 @@ public class ActivationService : IActivationService
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
+    private readonly IAppLifecycleService _appLifecycleService;
+    private readonly IOverlayAppService _overlayAppService;
     private UIElement? _shell = null;
 
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService, ILighthouseSettingsService lighthouseSettingsService)
+    public ActivationService(
+        ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
+        IEnumerable<IActivationHandler> activationHandlers,
+        IThemeSelectorService themeSelectorService,
+        ILighthouseSettingsService lighthouseSettingsService,
+        IAppLifecycleService appLifecycleService,
+        IOverlayAppService overlayAppService
+    )
     {
         _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
         _lighthouseSettingsService = lighthouseSettingsService;
+        _appLifecycleService = appLifecycleService;
+        _overlayAppService = overlayAppService;
     }
 
     public async Task ActivateAsync(object activationArgs)
@@ -34,6 +45,10 @@ public class ActivationService : IActivationService
         {
             _shell = App.GetService<ShellPage>();
             App.MainWindow.Content = _shell ?? new Frame();
+            App.MainWindow.AppWindow.Closing += (_, __) =>
+            {
+                _appLifecycleService.OnBeforeAppExit();
+            };
         }
 
         // Handle activation via ActivationHandlers.
@@ -66,10 +81,14 @@ public class ActivationService : IActivationService
         var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OVRLighthouseManager", "log-.txt");
         Log.Logger = new LoggerConfiguration()
             .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
+#if DEBUG
             .WriteTo.Debug()
+            .MinimumLevel.Debug()
+#endif
             .CreateLogger();
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
         await _lighthouseSettingsService.InitializeAsync().ConfigureAwait(false);
+        _appLifecycleService.Initialize();
         await Task.CompletedTask;
     }
 
