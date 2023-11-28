@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Activation;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Views;
+using Serilog;
 
 namespace OVRLighthouseManager.Services;
 
@@ -62,6 +63,11 @@ public class ActivationService : IActivationService
 
     private async Task InitializeAsync()
     {
+        var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OVRLighthouseManager", "log-.txt");
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
+            .WriteTo.Debug()
+            .CreateLogger();
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
         await _lighthouseSettingsService.InitializeAsync().ConfigureAwait(false);
         await Task.CompletedTask;

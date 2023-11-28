@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Helpers;
 using OVRLighthouseManager.Models;
+using Serilog;
 
 namespace OVRLighthouseManager.ViewModels;
 
@@ -54,7 +55,7 @@ public partial class MainViewModel : ObservableRecipient
             {
                 existing.Name = arg.Name;
             }
-            System.Diagnostics.Debug.WriteLine($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddress)})");
+            Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddress)})");
         };
 
         PowerManagement = _lighthouseSettingsService.PowerManagement;
@@ -79,7 +80,7 @@ public partial class MainViewModel : ObservableRecipient
 
     public async void OnClickScan()
     {
-        System.Diagnostics.Debug.WriteLine("Clicked Scan");
+        Log.Information("Clicked Scan");
         CanStartScan = false;
         _lighthouseService.StartScan();
         await Task.Delay(10000);
@@ -92,7 +93,7 @@ public partial class MainViewModel : ObservableRecipient
         if (e.ClickedItem is LighthouseObject device)
         {
             device.SetManaged(!device.IsManaged);
-            System.Diagnostics.Debug.WriteLine($"Clicked: {device.Name} ({device.BluetoothAddress}) : {device.IsManaged}");
+            Log.Information($"Clicked: {device.Name} ({device.BluetoothAddress}) : {device.IsManaged}");
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
         }
         else
@@ -105,7 +106,7 @@ public partial class MainViewModel : ObservableRecipient
     {
         if (sender is LighthouseObject device)
         {
-            System.Diagnostics.Debug.WriteLine($"Remove: {device.Name} ({device.BluetoothAddress})");
+            Log.Information($"Remove: {device.Name} ({device.BluetoothAddress})");
             Devices.Remove(device);
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
         }

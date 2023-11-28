@@ -1,5 +1,6 @@
 ﻿
 using System.Runtime.InteropServices.WindowsRuntime;
+using Serilog;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
@@ -26,7 +27,7 @@ public class LighthouseDevice : IDisposable
         device._device = await BluetoothLEDevice.FromBluetoothAddressAsync(bluetoothAddress);
         if (device._device == null)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to get device from address {bluetoothAddress:X012})");
+            Log.Information($"Failed to get device from address {bluetoothAddress:X012})");
             return null;
         }
 
@@ -44,7 +45,7 @@ public class LighthouseDevice : IDisposable
                             var services = servicesResult.Services;
                             if (services.Count == 0)
                             {
-                                System.Diagnostics.Debug.WriteLine($"No control services found for {device.Name} ({bluetoothAddress:X012})");
+                                Log.Information($"No control services found for {device.Name} ({bluetoothAddress:X012})");
                                 return null;
                             }
                             device._controlService = services[0];
@@ -54,7 +55,7 @@ public class LighthouseDevice : IDisposable
                         continue;
                     case GattCommunicationStatus.ProtocolError:
                     case GattCommunicationStatus.AccessDenied:
-                        System.Diagnostics.Debug.WriteLine($"Unknown error getting control service for {device.Name} ({bluetoothAddress:X012}) : {servicesResult.Status}");
+                        Log.Information($"Unknown error getting control service for {device.Name} ({bluetoothAddress:X012}) : {servicesResult.Status}");
                         return null;
                 }
                 if (shouldBreak)
@@ -64,7 +65,7 @@ public class LighthouseDevice : IDisposable
             }
             if (device._controlService == null)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to get control service for {device.Name} ({bluetoothAddress:X012}) : {servicesResult?.Status}");
+                Log.Information($"Failed to get control service for {device.Name} ({bluetoothAddress:X012}) : {servicesResult?.Status}");
                 device.Dispose();
                 return null;
             }
@@ -84,7 +85,7 @@ public class LighthouseDevice : IDisposable
                             var characteristics = characteristicsResult.Characteristics;
                             if (characteristics.Count == 0)
                             {
-                                System.Diagnostics.Debug.WriteLine($"No power characteristics found for {device.Name} ({bluetoothAddress:X012})");
+                                Log.Information($"No power characteristics found for {device.Name} ({bluetoothAddress:X012})");
                                 return null;
                             }
                             device._powerCharacteristic = characteristics[0];
@@ -94,7 +95,7 @@ public class LighthouseDevice : IDisposable
                         continue;
                     case GattCommunicationStatus.ProtocolError:
                     case GattCommunicationStatus.AccessDenied:
-                        System.Diagnostics.Debug.WriteLine($"Unknown error getting power characteristic for {device.Name} ({bluetoothAddress:X012}) : {characteristicsResult?.Status}");
+                        Log.Information($"Unknown error getting power characteristic for {device.Name} ({bluetoothAddress:X012}) : {characteristicsResult?.Status}");
                         return null;
                 }
                 if (shouldBreak)
@@ -104,7 +105,7 @@ public class LighthouseDevice : IDisposable
             }
             if (device._powerCharacteristic == null)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to get power characteristic for {device.Name} ({bluetoothAddress:X012}) : {characteristicsResult?.Status}");
+                Log.Information($"Failed to get power characteristic for {device.Name} ({bluetoothAddress:X012}) : {characteristicsResult?.Status}");
                 device.Dispose();
                 return null;
             }
@@ -157,11 +158,11 @@ public class LighthouseDevice : IDisposable
                 case GattCommunicationStatus.Success:
                     return true;
                 case GattCommunicationStatus.Unreachable:
-                    System.Diagnostics.Debug.WriteLine($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
+                    Log.Information($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
                     continue;
                 case GattCommunicationStatus.ProtocolError:
                 case GattCommunicationStatus.AccessDenied:
-                    System.Diagnostics.Debug.WriteLine($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
+                    Log.Information($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
                     return false;
             }
         }

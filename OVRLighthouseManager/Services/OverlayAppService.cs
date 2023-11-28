@@ -63,7 +63,7 @@ public class OverlayAppService : IOverlayAppService
                 continue;
             }
 
-            // System.Diagnostics.Debug.WriteLine($"OverlayAppService: {(EVREventType)pEvent.eventType}");
+            //Log.Information($"OverlayAppService: {(EVREventType)pEvent.eventType}");
 
             switch ((EVREventType)pEvent.eventType)
             {

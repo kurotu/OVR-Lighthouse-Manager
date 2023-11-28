@@ -11,6 +11,7 @@ using OVRLighthouseManager.Models;
 using OVRLighthouseManager.Services;
 using OVRLighthouseManager.ViewModels;
 using OVRLighthouseManager.Views;
+using Serilog;
 using Valve.VR;
 
 namespace OVRLighthouseManager;
@@ -93,7 +94,7 @@ public partial class App : Application
         var vr = App.GetService<IOverlayAppService>();
         vr.OnVRMonitorConnected += async (sender, args) =>
         {
-            System.Diagnostics.Debug.WriteLine("VRMonitorConnected");
+            Log.Information("VRMonitorConnected");
             await OnVRLaunch();
         };
         vr.OnVRSystemQuit += (sender, args) =>
@@ -102,10 +103,10 @@ public partial class App : Application
             {
                 Task.Run(async () =>
                 {
-                    System.Diagnostics.Debug.WriteLine("VRSystemQuit");
+                    Log.Information("VRSystemQuit");
                     await OnExit();
                 }).Wait();
-                System.Diagnostics.Debug.WriteLine("VRSystemQuit Done, Exit.");
+                Log.Information("VRSystemQuit Done, Exit.");
                 Exit();
             }, null);
         };
@@ -146,10 +147,10 @@ public partial class App : Application
         var lighthouse = App.GetService<ILighthouseService>();
         foreach (var device in devices)
         {
-            System.Diagnostics.Debug.WriteLine($"Power On {device.Name}");
+            Log.Information($"Power On {device.Name}");
             var d = await lighthouse.GetDeviceAsync(device.BluetoothAddress);
             var result = await d.PowerOnAsync();
-            System.Diagnostics.Debug.WriteLine($"Done: {result}");
+            Log.Information($"Done: {result}");
         }
     }
 
@@ -167,10 +168,10 @@ public partial class App : Application
         var devices = lighthouseSettings.Devices.Where(d => d.IsManaged);
         foreach (var device in devices)
         {
-            System.Diagnostics.Debug.WriteLine($"Sleeping {device.Name}");
+            Log.Information($"Sleeping {device.Name}");
             var d = await lighthouse.GetDeviceAsync(device.BluetoothAddress);
             var result = await d.SleepAsync();
-            System.Diagnostics.Debug.WriteLine($"Done: {result}");
+            Log.Information($"Done: {result}");
         }
     }
 }
