@@ -17,7 +17,6 @@ public partial class MainViewModel : ObservableRecipient
 {
     private readonly ILighthouseService _lighthouseService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
-    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private bool _powerManagement;
@@ -31,14 +30,12 @@ public partial class MainViewModel : ObservableRecipient
     public MainViewModel(
         ILighthouseService lighthouseService,
         ILighthouseSettingsService lighthouseSettingsService,
-        INotificationService notificationService,
         ScanCommand scanCommand
         )
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseService = lighthouseService;
         _lighthouseSettingsService = lighthouseSettingsService;
-        _notificationService = notificationService;
 
         _lighthouseService.OnFound += (sender, arg) =>
         {
@@ -77,6 +74,10 @@ public partial class MainViewModel : ObservableRecipient
         Devices = new(devices);
 
         ScanCommand = scanCommand;
+        if (ScanCommand.CanExecute(null))
+        {
+            ScanCommand.Execute(null);
+        }
     }
 
     public async void OnTogglePowerManagement(object sender, RoutedEventArgs e)
