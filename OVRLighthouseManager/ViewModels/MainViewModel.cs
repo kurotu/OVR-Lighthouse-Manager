@@ -22,19 +22,18 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     private bool _powerManagement;
 
-    [ObservableProperty]
-    private bool _canStartScan = true;
-
     public ObservableCollection<LighthouseObject> Devices = new();
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
-    public ICommand ClickScanCommand
-    {
-        get;
-    }
+    public readonly ICommand ScanCommand;
 
-    public MainViewModel(ILighthouseService lighthouseService, ILighthouseSettingsService lighthouseSettingsService, INotificationService notificationService)
+    public MainViewModel(
+        ILighthouseService lighthouseService,
+        ILighthouseSettingsService lighthouseSettingsService,
+        INotificationService notificationService,
+        ScanCommand scanCommand
+        )
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseService = lighthouseService;
@@ -77,7 +76,7 @@ public partial class MainViewModel : ObservableRecipient
         }).ToArray();
         Devices = new(devices);
 
-        ClickScanCommand = new RelayCommand(OnClickScan);
+        ScanCommand = scanCommand;
     }
 
     public async void OnTogglePowerManagement(object sender, RoutedEventArgs e)
@@ -87,18 +86,6 @@ public partial class MainViewModel : ObservableRecipient
             PowerManagement = toggleSwitch.IsOn;
             await _lighthouseSettingsService.SetPowerManagementAsync(PowerManagement);
         }
-    }
-
-    public async void OnClickScan()
-    {
-        Log.Information("Clicked Scan");
-        _notificationService.Information("Scanning Lighthouses");
-
-        CanStartScan = false;
-        _lighthouseService.StartScan();
-        await Task.Delay(10000);
-        _lighthouseService.StopScan();
-        CanStartScan = true;
     }
 
     public async void OnClickDevice(object sender, ItemClickEventArgs e)

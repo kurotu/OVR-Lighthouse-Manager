@@ -11,6 +11,55 @@ using Serilog;
 
 namespace OVRLighthouseManager.Helpers;
 
+public class ScanCommand : ICommand
+{
+    public event EventHandler? CanExecuteChanged;
+
+    private readonly ILighthouseService _lighthouseService;
+    private readonly ILogger _log = LogHelper.ForContext<ScanCommand>();
+    private bool _shouldStop = false;
+
+    public ScanCommand(ILighthouseService lighthouseService)
+    {
+        _lighthouseService = lighthouseService;
+    }
+
+    public bool CanExecute(object? parameter)
+    {
+        return !_lighthouseService.IsScanning && LighthouseService.HasBluetoothAdapter();
+    }
+
+    public async void Execute(object? parameter)
+    {
+        _log.Debug("Execute");
+        _shouldStop = false;
+        _lighthouseService.StartScan();
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        for (var i = 0; i < 100; i++)
+        {
+            await Task.Delay(100);
+            if (_shouldStop)
+            {
+                break;
+            }
+        }
+        _lighthouseService.StopScan();
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        _log.Debug("Execute done");
+    }
+
+    public async Task StopScan()
+    {
+        _log.Debug("Stop scan");
+        _shouldStop = true;
+        while (_lighthouseService.IsScanning)
+        {
+            await Task.Delay(100);
+        }
+        _log.Debug("Stop scan done");
+    }
+}
+
 public class PowerOnCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;

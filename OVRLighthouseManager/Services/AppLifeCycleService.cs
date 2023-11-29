@@ -18,13 +18,15 @@ class AppLifeCycleService : IAppLifecycleService
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
     private readonly ILighthouseService _lighthouseService;
     private readonly IOverlayAppService _overlayAppService;
+    private readonly ScanCommand _scanCommand;
 
-    public AppLifeCycleService(ILighthouseSettingsService lighthouseSettingsService, ILighthouseService lighthouseService, IOverlayAppService overlayAppService)
+    public AppLifeCycleService(ILighthouseSettingsService lighthouseSettingsService, ILighthouseService lighthouseService, IOverlayAppService overlayAppService, ScanCommand scanCommand)
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseSettingsService = lighthouseSettingsService;
         _lighthouseService = lighthouseService;
         _overlayAppService = overlayAppService;
+        _scanCommand = scanCommand;
     }
 
     public void Initialize()
@@ -36,7 +38,7 @@ class AppLifeCycleService : IAppLifecycleService
         _overlayAppService.OnVRSystemQuit += async (_, __) =>
         {
             await OnVRSystemQuit();
-            OnBeforeAppExit();
+            await OnBeforeAppExit();
 
             dispatcherQueue.TryEnqueue(() =>
             {
@@ -49,10 +51,10 @@ class AppLifeCycleService : IAppLifecycleService
         }
     }
 
-    public void OnBeforeAppExit()
+    public async Task OnBeforeAppExit()
     {
         _overlayAppService.Shutdown();
-        _lighthouseService.StopScan();
+        await _scanCommand.StopScan();
     }
 
     private async Task OnVRMonitorConnected()
@@ -63,7 +65,10 @@ class AppLifeCycleService : IAppLifecycleService
             return;
         }
 
-        _lighthouseService.StartScan();
+        if (_scanCommand.CanExecute(null))
+        {
+            _scanCommand.Execute(null);
+        }
 
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
@@ -88,6 +93,8 @@ class AppLifeCycleService : IAppLifecycleService
             var result = await device.PowerOnAsync();
             Log.Information($"Done {d.Name}: {result}");
         }).ToArray());
+
+        await _scanCommand.StopScan();
         Log.Information("OnVRMonitorConnected Done");
     }
 
@@ -100,7 +107,10 @@ class AppLifeCycleService : IAppLifecycleService
             return;
         }
 
-        _lighthouseService.StartScan();
+        if (_scanCommand.CanExecute(null))
+        {
+            _scanCommand.Execute(null);
+        }
 
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
@@ -129,6 +139,8 @@ class AppLifeCycleService : IAppLifecycleService
                 Log.Information($"Done {d.Name}: {result}");
             });
         }).ToArray());
+
+        await _scanCommand.StopScan();
         Log.Information("OnVRSystemQuit Done");
     }
 }

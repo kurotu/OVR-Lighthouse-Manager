@@ -16,6 +16,11 @@ public interface ILighthouseService
         get;
     }
 
+    public bool IsScanning
+    {
+        get;
+    }
+
     public void StartScan();
     public void StopScan();
 

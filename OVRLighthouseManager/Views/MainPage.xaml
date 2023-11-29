@@ -39,8 +39,7 @@
                 Grid.Row="1"
                 x:Name="ScanButton"
                 x:Uid="Shell_Main_ScanButton"
-                Command="{x:Bind ViewModel.ClickScanCommand}"
-                IsEnabled="{x:Bind ViewModel.CanStartScan, Mode=OneWay}"
+                Command="{x:Bind ViewModel.ScanCommand}"
             />
         </StackPanel>
 

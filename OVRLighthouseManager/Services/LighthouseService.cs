@@ -19,6 +19,8 @@ public class LighthouseService : ILighthouseService
     private readonly List<DeviceInformation> _notLighthouses = new();
 
     private readonly DeviceWatcher _watcher;
+
+    public bool IsScanning => _isScanning;
     private bool _isScanning;
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
@@ -85,6 +87,11 @@ public class LighthouseService : ILighthouseService
     {
         var address = AddressToStringConverter.StringToAddress(bluetoothAddress);
         return GetLighthouse(address);
+    }
+
+    public static bool HasBluetoothAdapter()
+    {
+        return BluetoothAdapter.GetDefaultAsync().AsTask().Result != null;
     }
 
     internal static void CheckBluetoothAdapter()
