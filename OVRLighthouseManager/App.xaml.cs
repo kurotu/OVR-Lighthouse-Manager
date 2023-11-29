@@ -49,6 +49,7 @@ public partial class App : Application
 
     public App()
     {
+        LogHelper.InitializeLogger();
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.

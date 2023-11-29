@@ -78,14 +78,6 @@ public class ActivationService : IActivationService
 
     private async Task InitializeAsync()
     {
-        var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OVRLighthouseManager", "log-.txt");
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
-#if DEBUG
-            .WriteTo.Debug()
-            .MinimumLevel.Debug()
-#endif
-            .CreateLogger();
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
         await _lighthouseSettingsService.InitializeAsync().ConfigureAwait(false);
         _appLifecycleService.Initialize();
