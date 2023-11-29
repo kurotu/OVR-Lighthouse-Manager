@@ -28,13 +28,13 @@ public class ScanCommand : ICommand
 
     public bool CanExecute(object? parameter)
     {
-        return !_lighthouseService.IsScanning && LighthouseService.HasBluetoothAdapter();
+        return !_lighthouseService.IsScanning && _lighthouseService.HasBluetoothLEAdapter();
     }
 
     public async void Execute(object? parameter)
     {
         _log.Debug("Execute");
-        _notificationService.Information("Scanning for lighthouses");
+        _notificationService.Information("Notification_Scanning".GetLocalized());
         _shouldStop = false;
         _lighthouseService.StartScan();
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
@@ -96,17 +96,17 @@ public class PowerOnCommand : ICommand
 
                 if (result)
                 {
-                    notification.Information($"{lighthouse.Name} powered on.");
+                    notification.Success(string.Format("Notification_PowerOn".GetLocalized(), lighthouse.Name));
                 }
                 else
                 {
-                    notification.Error($"{lighthouse.Name} failed to power on.");
+                    notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name));
                 }
             }
             catch (Exception ex)
             {
                 _log.Error(ex, $"{lighthouse.Name} Failed to power on");
-                notification.Error($"{lighthouse.Name} failed to power on.");
+                notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name) + "\n" + ex.Message);
             }
         }
         else
@@ -150,17 +150,17 @@ public class SleepCommand : ICommand
 
                 if (reulst)
                 {
-                    notification.Information($"{lighthouse.Name} slept.");
+                    notification.Success(string.Format("Notification_Sleep".GetLocalized(), lighthouse.Name));
                 }
                 else
                 {
-                    notification.Error($"{lighthouse.Name} failed to sleep.");
+                    notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name));
                 }
             }
             catch (Exception ex)
             {
                 _log.Error(ex, $"{lighthouse.Name} Failed to sleep");
-                notification.Error($"{lighthouse.Name} failed to sleep.");
+                notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name) + "\n" + ex.Message);
             }
         }
         else
@@ -203,17 +203,17 @@ public class StandbyCommand : ICommand
 
                 if (result)
                 {
-                    notification.Information($"{lighthouse.Name} standby.");
+                    notification.Success(string.Format("Notification_Standby".GetLocalized(), lighthouse.Name));
                 }
                 else
                 {
-                    notification.Error($"{lighthouse.Name} failed to standby.");
+                    notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name));
                 }
             }
             catch (Exception ex)
             {
                 _log.Error(ex, $"{lighthouse.Name} Failed to standby");
-                notification.Error($"{lighthouse.Name} failed to standby.");
+                notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name) + "\n" + ex.Message);
             }
         }
         else

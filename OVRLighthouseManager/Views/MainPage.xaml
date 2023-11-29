@@ -15,10 +15,22 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0">
+            <InfoBar
+                IsOpen="{x:Bind ViewModel.CannotUseBluetooth, Mode=OneWay}"
+                Severity="Error"
+                x:Uid="InfoBar_BluetoothLERequired"
+                IsClosable="False"
+                />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0"
+                    Margin="0, 0, 0, 24"
+                    >
             <ToggleSwitch
                 IsOn="{x:Bind ViewModel.PowerManagement, Mode=OneWay}"
                 Toggled="{x:Bind ViewModel.OnTogglePowerManagement}"
@@ -27,9 +39,13 @@
                     <TextBlock x:Uid="Shell_Main_PowerManagementToggle" />
                 </ToggleSwitch.Header>
             </ToggleSwitch>
+            <TextBlock x:Uid="Shell_Main_PowerManagementDescription"
+                       TextWrapping="WrapWholeWords"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       />
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Grid.Column="0"
+        <StackPanel Grid.Row="2" Grid.Column="0"
                     Orientation="Horizontal"
                     Spacing="12"
                     >
@@ -45,7 +61,7 @@
 
         <ListView
             Grid.Column="0"
-            Grid.Row="2"
+            Grid.Row="3"
                 x:Name="BaseStationListView"
                 ItemsSource="{x:Bind ViewModel.Devices, Mode=Oneway}"
                 IsItemClickEnabled="True"

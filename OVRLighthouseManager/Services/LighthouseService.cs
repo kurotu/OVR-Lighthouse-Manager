@@ -89,14 +89,19 @@ public class LighthouseService : ILighthouseService
         return GetLighthouse(address);
     }
 
-    public static bool HasBluetoothAdapter()
+    public bool HasBluetoothLEAdapter()
     {
-        return BluetoothAdapter.GetDefaultAsync().AsTask().Result != null;
+        var adaper = BluetoothAdapter.GetDefaultAsync().AsTask().Result;
+        if (adaper == null)
+        {
+            return false;
+        }
+        return adaper.IsLowEnergySupported;
     }
 
-    internal static void CheckBluetoothAdapter()
+    internal void CheckBluetoothAdapter()
     {
-        if (BluetoothAdapter.GetDefaultAsync().AsTask().Result == null)
+        if (!HasBluetoothLEAdapter())
         {
             throw new Exception("Bluetooth is not available");
         }

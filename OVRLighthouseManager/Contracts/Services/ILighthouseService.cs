@@ -26,4 +26,5 @@ public interface ILighthouseService
 
     public LighthouseDevice? GetLighthouse(ulong bluetoothAddress);
     public LighthouseDevice? GetLighthouse(string bluetoothAddress);
+    public bool HasBluetoothLEAdapter();
 }

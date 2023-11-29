@@ -174,4 +174,25 @@
   <data name="Shell_Main_ScanButton.Content" xml:space="preserve">
     <value>Scan</value>
   </data>
+  <data name="InfoBar_BluetoothLERequired.Message" xml:space="preserve">
+    <value>An adapter which supports Bluetooth Low Energy (BLE) required.</value>
+  </data>
+  <data name="Notification_CommunicationError" xml:space="preserve">
+    <value>Failed to communicate with {0}.</value>
+  </data>
+  <data name="Notification_PowerOn" xml:space="preserve">
+    <value>{0} has been turned on.</value>
+  </data>
+  <data name="Notification_Scanning" xml:space="preserve">
+    <value>Scanning base stations.</value>
+  </data>
+  <data name="Notification_Sleep" xml:space="preserve">
+    <value>{0} has been put to sleep.</value>
+  </data>
+  <data name="Notification_Standby" xml:space="preserve">
+    <value>{0} has been put to standby.</value>
+  </data>
+  <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
+    <value>When you start SteamVR, they wake up from sleep, and when you exit SteamVR, they go to sleep. Neither HTC VIVE nor Valve Index headset required.</value>
+  </data>
 </root>

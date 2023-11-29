@@ -43,6 +43,18 @@ public class NotificationService : INotificationService
         Show(notification);
     }
 
+    public void Success(string message)
+    {
+        var notification = new Notification()
+        {
+            Message = message,
+            Duration = TimeSpan.FromSeconds(5),
+            Severity = InfoBarSeverity.Success,
+            IsIconVisible = true,
+        };
+        Show(notification);
+    }
+
     public void Warning(string message)
     {
         var notification = new Notification()

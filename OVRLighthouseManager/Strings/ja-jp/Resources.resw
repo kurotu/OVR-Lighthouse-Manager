@@ -174,4 +174,25 @@
   <data name="Shell_Main_ScanButton.Content" xml:space="preserve">
     <value>スキャン</value>
   </data>
+  <data name="InfoBar_BluetoothLERequired.Message" xml:space="preserve">
+    <value>Bluetooth Low Energy (BLE)に対応したアダプターが必要です。</value>
+  </data>
+  <data name="Notification_CommunicationError" xml:space="preserve">
+    <value>{0}との通信に失敗しました。</value>
+  </data>
+  <data name="Notification_PowerOn" xml:space="preserve">
+    <value>{0}の電源をオンにしました。</value>
+  </data>
+  <data name="Notification_Scanning" xml:space="preserve">
+    <value>ベースステーションをスキャンしています。</value>
+  </data>
+  <data name="Notification_Sleep" xml:space="preserve">
+    <value>{0}をスリープ状態にしました。</value>
+  </data>
+  <data name="Notification_Standby" xml:space="preserve">
+    <value>{0}をスタンバイ状態にしました。</value>
+  </data>
+  <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
+    <value>SteamVRを起動するとスリープ状態から復帰し、SteamVRを終了するとスリープ状態にします。HTC VIVEおよびValve Indexのヘッドセットは必要ありません。</value>
+  </data>
 </root>

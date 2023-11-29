@@ -25,6 +25,8 @@ public partial class MainViewModel : ObservableRecipient
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
+    public bool CannotUseBluetooth => !_lighthouseService.HasBluetoothLEAdapter();
+
     public readonly ICommand ScanCommand;
 
     public MainViewModel(
