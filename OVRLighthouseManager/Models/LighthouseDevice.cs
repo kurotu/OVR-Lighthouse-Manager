@@ -65,7 +65,7 @@ public class LighthouseDevice : IDisposable
             GattDeviceServicesResult? result = null;
             for (var i = 0; i < retryCount; i++)
             {
-                result = await _device.GetGattServicesAsync(BluetoothCacheMode.Uncached);
+                result = await _device.GetGattServicesAsync(BluetoothCacheMode.Cached);
                 var shouldBreak = false;
                 switch (result.Status)
                 {
@@ -102,7 +102,7 @@ public class LighthouseDevice : IDisposable
             GattCharacteristicsResult? result = null;
             for (var i = 0; i < retryCount; i++)
             {
-                result = await _controlService?.GetCharacteristicsAsync(BluetoothCacheMode.Uncached);
+                result = await _controlService?.GetCharacteristicsAsync(BluetoothCacheMode.Cached);
                 var shouldBreak = false;
                 switch (result.Status)
                 {
