@@ -75,6 +75,7 @@ public partial class App : Application
             services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
             services.AddSingleton<IOverlayAppService, OverlayAppService>();
             services.AddSingleton<IAppLifecycleService, AppLifeCycleService>();
+            services.AddSingleton<INotificationService, NotificationService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

@@ -7,6 +7,9 @@
     xmlns:helpers="using:OVRLighthouseManager.Helpers"
     xmlns:behaviors="using:OVRLighthouseManager.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:behaviors2="using:CommunityToolkit.WinUI.Behaviors"
     Loaded="OnLoaded">
 
     <Grid>
@@ -76,5 +79,14 @@
                 <Frame x:Name="NavigationFrame" />
             </Grid>
         </NavigationView>
+        <muxc:InfoBar HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      IsIconVisible="False"
+                      Margin="8"
+              >
+            <interactivity:Interaction.Behaviors>
+                <behaviors2:StackedNotificationsBehavior x:Name="NotificationQueue" />
+            </interactivity:Interaction.Behaviors>
+        </muxc:InfoBar>
     </Grid>
 </Page>

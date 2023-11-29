@@ -1,4 +1,5 @@
-﻿using OVRLighthouseManager.Helpers;
+﻿using OVRLighthouseManager.Contracts.Services;
+using OVRLighthouseManager.Helpers;
 
 using Windows.UI.ViewManagement;
 

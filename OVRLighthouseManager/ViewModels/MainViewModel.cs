@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Behaviors;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Contracts.Services;
@@ -16,6 +17,7 @@ public partial class MainViewModel : ObservableRecipient
 {
     private readonly ILighthouseService _lighthouseService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private bool _powerManagement;
@@ -32,11 +34,12 @@ public partial class MainViewModel : ObservableRecipient
         get;
     }
 
-    public MainViewModel(ILighthouseService lighthouseService, ILighthouseSettingsService lighthouseSettingsService)
+    public MainViewModel(ILighthouseService lighthouseService, ILighthouseSettingsService lighthouseSettingsService, INotificationService notificationService)
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseService = lighthouseService;
         _lighthouseSettingsService = lighthouseSettingsService;
+        _notificationService = notificationService;
 
         _lighthouseService.OnFound += (sender, arg) =>
         {
@@ -89,6 +92,8 @@ public partial class MainViewModel : ObservableRecipient
     public async void OnClickScan()
     {
         Log.Information("Clicked Scan");
+        _notificationService.Information("Scanning Lighthouses");
+
         CanStartScan = false;
         _lighthouseService.StartScan();
         await Task.Delay(10000);
