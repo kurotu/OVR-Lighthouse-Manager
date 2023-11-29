@@ -11,12 +11,16 @@ namespace OVRLighthouseManager.Services;
 public class NotificationService : INotificationService
 {
     private StackedNotificationsBehavior? _notificationQueue;
-    private Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+
+    public NotificationService()
+    {
+        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+    }
 
     public void SetNotificationQueue(StackedNotificationsBehavior notificationQueue)
     {
         _notificationQueue = notificationQueue;
-        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
     public void Show(Notification notification)
