@@ -1,5 +1,6 @@
 ﻿
 using System.Runtime.InteropServices.WindowsRuntime;
+using OVRLighthouseManager.Helpers;
 using Serilog;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
@@ -20,6 +21,8 @@ public class LighthouseDevice
 
     public bool IsInitialized => _powerCharacteristic != null;
 
+    public event EventHandler OnDisconnected = delegate { };
+
     private readonly BluetoothLEDevice _device;
     private GattDeviceService? _controlService;
     private GattCharacteristic? _powerCharacteristic;
@@ -27,9 +30,21 @@ public class LighthouseDevice
     private static readonly Guid ControlService = new("00001523-1212-efde-1523-785feabcd124");
     private static readonly Guid PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
 
+    private ILogger _log = LogHelper.ForContext<LighthouseDevice>();
+
     private LighthouseDevice(BluetoothLEDevice device)
     {
         _device = device;
+        _device.ConnectionStatusChanged += (sender, args) =>
+        {
+            _log.Debug($"{Name} ({BluetoothAddress:X012}) Connection status changed: {sender.ConnectionStatus}");
+            if (sender.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
+            {
+                _controlService = null;
+                _powerCharacteristic = null;
+                OnDisconnected(this, EventArgs.Empty);
+            }
+        };
     }
 
     internal static async Task<LighthouseDevice> FromBluetoothAddressAsync(ulong bluetoothAddress)
@@ -46,17 +61,38 @@ public class LighthouseDevice
 
     public async Task<DeviceType> Identify()
     {
+        const int retryCount = 5;
         if (_controlService == null)
         {
-            var result = await _device.GetGattServicesAsync(BluetoothCacheMode.Cached);
-            if (result.Status == GattCommunicationStatus.Success)
+            GattDeviceServicesResult? result = null;
+            for (var i = 0; i < retryCount; i++)
             {
-                _controlService = result.Services.FirstOrDefault(s => s.Uuid == ControlService);
-            } else
+                result = await _device.GetGattServicesAsync(BluetoothCacheMode.Uncached);
+                var shouldBreak = false;
+                switch (result.Status)
+                {
+                    case GattCommunicationStatus.Success:
+                        shouldBreak = true;
+                        break;
+                    case GattCommunicationStatus.ProtocolError:
+                    case GattCommunicationStatus.AccessDenied:
+                        Log.Information($"{Name} ({BluetoothAddress:X012}) Failed to get services: {result.Status}");
+                        return DeviceType.NotLighthouse;
+                    case GattCommunicationStatus.Unreachable:
+                        Log.Information($"{Name} ({BluetoothAddress:X012}) Failed to get services: {result.Status}");
+                        break;
+                }
+                if (shouldBreak)
+                {
+                    break;
+                }
+                await Task.Delay(100);
+            }
+            if (result?.Status == GattCommunicationStatus.Unreachable)
             {
                 return DeviceType.Unknown;
             }
-
+            _controlService = result?.Services.FirstOrDefault(s => s.Uuid == ControlService);
             if (_controlService == null)
             {
                 return DeviceType.NotLighthouse;
@@ -65,16 +101,36 @@ public class LighthouseDevice
 
         if (_powerCharacteristic == null)
         {
-            var result = await _controlService.GetCharacteristicsAsync(BluetoothCacheMode.Cached);
-            if (result.Status == GattCommunicationStatus.Success)
+            GattCharacteristicsResult? result = null;
+            for (var i = 0; i < retryCount; i++)
             {
-                _powerCharacteristic = result.Characteristics.FirstOrDefault(c => c.Uuid == PowerCharacteristic);
+                result = await _controlService?.GetCharacteristicsAsync(BluetoothCacheMode.Uncached);
+                var shouldBreak = false;
+                switch (result.Status)
+                {
+                    case GattCommunicationStatus.Success:
+                        shouldBreak = true;
+                        break;
+                    case GattCommunicationStatus.ProtocolError:
+                    case GattCommunicationStatus.AccessDenied:
+                        Log.Information($"{Name}  ( {BluetoothAddress:X012} ) Failed to get characteristics: {result.Status}");
+                        return DeviceType.NotLighthouse;
+                    case GattCommunicationStatus.Unreachable:
+                        Log.Information($"{Name}  ( {BluetoothAddress:X012} ) Failed to get characteristics: {result.Status}");
+                        break;
+                }
+                if (shouldBreak)
+                {
+
+                    break;
+                }
+                await Task.Delay(100);
             }
-            else
+            if (result?.Status == GattCommunicationStatus.Unreachable)
             {
                 return DeviceType.Unknown;
             }
-
+            _powerCharacteristic = result?.Characteristics.FirstOrDefault(c => c.Uuid == PowerCharacteristic);
             if (_powerCharacteristic == null)
             {
                 return DeviceType.NotLighthouse;
@@ -123,13 +179,14 @@ public class LighthouseDevice
                 case GattCommunicationStatus.Success:
                     return true;
                 case GattCommunicationStatus.Unreachable:
-                    Log.Information($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
+                    Log.Information($"{Name} ({BluetoothAddress:X012}) Failed to write characteristic: {result}");
                     continue;
                 case GattCommunicationStatus.ProtocolError:
                 case GattCommunicationStatus.AccessDenied:
-                    Log.Information($"Failed to write characteristic for {Name} ({BluetoothAddress:X012}) : {result}");
+                    Log.Information($"{Name} ({BluetoothAddress:X012}) Failed to write characteristic: {result}");
                     return false;
             }
+            await Task.Delay(100);
         }
         return false;
     }

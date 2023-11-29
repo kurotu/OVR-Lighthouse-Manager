@@ -21,10 +21,13 @@ public class LighthouseService : ILighthouseService
     private readonly DeviceWatcher _watcher;
     private bool _isScanning;
 
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue;
+
+    private readonly ILogger _log = LogHelper.ForContext<LighthouseService>();
+
     public LighthouseService()
     {
         string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
-        Log.Debug(BluetoothLEDevice.GetDeviceSelectorFromPairingState(false));
         _watcher = DeviceInformation.CreateWatcher
             (BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
             requestedProperties,
@@ -34,17 +37,20 @@ public class LighthouseService : ILighthouseService
         _watcher.Removed += DeviceWatcher_Removed;
         _watcher.EnumerationCompleted += (sender, arg) =>
         {
-            Log.Debug("EnumerationCompleted");
-            sender.Stop();
+            _log.Debug("DeviceWatcher EnumerationCompleted");
+            StopScan();
         };
         _watcher.Stopped += (sender, arg) =>
         {
-            Log.Debug("Stopped");
+            _log.Debug("DeviceWatcher Stopped");
         };
+
+        _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
     public void StartScan()
     {
+        _log.Debug("StartScan");
         CheckBluetoothAdapter();
         if (_isScanning)
         {
@@ -56,6 +62,7 @@ public class LighthouseService : ILighthouseService
 
     public void StopScan()
     {
+        _log.Debug("StopScan");
         if (!_isScanning)
         {
             return;
@@ -97,89 +104,67 @@ public class LighthouseService : ILighthouseService
         throw new Exception("Failed to get Bluetooth address");
     }
 
-    private bool IsKnownDevice(DeviceInformation device)
+    private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation device)
     {
-        var address = GetBluetoothAddress(device);
-        return _knownLighthouses.Any(l => l.BluetoothAddress == address);
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            var address = GetBluetoothAddress(device);
+            if (device.Name == "")
+            {
+                return;
+            }
+            if (_notLighthouses.Any(d => d.Id == device.Id))
+            {
+                return;
+            }
+            if (_identifyingDevices.Any(l => l.Id == device.Id))
+            {
+                return;
+            }
+
+            if (_knownLighthouses.Any(l => l.BluetoothAddress == address))
+            {
+                return;
+            }
+
+            if (device.Name.StartsWith("LHB-"))
+            {
+                _log.Information($"Found possible lighthouse: {device.Name} ({address:X012})");
+
+                var lighthouse = await LighthouseDevice.FromBluetoothAddressAsync(address);
+                lighthouse.OnDisconnected += (sender, args) =>
+                {
+                    _log.Information("{$name} has been disconnected", lighthouse.Name);
+                    if (_knownLighthouses.Contains(lighthouse))
+                    {
+                        _knownLighthouses.Remove(lighthouse);
+                    }
+                };
+
+                var result = await lighthouse.Identify();
+                switch (result)
+                {
+                    case LighthouseDevice.DeviceType.Lighthouse:
+                        _log.Information($"{device.Name} is a lighthouse");
+                        _knownLighthouses.Add(lighthouse);
+                        OnFound(this, lighthouse);
+                        _identifyingDevices.Remove(device);
+                        break;
+                    case LighthouseDevice.DeviceType.NotLighthouse:
+                        _log.Debug($"{device.Name} is not a lighthouse");
+                        _notLighthouses.Add(device);
+                        break;
+                    case LighthouseDevice.DeviceType.Unknown:
+                        _log.Debug($"{device.Name} is unknown device");
+                        _identifyingDevices.Remove(device);
+                        break;
+                }
+            }
+        });
     }
 
-    private async void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation device)
+    private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate device)
     {
-        var address = GetBluetoothAddress(device);
-        if (device.Name == "")
-        {
-            return;
-        }
-        if (_notLighthouses.Any(d => d.Id == device.Id))
-        {
-            return;
-        }
-        if (_identifyingDevices.Any(l => l.Id == device.Id))
-        {
-            return;
-        }
-
-        if (_knownLighthouses.Any(l => l.BluetoothAddress == address))
-        {
-            Log.Debug($"{device.Name} is known lighthouse");
-            return;
-        }
-
-        Log.Debug("Found BLE Device: {@id}", device.Name);
-
-        var lighthouse = await LighthouseDevice.FromBluetoothAddressAsync(address);
-
-        var result = await lighthouse.Identify();
-        switch (result)
-        {
-            case LighthouseDevice.DeviceType.Lighthouse:
-                _knownLighthouses.Add(lighthouse);
-                OnFound(this, lighthouse);
-                _identifyingDevices.Remove(device);
-                break;
-            case LighthouseDevice.DeviceType.NotLighthouse:
-                Log.Debug($"{device.Name} is not a lighthouse");
-                _notLighthouses.Add(device);
-                break;
-            case LighthouseDevice.DeviceType.Unknown:
-                Log.Debug($"{device.Name} is unknown");
-                _identifyingDevices.Remove(device);
-                break;
-        }
-    }
-
-    private async void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate device)
-    {
-        if (_notLighthouses.Any(d => d.Id == device.Id))
-        {
-            return;
-        }
-        var identifying = _identifyingDevices.FirstOrDefault(d => d.Id == device.Id);
-        if (identifying == null)
-        {
-            return;
-        }
-
-        Log.Debug("Updated {@id}", device.Id);
-
-        var lighthouse = await LighthouseDevice.FromIdAsync(device.Id);
-        var result = await lighthouse.Identify();
-        switch (result)
-        {
-            case LighthouseDevice.DeviceType.Lighthouse:
-                _knownLighthouses.Add(lighthouse);
-                OnFound(this, lighthouse);
-                _identifyingDevices.Remove(identifying);
-                break;
-            case LighthouseDevice.DeviceType.NotLighthouse:
-                Log.Debug($"{lighthouse.Name} is not a lighthouse");
-                _notLighthouses.Add(identifying);
-                break;
-            case LighthouseDevice.DeviceType.Unknown:
-                Log.Debug($"{lighthouse.Name} is unknown");
-                _identifyingDevices.Remove(identifying);
-                break;
-        }
     }
 
     private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate device)
