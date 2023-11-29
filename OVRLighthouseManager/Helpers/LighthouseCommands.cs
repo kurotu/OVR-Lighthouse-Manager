@@ -16,12 +16,14 @@ public class ScanCommand : ICommand
     public event EventHandler? CanExecuteChanged;
 
     private readonly ILighthouseService _lighthouseService;
+    private readonly INotificationService _notificationService;
     private readonly ILogger _log = LogHelper.ForContext<ScanCommand>();
     private bool _shouldStop = false;
 
-    public ScanCommand(ILighthouseService lighthouseService)
+    public ScanCommand(ILighthouseService lighthouseService, INotificationService notificationService)
     {
         _lighthouseService = lighthouseService;
+        _notificationService = notificationService;
     }
 
     public bool CanExecute(object? parameter)
@@ -32,6 +34,7 @@ public class ScanCommand : ICommand
     public async void Execute(object? parameter)
     {
         _log.Debug("Execute");
+        _notificationService.Information("Scanning for lighthouses");
         _shouldStop = false;
         _lighthouseService.StartScan();
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
