@@ -67,6 +67,7 @@ public class PowerOnCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
     private Task<bool>? _task;
+    private readonly ILogger _log = LogHelper.ForContext<PowerOnCommand>();
 
     public bool CanExecute(object? parameter)
     {
@@ -77,22 +78,40 @@ public class PowerOnCommand : ICommand
     {
         if (parameter is LighthouseObject lighthouse)
         {
-            Log.Information("Powering on {@lighthouse}", lighthouse);
-            var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
-            if (device == null)
+            var notification = App.GetService<INotificationService>();
+            try
             {
-                throw new Exception("Device not found");
+                _log.Information($"{lighthouse.Name} Powering on");
+                var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
+                if (device == null)
+                {
+                    throw new Exception("Device not found");
+                }
+                _task = device.PowerOnAsync();
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                var result = await _task;
+                _log.Information($"{lighthouse.Name} Power on result: {result}");
+                _task = null;
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+                if (result)
+                {
+                    notification.Information($"{lighthouse.Name} powered on.");
+                }
+                else
+                {
+                    notification.Error($"{lighthouse.Name} failed to power on.");
+                }
             }
-            _task = device.PowerOnAsync();
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-            var result = await _task;
-            Log.Information("PowerOn result: {result}", result);
-            _task = null;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"{lighthouse.Name} Failed to power on");
+                notification.Error($"{lighthouse.Name} failed to power on.");
+            }
         }
         else
         {
-            throw new Exception("Invalid parameter");
+            throw new ArgumentException("Invalid parameter");
         }
     }
 }
@@ -102,6 +121,7 @@ public class SleepCommand : ICommand
 
     public event EventHandler? CanExecuteChanged;
     private Task<bool>? _task;
+    private readonly ILogger _log = LogHelper.ForContext<SleepCommand>();
 
     public bool CanExecute(object? parameter)
     {
@@ -112,22 +132,40 @@ public class SleepCommand : ICommand
     {
         if (parameter is LighthouseObject lighthouse)
         {
-            Log.Information("Sleeping {@lighthouse}", lighthouse);
-            var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
-            if (device == null)
+            var notification = App.GetService<INotificationService>();
+            try
             {
-                           throw new Exception("Device not found");
-                       }
-            _task = device.SleepAsync();
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-            var reulst = await _task;
-            Log.Information("Sleep result: {result}", reulst);
-            _task = null;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                _log.Information($"{lighthouse.Name} Sleeping");
+                var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
+                if (device == null)
+                {
+                    throw new Exception("Device not found");
+                }
+                _task = device.SleepAsync();
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                var reulst = await _task;
+                _log.Information($"{lighthouse.Name} Sleep result: {reulst}");
+                _task = null;
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+                if (reulst)
+                {
+                    notification.Information($"{lighthouse.Name} slept.");
+                }
+                else
+                {
+                    notification.Error($"{lighthouse.Name} failed to sleep.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"{lighthouse.Name} Failed to sleep");
+                notification.Error($"{lighthouse.Name} failed to sleep.");
+            }
         }
         else
         {
-            throw new Exception("Invalid parameter");
+            throw new ArgumentException("Invalid parameter");
         }
     }
 }
@@ -136,6 +174,7 @@ public class StandbyCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
     private Task<bool>? _task;
+    private readonly ILogger _log = LogHelper.ForContext<StandbyCommand>();
 
     public bool CanExecute(object? parameter)
     {
@@ -144,25 +183,42 @@ public class StandbyCommand : ICommand
 
     public async void Execute(object? parameter)
     {
-
         if (parameter is LighthouseObject lighthouse)
         {
-            Log.Information("Standby {@lighthouse}", lighthouse);
-            var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
-            if (device == null)
+            var notification = App.GetService<INotificationService>();
+            try
             {
-                throw new Exception("Device not found");
+                _log.Information($"{lighthouse.Name} Standby");
+                var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
+                if (device == null)
+                {
+                    throw new Exception("Device not found");
+                }
+                _task = device.StandbyAsync();
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                var result = await _task;
+                _log.Information($"{lighthouse.Name} Standby result: {result}");
+                _task = null;
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+                if (result)
+                {
+                    notification.Information($"{lighthouse.Name} standby.");
+                }
+                else
+                {
+                    notification.Error($"{lighthouse.Name} failed to standby.");
+                }
             }
-            _task = device.StandbyAsync();
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-            var result = await _task;
-            Log.Information("Standby result: {result}", result);
-            _task = null;
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"{lighthouse.Name} Failed to standby");
+                notification.Error($"{lighthouse.Name} failed to standby.");
+            }
         }
         else
         {
-            throw new Exception("Invalid parameter");
+            throw new ArgumentException("Invalid parameter");
         }
     }
 }

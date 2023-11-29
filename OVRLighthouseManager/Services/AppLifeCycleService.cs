@@ -33,21 +33,42 @@ class AppLifeCycleService : IAppLifecycleService
     {
         _overlayAppService.OnVRMonitorConnected += async (_, __) =>
         {
-            await OnVRMonitorConnected();
+            try
+            {
+                await OnVRMonitorConnected();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "OnVRMonitorConnected Failed");
+            }
         };
         _overlayAppService.OnVRSystemQuit += async (_, __) =>
         {
-            await OnVRSystemQuit();
-            await OnBeforeAppExit();
-
-            dispatcherQueue.TryEnqueue(() =>
+            try
             {
-                App.Current.Exit();
-            });
+                await OnVRSystemQuit();
+                await OnBeforeAppExit();
+
+                dispatcherQueue.TryEnqueue(() =>
+                {
+                    App.Current.Exit();
+                });
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "OnVRSystemQuit Failed");
+            }
         };
         if (_overlayAppService.IsVRMonitorConnected)
         {
-            _ = OnVRMonitorConnected();
+            try
+            {
+                OnVRMonitorConnected().Wait();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "OnVRMonitorConnected Failed");
+            }
         }
     }
 

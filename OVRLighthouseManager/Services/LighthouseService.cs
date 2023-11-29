@@ -136,36 +136,43 @@ public class LighthouseService : ILighthouseService
 
             if (device.Name.StartsWith("LHB-"))
             {
-                _log.Information($"Found possible lighthouse: {device.Name} ({address:X012})");
-
-                var lighthouse = await LighthouseDevice.FromBluetoothAddressAsync(address);
-                lighthouse.OnDisconnected += (sender, args) =>
+                try
                 {
-                    _log.Information("{$name} has been disconnected", lighthouse.Name);
-                    if (_knownLighthouses.Contains(lighthouse))
+                    _log.Information($"Found possible lighthouse: {device.Name} ({address:X012})");
+
+                    var lighthouse = await LighthouseDevice.FromBluetoothAddressAsync(address);
+                    lighthouse.OnDisconnected += (sender, args) =>
                     {
-                        _knownLighthouses.Remove(lighthouse);
-                    }
-                    lighthouse.Dispose();
-                };
+                        _log.Information("{$name} has been disconnected", lighthouse.Name);
+                        if (_knownLighthouses.Contains(lighthouse))
+                        {
+                            _knownLighthouses.Remove(lighthouse);
+                        }
+                        lighthouse.Dispose();
+                    };
 
-                var result = await lighthouse.Identify();
-                switch (result)
+                    var result = await lighthouse.Identify();
+                    switch (result)
+                    {
+                        case LighthouseDevice.DeviceType.Lighthouse:
+                            _log.Information($"{device.Name} is a lighthouse");
+                            _knownLighthouses.Add(lighthouse);
+                            OnFound(this, lighthouse);
+                            _identifyingDevices.Remove(device);
+                            break;
+                        case LighthouseDevice.DeviceType.NotLighthouse:
+                            _log.Debug($"{device.Name} is not a lighthouse");
+                            _notLighthouses.Add(device);
+                            break;
+                        case LighthouseDevice.DeviceType.Unknown:
+                            _log.Debug($"{device.Name} is unknown device");
+                            _identifyingDevices.Remove(device);
+                            break;
+                    }
+                }
+                catch (Exception ex)
                 {
-                    case LighthouseDevice.DeviceType.Lighthouse:
-                        _log.Information($"{device.Name} is a lighthouse");
-                        _knownLighthouses.Add(lighthouse);
-                        OnFound(this, lighthouse);
-                        _identifyingDevices.Remove(device);
-                        break;
-                    case LighthouseDevice.DeviceType.NotLighthouse:
-                        _log.Debug($"{device.Name} is not a lighthouse");
-                        _notLighthouses.Add(device);
-                        break;
-                    case LighthouseDevice.DeviceType.Unknown:
-                        _log.Debug($"{device.Name} is unknown device");
-                        _identifyingDevices.Remove(device);
-                        break;
+                    _log.Error(ex, $"Failed to identify {device.Name} ({address:X012})");
                 }
             }
         });
