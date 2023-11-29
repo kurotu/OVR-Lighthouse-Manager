@@ -7,7 +7,7 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
 namespace OVRLighthouseManager.Models;
 
-public class LighthouseDevice
+public class LighthouseDevice : IDisposable
 {
     public enum DeviceType
     {
@@ -35,16 +35,14 @@ public class LighthouseDevice
     private LighthouseDevice(BluetoothLEDevice device)
     {
         _device = device;
-        _device.ConnectionStatusChanged += (sender, args) =>
-        {
-            _log.Debug($"{Name} ({BluetoothAddress:X012}) Connection status changed: {sender.ConnectionStatus}");
-            if (sender.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
-            {
-                _controlService = null;
-                _powerCharacteristic = null;
-                OnDisconnected(this, EventArgs.Empty);
-            }
-        };
+        _device.ConnectionStatusChanged += Device_ConnectionStatusChanged;
+    }
+
+    public void Dispose()
+    {
+        _device.ConnectionStatusChanged -= Device_ConnectionStatusChanged;
+        _device.Dispose();
+        _controlService?.Dispose();
     }
 
     internal static async Task<LighthouseDevice> FromBluetoothAddressAsync(ulong bluetoothAddress)
@@ -189,5 +187,16 @@ public class LighthouseDevice
             await Task.Delay(100);
         }
         return false;
+    }
+
+    private void Device_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
+    {
+        _log.Debug($"{Name} ({BluetoothAddress:X012}) Connection status changed: {sender.ConnectionStatus}");
+        if (sender.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
+        {
+            _controlService = null;
+            _powerCharacteristic = null;
+            OnDisconnected(this, EventArgs.Empty);
+        }
     }
 }

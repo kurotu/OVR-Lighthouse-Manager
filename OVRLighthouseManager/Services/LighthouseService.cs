@@ -139,6 +139,7 @@ public class LighthouseService : ILighthouseService
                     {
                         _knownLighthouses.Remove(lighthouse);
                     }
+                    lighthouse.Dispose();
                 };
 
                 var result = await lighthouse.Identify();
