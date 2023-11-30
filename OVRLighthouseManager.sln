@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OVRLighthouseManager", "OVR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OVRLighthouseManager.Core", "OVRLighthouseManager.Core\OVRLighthouseManager.Core.csproj", "{8601415A-DC58-4835-9546-21B900BB4506}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "OVRLighthouseManagerSetup", "OVRLighthouseManagerSetup\OVRLighthouseManagerSetup.vdproj", "{43755218-DB4C-4970-BAB0-65EF9023C4B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,14 @@ Global
 		{8601415A-DC58-4835-9546-21B900BB4506}.Release|x64.Build.0 = Release|x64
 		{8601415A-DC58-4835-9546-21B900BB4506}.Release|x86.ActiveCfg = Release|x86
 		{8601415A-DC58-4835-9546-21B900BB4506}.Release|x86.Build.0 = Release|x86
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|Any CPU.ActiveCfg = Debug
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|arm64.ActiveCfg = Debug
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|x64.ActiveCfg = Debug
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|x86.ActiveCfg = Debug
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|Any CPU.ActiveCfg = Release
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|arm64.ActiveCfg = Release
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|x64.ActiveCfg = Release
+		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
