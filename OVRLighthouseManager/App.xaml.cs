@@ -50,6 +50,11 @@ public partial class App : Application
     public App()
     {
         LogHelper.InitializeLogger();
+        var args = Environment.GetCommandLineArgs();
+        if (args.Length > 1)
+        {
+            OnCommandLineArgs(args);
+        }
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.
@@ -111,5 +116,46 @@ public partial class App : Application
         base.OnLaunched(args);
 
         await App.GetService<IActivationService>().ActivateAsync(args);
+    }
+
+    private void OnCommandLineArgs(string[] args)
+    {
+        var key = "com.github.kurotu.ovr-lighthouse-manager";
+        var manifestPath = Path.Combine(AppContext.BaseDirectory, "manifest.vrmanifest");
+        if (args[1] == "install")
+        {
+            try
+            {
+                var openvr = new OpenVRService();
+                openvr.Initialize();
+                openvr.AddApplicationManifest(manifestPath);
+                openvr.SetApplicationAutoLaunch(key, true);
+                openvr.Shutdown();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to install vrmanifest");
+                Environment.Exit(1);
+            }
+            Environment.Exit(0);
+        }
+
+        if (args[1] == "uninstall")
+        {
+            try
+            {
+                var openvr = new OpenVRService();
+                openvr.Initialize();
+                openvr.SetApplicationAutoLaunch(key, false);
+                openvr.RemoveApplicationManifest(manifestPath);
+                openvr.Shutdown();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to uninstall vrmanifest");
+                Environment.Exit(1);
+            }
+            Environment.Exit(0);
+        }
     }
 }

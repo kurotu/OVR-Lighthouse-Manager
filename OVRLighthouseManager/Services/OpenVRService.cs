@@ -27,6 +27,15 @@ public class OpenVRService : IOpenVRService
         OpenVR.Applications.AddApplicationManifest(applicationManifestPath, false);
     }
 
+    public void SetApplicationAutoLaunch(string applicationKey, bool autoLaunch)
+    {
+        if (_application == null)
+        {
+            throw new Exception("OpenVRService not initialized");
+        }
+        OpenVR.Applications.SetApplicationAutoLaunch(applicationKey, autoLaunch);
+    }
+
     public void RemoveApplicationManifest(string applicationManifestPath)
     {
         if (_application == null)
