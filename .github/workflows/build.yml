@@ -1,0 +1,58 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [x64]
+
+    runs-on: windows-latest
+
+    # TODO: Update environment variables.
+    env:
+      Solution_Name: OVRLighthouseManager.sln
+      Project_Name: OVRLighthouseManager
+    # Test_Project_Name: OVRLighthouseManager.Tests.MSTest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Restore
+      run: dotnet restore $env:Solution_Name
+  
+    - name: Setup VS Dev Environment
+      uses: seanmiddleditch/gha-setup-vsdevenv@v4
+
+    # Required to Build VS Installer Projects
+    - name: Disable Out of Process Building
+      run: .\DisableOutOfProcBuild.exe
+      working-directory: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
+
+    - name: Build
+      run: devenv ${{ env.Solution_Name}} /build "${{ matrix.configuration }}|${{ matrix.platform }}"
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.configuration }}-${{ matrix.platform }}-build-artifact
+        path: ${{ env.Project_Name }}Setup/${{ matrix.configuration }}/
+
+    # - name: Test
+    #   run: '& "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" ${env:Test_Project_Name}\bin\${{ matrix.platform }}\${{ matrix.configuration }}\**\${env:Test_Project_Name}.dll'
