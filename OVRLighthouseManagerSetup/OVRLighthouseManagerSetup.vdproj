@@ -34,13 +34,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9877AB4418BEB7650D7FD3E645885CE0"
+        "OwnerKey" = "8:_A5C30008387A4DE2B52BB429FCB9B3D3"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A5C30008387A4DE2B52BB429FCB9B3D3"
+        "OwnerKey" = "8:_9877AB4418BEB7650D7FD3E645885CE0"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -127,7 +127,7 @@
             "Sequence" = "3:1"
             "Identifier" = "8:_923933B1_22C2_4E44_A6CD_034A9A926914"
             "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\""
             }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_E39B8D598C0B4826806CFFFD4F74BD5D"
             {
@@ -141,7 +141,7 @@
             "Sequence" = "3:1"
             "Identifier" = "8:_36F9AC3C_D427_4D7D_84F2_DA25CBD633F5"
             "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\""
             }
         }
         "DefaultFeature"
@@ -264,7 +264,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:OVR Lighthouse Manager"
         "ProductCode" = "8:{7435B465-A645-41A7-90E9-1EBA7638ADA0}"
-        "PackageCode" = "8:{71F0C439-DD7F-4B74-AD5C-04249878364D}"
+        "PackageCode" = "8:{45676424-A19D-4404-AEE6-B973005F8A2D}"
         "UpgradeCode" = "8:{F373BCD0-B89C-49A6-8FF3-893A6CB5C235}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
