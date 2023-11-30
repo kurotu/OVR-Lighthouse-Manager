@@ -41,30 +41,30 @@ public partial class MainViewModel : ObservableRecipient
 
         _lighthouseService.OnFound += (sender, arg) =>
         {
-                var address = arg.BluetoothAddress;
-                var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == address);
-                if (existing == null)
+            var address = arg.BluetoothAddress;
+            var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == address);
+            if (existing == null)
+            {
+                dispatcherQueue.TryEnqueue(async () =>
                 {
-                    dispatcherQueue.TryEnqueue(async () =>
+                    var d = _lighthouseService.GetLighthouse(address);
+                    if (d == null)
                     {
-                        var d = _lighthouseService.GetLighthouse(address);
-                        if (d == null)
-                        {
-                            Log.Information($"{arg.Name} is not a Lighthouse");
-                            return;
-                        }
-                        var item = LighthouseObject.FromLighthouseDevice(d);
-                        Devices.Add(item);
-                        var devices = Devices.Select(d => d.ToListItem()).ToArray();
-                        await _lighthouseSettingsService.SetDevicesAsync(devices);
-                        Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
-                    });
-                }
-                else
-                {
-                    Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
-                    existing.Name = arg.Name;
-                }
+                        Log.Information($"{arg.Name} is not a Lighthouse");
+                        return;
+                    }
+                    var item = LighthouseObject.FromLighthouseDevice(d);
+                    Devices.Add(item);
+                    var devices = Devices.Select(d => d.ToListItem()).ToArray();
+                    await _lighthouseSettingsService.SetDevicesAsync(devices);
+                    Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
+                });
+            }
+            else
+            {
+                Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
+                existing.Name = arg.Name;
+            }
         };
 
         PowerManagement = _lighthouseSettingsService.PowerManagement;

@@ -12,7 +12,10 @@ using Valve.VR;
 namespace OVRLighthouseManager.Services;
 public class OverlayAppService : IOverlayAppService
 {
-    public bool IsVRMonitorConnected { get; set; }
+    public bool IsVRMonitorConnected
+    {
+        get; set;
+    }
 
     private readonly Application _application;
 

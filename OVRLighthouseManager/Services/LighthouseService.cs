@@ -1,13 +1,13 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Devices.Bluetooth.Advertisement;
-using Windows.Devices.Bluetooth.GenericAttributeProfile;
-using Windows.Devices.Bluetooth;
-using OVRLighthouseManager.Models;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Helpers;
-using Windows.Devices.Enumeration;
+using OVRLighthouseManager.Models;
 using Serilog;
-using System.Collections.Generic;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Bluetooth.Advertisement;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Devices.Enumeration;
 
 namespace OVRLighthouseManager.Services;
 public class LighthouseService : ILighthouseService
