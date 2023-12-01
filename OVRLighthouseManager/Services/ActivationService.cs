@@ -15,7 +15,7 @@ public class ActivationService : IActivationService
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
     private readonly IAppLifecycleService _appLifecycleService;
-    private readonly IOverlayAppService _overlayAppService;
+    private readonly IOpenVRService _openVRService;
     private UIElement? _shell = null;
 
     public ActivationService(
@@ -24,7 +24,7 @@ public class ActivationService : IActivationService
         IThemeSelectorService themeSelectorService,
         ILighthouseSettingsService lighthouseSettingsService,
         IAppLifecycleService appLifecycleService,
-        IOverlayAppService overlayAppService
+        IOpenVRService openVRService
     )
     {
         _defaultHandler = defaultHandler;
@@ -32,7 +32,7 @@ public class ActivationService : IActivationService
         _themeSelectorService = themeSelectorService;
         _lighthouseSettingsService = lighthouseSettingsService;
         _appLifecycleService = appLifecycleService;
-        _overlayAppService = overlayAppService;
+        _openVRService = openVRService;
     }
 
     public async Task ActivateAsync(object activationArgs)

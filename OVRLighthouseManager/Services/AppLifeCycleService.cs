@@ -17,21 +17,21 @@ class AppLifeCycleService : IAppLifecycleService
 
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
     private readonly ILighthouseService _lighthouseService;
-    private readonly IOverlayAppService _overlayAppService;
+    private readonly IOpenVRService _openVRService;
     private readonly ScanCommand _scanCommand;
 
-    public AppLifeCycleService(ILighthouseSettingsService lighthouseSettingsService, ILighthouseService lighthouseService, IOverlayAppService overlayAppService, ScanCommand scanCommand)
+    public AppLifeCycleService(ILighthouseSettingsService lighthouseSettingsService, ILighthouseService lighthouseService, IOpenVRService openVRService, ScanCommand scanCommand)
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseSettingsService = lighthouseSettingsService;
         _lighthouseService = lighthouseService;
-        _overlayAppService = overlayAppService;
+        _openVRService = openVRService;
         _scanCommand = scanCommand;
     }
 
     public void Initialize()
     {
-        _overlayAppService.OnVRMonitorConnected += async (_, __) =>
+        _openVRService.OnVRMonitorConnected += async (_, __) =>
         {
             try
             {
@@ -42,7 +42,7 @@ class AppLifeCycleService : IAppLifecycleService
                 Log.Error(e, "OnVRMonitorConnected Failed");
             }
         };
-        _overlayAppService.OnVRSystemQuit += async (_, __) =>
+        _openVRService.OnVRSystemQuit += async (_, __) =>
         {
             try
             {
@@ -59,7 +59,7 @@ class AppLifeCycleService : IAppLifecycleService
                 Log.Error(e, "OnVRSystemQuit Failed");
             }
         };
-        if (_overlayAppService.IsVRMonitorConnected)
+        if (_openVRService.IsVRMonitorConnected)
         {
             try
             {
@@ -74,7 +74,7 @@ class AppLifeCycleService : IAppLifecycleService
 
     public async Task OnBeforeAppExit()
     {
-        _overlayAppService.Shutdown();
+        _openVRService.Shutdown();
         await _scanCommand.StopScan();
     }
 

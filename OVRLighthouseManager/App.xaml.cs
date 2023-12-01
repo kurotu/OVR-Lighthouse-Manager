@@ -19,6 +19,9 @@ namespace OVRLighthouseManager;
 // To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application
 {
+    private const string OpenVRAppKey = "com.github.kurotu.ovr-lighthouse-manager";
+    private static string OpenVRManifestPath => Path.Combine(AppContext.BaseDirectory, "manifest.vrmanifest");
+
     // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
     // https://docs.microsoft.com/dotnet/core/extensions/generic-host
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -78,7 +81,7 @@ public partial class App : Application
 
             services.AddSingleton<ILighthouseService, LighthouseService>();
             services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
-            services.AddSingleton<IOverlayAppService, OverlayAppService>();
+            services.AddSingleton<IOpenVRService, OpenVRService>();
             services.AddSingleton<IAppLifecycleService, AppLifeCycleService>();
             services.AddSingleton<INotificationService, NotificationService>();
 
@@ -120,16 +123,13 @@ public partial class App : Application
 
     private void OnCommandLineArgs(string[] args)
     {
-        var key = "com.github.kurotu.ovr-lighthouse-manager";
-        var manifestPath = Path.Combine(AppContext.BaseDirectory, "manifest.vrmanifest");
         if (args[1] == "install")
         {
             try
             {
                 var openvr = new OpenVRService();
-                openvr.Initialize();
-                openvr.AddApplicationManifest(manifestPath);
-                openvr.SetApplicationAutoLaunch(key, true);
+                openvr.AddApplicationManifest(OpenVRManifestPath);
+                openvr.SetApplicationAutoLaunch(OpenVRAppKey, true);
                 openvr.Shutdown();
             }
             catch (Exception e)
@@ -145,9 +145,8 @@ public partial class App : Application
             try
             {
                 var openvr = new OpenVRService();
-                openvr.Initialize();
-                openvr.SetApplicationAutoLaunch(key, false);
-                openvr.RemoveApplicationManifest(manifestPath);
+                openvr.SetApplicationAutoLaunch(OpenVRAppKey, false);
+                openvr.RemoveApplicationManifest(OpenVRManifestPath);
                 openvr.Shutdown();
             }
             catch (Exception e)
