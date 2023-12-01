@@ -35,6 +35,13 @@ public partial class LighthouseObject : INotifyPropertyChanged
 
     public string Glyph => IsManaged ? "\uE73D" : "\uE739";
 
+    public ICommand RemoveCommand
+    {
+        get;
+    }
+
+    public event EventHandler OnClickRemove = delegate { };
+
     public LighthouseListItem ListItem
     {
         set
@@ -49,6 +56,10 @@ public partial class LighthouseObject : INotifyPropertyChanged
     {
         Name = "";
         BluetoothAddress = "";
+        RemoveCommand = new RelayCommand<LighthouseObject>((parameter) =>
+        {
+            parameter?.OnClickRemove(parameter, EventArgs.Empty);
+        });
     }
 
     public static LighthouseObject FromLighthouseDevice(LighthouseDevice device)

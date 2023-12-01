@@ -89,6 +89,17 @@ public class LighthouseService : ILighthouseService
         return GetLighthouse(address);
     }
 
+    public void RemoveLighthouse(string bluetoothAddress)
+    {
+        var address = AddressToStringConverter.StringToAddress(bluetoothAddress);
+        var device = _knownLighthouses.FirstOrDefault(l => l.BluetoothAddress == address);
+        if (device != null)
+        {
+            _knownLighthouses.Remove(device);
+            device.Dispose();
+        }
+    }
+
     public bool HasBluetoothLEAdapter()
     {
         var adaper = BluetoothAdapter.GetDefaultAsync().AsTask().Result;

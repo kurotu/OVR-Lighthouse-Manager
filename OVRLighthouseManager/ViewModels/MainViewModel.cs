@@ -58,6 +58,7 @@ public partial class MainViewModel : ObservableRecipient
                         return;
                     }
                     var item = LighthouseObject.FromLighthouseDevice(d);
+                    item.OnClickRemove += OnClickRemoveDevice;
                     Devices.Add(item);
                     var devices = Devices.Select(d => d.ToListItem()).ToArray();
                     await _lighthouseSettingsService.SetDevicesAsync(devices);
@@ -75,6 +76,7 @@ public partial class MainViewModel : ObservableRecipient
         var devices = _lighthouseSettingsService.Devices.Select(d =>
         {
             var vm = LighthouseObject.FromLighthouseListItem(d);
+            vm.OnClickRemove += OnClickRemoveDevice;
             return vm;
         }).ToArray();
         Devices = new(devices);
@@ -116,6 +118,7 @@ public partial class MainViewModel : ObservableRecipient
             Log.Information($"Remove: {device.Name} ({device.BluetoothAddress})");
             Devices.Remove(device);
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
+            _lighthouseService.RemoveLighthouse(device.BluetoothAddress);
         }
         else
         {

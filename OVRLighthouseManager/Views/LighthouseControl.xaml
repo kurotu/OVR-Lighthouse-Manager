@@ -78,6 +78,8 @@
                     <MenuFlyoutSeparator />
                     <MenuFlyoutItem
                         x:Uid="Menu_Remove"
+                        Command="{x:Bind LighthouseObject.RemoveCommand, Mode=OneWay}"
+                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                 </MenuFlyout>
             </Button.Flyout>
