@@ -60,7 +60,11 @@
                     x:Uid="Settings_AboutDescription"
                     Margin="{StaticResource XSmallTopMargin}"
                     Style="{ThemeResource BodyTextBlockStyle}" />
-                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton
+                    x:Uid="SettingsPage_ThirdPartyLicensesLink"
+                    Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
+                    Command="{x:Bind ViewModel.ThirdPartyLicensesLinkCommand}"
+                    />
             </StackPanel>
         </StackPanel>
     </Grid>

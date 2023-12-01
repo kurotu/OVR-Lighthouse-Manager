@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Input;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,6 +24,11 @@ public partial class SettingsViewModel : ObservableRecipient
     [ObservableProperty]
     private string _versionDescription;
 
+    public ICommand ThirdPartyLicensesLinkCommand
+    {
+        get;
+    }
+
     public ICommand SwitchThemeCommand
     {
         get;
@@ -43,6 +49,15 @@ public partial class SettingsViewModel : ObservableRecipient
                     await _themeSelectorService.SetThemeAsync(param);
                 }
             });
+
+        ThirdPartyLicensesLinkCommand = new RelayCommand(() =>
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "ThirdPartyLicenses.html");
+            Process.Start(new ProcessStartInfo(path)
+            {
+                UseShellExecute = true,
+            });
+        });
     }
 
     private static string GetVersionDescription()

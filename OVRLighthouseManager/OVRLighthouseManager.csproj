@@ -47,6 +47,9 @@
     <None Update="manifest.vrmanifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ThirdPartyLicenses.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Page Update="Views\LighthouseControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

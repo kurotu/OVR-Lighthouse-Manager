@@ -147,11 +147,8 @@
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
     <value>TODO: Replace with your app description.</value>
   </data>
-  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
-    <value>Privacy Statement</value>
-  </data>
-  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
-    <value>https://YourPrivacyUrlGoesHere/</value>
+  <data name="SettingsPage_ThirdPartyLicensesLink.Content" xml:space="preserve">
+    <value>サードパーティーのライセンス</value>
   </data>
   <data name="Menu_PowerOn.Text" xml:space="preserve">
     <value>電源オン</value>
