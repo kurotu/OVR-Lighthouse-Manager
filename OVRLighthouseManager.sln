@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OVRLighthouseManager", "OVR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OVRLighthouseManager.Core", "OVRLighthouseManager.Core\OVRLighthouseManager.Core.csproj", "{8601415A-DC58-4835-9546-21B900BB4506}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "OVRLighthouseManagerSetup", "OVRLighthouseManagerSetup\OVRLighthouseManagerSetup.vdproj", "{43755218-DB4C-4970-BAB0-65EF9023C4B8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OVRLighthouseManagerSetupActions", "OVRLighthouseManagerSetupActions\OVRLighthouseManagerSetupActions.csproj", "{AB27217C-1C6E-4F09-8217-B83486C374BD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,32 +59,6 @@ Global
 		{8601415A-DC58-4835-9546-21B900BB4506}.Release|x64.Build.0 = Release|x64
 		{8601415A-DC58-4835-9546-21B900BB4506}.Release|x86.ActiveCfg = Release|x86
 		{8601415A-DC58-4835-9546-21B900BB4506}.Release|x86.Build.0 = Release|x86
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|Any CPU.ActiveCfg = Debug
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|arm64.ActiveCfg = Debug
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|x64.ActiveCfg = Debug
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|x64.Build.0 = Debug
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Debug|x86.ActiveCfg = Debug
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|Any CPU.ActiveCfg = Release
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|arm64.ActiveCfg = Release
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|x64.ActiveCfg = Release
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|x64.Build.0 = Release
-		{43755218-DB4C-4970-BAB0-65EF9023C4B8}.Release|x86.ActiveCfg = Release
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|arm64.Build.0 = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|x64.Build.0 = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Debug|x86.Build.0 = Debug|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|arm64.ActiveCfg = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|arm64.Build.0 = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|x64.ActiveCfg = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|x64.Build.0 = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|x86.ActiveCfg = Release|Any CPU
-		{AB27217C-1C6E-4F09-8217-B83486C374BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
