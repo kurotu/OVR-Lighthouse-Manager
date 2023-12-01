@@ -51,18 +51,28 @@
                        />
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Grid.Column="0"
-                    Orientation="Horizontal"
-                    Spacing="12"
-                    >
-            <TextBlock x:Uid="Shell_Main_BaseStationsLabel" VerticalAlignment="Center" />
-            <Button
-                Grid.Column="0"
-                Grid.Row="1"
-                x:Name="ScanButton"
-                x:Uid="Shell_Main_ScanButton"
-                Command="{x:Bind ViewModel.ScanCommand}"
+        <StackPanel
+            Grid.Row="2" Grid.Column="0"
+            Spacing="8"
+            Margin="0, 0, 0, 4"
+            >
+            <StackPanel
+                Orientation="Horizontal"
+                Spacing="12"
+                >
+                <TextBlock x:Uid="Shell_Main_BaseStationsLabel" VerticalAlignment="Center" />
+                <Button
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    x:Name="ScanButton"
+                    x:Uid="Shell_Main_ScanButton"
+                    Command="{x:Bind ViewModel.ScanCommand}"
             />
+            </StackPanel>
+            <TextBlock x:Uid="Shell_Main_BaseStationsDescription"
+                       TextWrapping="WrapWholeWords"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       />
         </StackPanel>
 
         <ListView

@@ -195,4 +195,7 @@
   <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
     <value>SteamVRに接続できませんでした。SteamVRがインストールされているか確認してください。</value>
   </data>
+  <data name="Shell_Main_BaseStationsDescription.Text" xml:space="preserve">
+    <value>管理するベースステーションを選択してください。</value>
+  </data>
 </root>

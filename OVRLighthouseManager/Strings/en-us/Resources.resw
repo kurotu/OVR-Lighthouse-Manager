@@ -195,4 +195,7 @@
   <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
     <value>Could not connect to SteamVR. Please make sure SteamVR is installed.</value>
   </data>
+  <data name="Shell_Main_BaseStationsDescription.Text" xml:space="preserve">
+    <value>Select base stations to manage.</value>
+  </data>
 </root>
