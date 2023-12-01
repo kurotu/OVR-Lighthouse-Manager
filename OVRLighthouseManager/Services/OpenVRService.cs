@@ -14,7 +14,7 @@ public class OpenVRService : IOpenVRService
         get; set;
     }
 
-    private readonly Application _application;
+    private Application? _application;
 
     private const int PollingRate = 20;
 
@@ -39,7 +39,8 @@ public class OpenVRService : IOpenVRService
     public void Shutdown()
     {
         StopPolling();
-        _application.Shutdown();
+        _application?.Shutdown();
+        _application = null;
     }
 
     public void StartPolling()
@@ -56,7 +57,7 @@ public class OpenVRService : IOpenVRService
 
     private void Poll()
     {
-        while (_pollThread != null)
+        while (_pollThread != null && _application != null)
         {
             var pEvent = default(VREvent_t);
             var uncbVREvent = (uint)Marshal.SizeOf(typeof(VREvent_t));
@@ -86,6 +87,7 @@ public class OpenVRService : IOpenVRService
                     _log.Information("VRSystem quit");
                     IsVRMonitorConnected = false;
                     OnVRSystemQuit(this, pEvent);
+                    Shutdown();
                     break;
             }
         }

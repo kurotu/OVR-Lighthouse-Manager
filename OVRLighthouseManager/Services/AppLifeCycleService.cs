@@ -47,12 +47,6 @@ class AppLifeCycleService : IAppLifecycleService
             try
             {
                 await OnVRSystemQuit();
-                await OnBeforeAppExit();
-
-                dispatcherQueue.TryEnqueue(() =>
-                {
-                    App.Current.Exit();
-                });
             }
             catch (Exception e)
             {
@@ -162,6 +156,12 @@ class AppLifeCycleService : IAppLifecycleService
         }).ToArray());
 
         await _scanCommand.StopScan();
+
+        dispatcherQueue.TryEnqueue(() =>
+        {
+            App.Current.Exit();
+        });
+
         Log.Information("OnVRSystemQuit Done");
     }
 }
