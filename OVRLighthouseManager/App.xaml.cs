@@ -51,6 +51,7 @@ public partial class App : Application
     }
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
+    private readonly Mutex appMutex;
 
     public App()
     {
@@ -63,6 +64,12 @@ public partial class App : Application
         if (DecideRedirection())
         {
             Environment.Exit(0);
+        }
+        appMutex = new Mutex(true, "OVRLighthouseManager", out var createdNew);
+        if (!createdNew)
+        {
+            Log.Information("Failed to create mutex");
+            Environment.Exit(1);
         }
         InitializeComponent();
 

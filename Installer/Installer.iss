@@ -29,6 +29,7 @@ OutputBaseFilename=OVRLighthouseManager-Installer
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+AppMutex="OVRLighthouseManager"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
