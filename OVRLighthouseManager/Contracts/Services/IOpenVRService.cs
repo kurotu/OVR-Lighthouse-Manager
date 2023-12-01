@@ -8,6 +8,10 @@ using Valve.VR;
 namespace OVRLighthouseManager.Contracts.Services;
 public interface IOpenVRService
 {
+    public bool IsInitialized
+    {
+        get;
+    }
     public bool IsVRMonitorConnected
     {
         get;

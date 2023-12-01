@@ -195,4 +195,7 @@
   <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
     <value>SteamVRを起動するとスリープ状態から復帰し、SteamVRを終了するとスリープ状態にします。HTC VIVEおよびValve Indexのヘッドセットは必要ありません。</value>
   </data>
+  <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
+    <value>SteamVRに接続できませんでした。SteamVRがインストールされているか確認してください。</value>
+  </data>
 </root>

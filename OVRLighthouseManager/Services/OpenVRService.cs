@@ -9,6 +9,11 @@ using Valve.VR;
 namespace OVRLighthouseManager.Services;
 public class OpenVRService : IOpenVRService
 {
+    public bool IsInitialized
+    {
+        get; set;
+    }
+
     public bool IsVRMonitorConnected
     {
         get; set;
@@ -27,13 +32,21 @@ public class OpenVRService : IOpenVRService
 
     public OpenVRService()
     {
-        _application = new Application(Application.ApplicationType.Utility);
-        if (Process.GetProcessesByName("vrmonitor").Any())
+        try
         {
-            _log.Information("VRMonitor already running");
-            IsVRMonitorConnected = true;
+            _application = new Application(Application.ApplicationType.Utility);
+            IsInitialized = true;
+            if (Process.GetProcessesByName("vrmonitor").Any())
+            {
+                _log.Information("VRMonitor already running");
+                IsVRMonitorConnected = true;
+            }
+            StartPolling();
         }
-        StartPolling();
+        catch (Exception e)
+        {
+            _log.Error(e, "Failed to initialize OpenVRService");
+        }
     }
 
     public void Shutdown()

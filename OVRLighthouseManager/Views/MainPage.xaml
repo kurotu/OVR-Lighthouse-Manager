@@ -26,6 +26,12 @@
                 x:Uid="InfoBar_BluetoothLERequired"
                 IsClosable="False"
                 />
+            <InfoBar
+                IsOpen="{x:Bind ViewModel.CannotUseOpenVR, Mode=OneWay}"
+                Severity="Error"
+                x:Uid="InfoBar_OpenVRRequired"
+                IsClosable="False"
+                />
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="0"

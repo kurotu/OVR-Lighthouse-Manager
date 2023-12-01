@@ -17,6 +17,7 @@ public partial class MainViewModel : ObservableRecipient
 {
     private readonly ILighthouseService _lighthouseService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
+    private readonly IOpenVRService _openVRService;
 
     [ObservableProperty]
     private bool _powerManagement;
@@ -25,6 +26,7 @@ public partial class MainViewModel : ObservableRecipient
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
+    public bool CannotUseOpenVR => !_openVRService.IsInitialized;
     public bool CannotUseBluetooth => !_lighthouseService.HasBluetoothLEAdapter();
 
     public readonly ICommand ScanCommand;
@@ -32,12 +34,14 @@ public partial class MainViewModel : ObservableRecipient
     public MainViewModel(
         ILighthouseService lighthouseService,
         ILighthouseSettingsService lighthouseSettingsService,
+        IOpenVRService openVRService,
         ScanCommand scanCommand
         )
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseService = lighthouseService;
         _lighthouseSettingsService = lighthouseSettingsService;
+        _openVRService = openVRService;
 
         _lighthouseService.OnFound += (sender, arg) =>
         {
