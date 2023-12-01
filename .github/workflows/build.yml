@@ -36,6 +36,12 @@ jobs:
 
     - name: Restore
       run: dotnet restore $env:Solution_Name
+
+    - name: Restore Tools
+      run: dotnet tool restore
+
+    - name: Install Pandoc
+      run: choco install pandoc
   
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v4
@@ -44,6 +50,12 @@ jobs:
     - name: Disable Out of Process Building
       run: .\DisableOutOfProcBuild.exe
       working-directory: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild
+
+    - name: Update ThirdPartyLicenses.md
+      run: .\Scripts\UpdateThirdPartyLicenses.ps1
+
+    - name: Update ThirdPartyLicenses.html
+      run: pandoc -f markdown -t html -o OVRLighthouseManager/ThirdPartyLicenses.html ThirdPartyLicenses.md
 
     - name: Build
       run: devenv ${{ env.Solution_Name}} /build "${{ matrix.configuration }}|${{ matrix.platform }}"

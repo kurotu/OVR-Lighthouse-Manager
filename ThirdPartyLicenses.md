@@ -1,4 +1,5 @@
 OVR Lighthouse Manager uses the following third party libraries:
+
  | Reference                                               | Version        | License Type | License                                                                      | 
  | ------------------------------------------------------- | -------------- | ------------ | ---------------------------------------------------------------------------- | 
  | CommunityToolkit.Common                                 | 8.2.1          | MIT          | https://licenses.nuget.org/MIT                                               | 
