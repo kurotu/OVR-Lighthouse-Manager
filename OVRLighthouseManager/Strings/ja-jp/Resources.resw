@@ -127,7 +127,7 @@
     <value>電源の管理</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
-    <value>Personalization</value>
+    <value>個人別設定</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
     <value>テーマ</value>
@@ -145,7 +145,7 @@
     <value>このアプリについて</value>
   </data>
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>TODO: Replace with your app description.</value>
+    <value>このアプリはGPLv3でライセンスされています。</value>
   </data>
   <data name="SettingsPage_ThirdPartyLicensesLink.Content" xml:space="preserve">
     <value>サードパーティーのライセンス</value>
