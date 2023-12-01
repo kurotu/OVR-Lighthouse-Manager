@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-
+using Microsoft.Windows.AppLifecycle;
 using OVRLighthouseManager.Activation;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Core.Contracts.Services;
@@ -50,6 +50,8 @@ public partial class App : Application
         get; set;
     }
 
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
+
     public App()
     {
         LogHelper.InitializeLogger();
@@ -57,6 +59,10 @@ public partial class App : Application
         if (args.Length > 1)
         {
             OnCommandLineArgs(args);
+        }
+        if (DecideRedirection())
+        {
+            Environment.Exit(0);
         }
         InitializeComponent();
 
@@ -105,6 +111,8 @@ public partial class App : Application
         Build();
 
         UnhandledException += App_UnhandledException;
+
+        dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -156,5 +164,33 @@ public partial class App : Application
             }
             Environment.Exit(0);
         }
+    }
+
+    private bool DecideRedirection()
+    {
+        var instances = AppInstance.GetInstances();
+        if (instances.Count() > 1)
+        {
+            foreach (var instance in instances)
+            {
+                if (!instance.IsCurrent)
+                {
+                    var args = instance.GetActivatedEventArgs();
+                    instance.RedirectActivationToAsync(args).AsTask().Wait();
+                }
+            }
+            return true;
+        }
+
+        AppInstance.GetCurrent().Activated += AppInstance_Activated;
+        return false;
+    }
+
+    private void AppInstance_Activated(object? sender, AppActivationArguments args)
+    {
+        dispatcherQueue.TryEnqueue(() =>
+        {
+            MainWindow.Activate();
+        });
     }
 }
