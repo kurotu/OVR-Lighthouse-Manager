@@ -21,6 +21,12 @@
 
         <StackPanel Grid.Row="0" Grid.Column="0">
             <InfoBar
+                IsOpen="{x:Bind ViewModel.HasUpdate, Mode=OneWay}"
+                Severity="Informational"
+                Message="{x:Bind ViewModel.HasUpdateMessage, Mode=OneWay}"
+                IsClosable="True"
+                />
+            <InfoBar
                 IsOpen="{x:Bind ViewModel.CannotUseBluetooth, Mode=OneWay}"
                 Severity="Error"
                 x:Uid="InfoBar_BluetoothLERequired"

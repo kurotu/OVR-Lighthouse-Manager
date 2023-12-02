@@ -100,6 +100,7 @@ public partial class App : Application
             services.AddSingleton<IOpenVRService, OpenVRService>();
             services.AddSingleton<IAppLifecycleService, AppLifeCycleService>();
             services.AddSingleton<INotificationService, NotificationService>();
+            services.AddSingleton<IUpdaterService, UpdaterService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

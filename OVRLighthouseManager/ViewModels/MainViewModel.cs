@@ -20,6 +20,14 @@ public partial class MainViewModel : ObservableRecipient
     private readonly IOpenVRService _openVRService;
 
     [ObservableProperty]
+    private bool _hasUpdate;
+
+    [ObservableProperty]
+    private string? _hasUpdateMessage;
+
+    private string? _latestVersion;
+
+    [ObservableProperty]
     private bool _powerManagement;
 
     public ObservableCollection<LighthouseObject> Devices = new();
@@ -35,6 +43,7 @@ public partial class MainViewModel : ObservableRecipient
         ILighthouseService lighthouseService,
         ILighthouseSettingsService lighthouseSettingsService,
         IOpenVRService openVRService,
+        IUpdaterService updaterService,
         ScanCommand scanCommand
         )
     {
@@ -70,6 +79,16 @@ public partial class MainViewModel : ObservableRecipient
                 Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
                 existing.Name = arg.Name;
             }
+        };
+
+        _latestVersion = updaterService.LatestVersion;
+        HasUpdate = updaterService.HasUpdate;
+        HasUpdateMessage = GetHasUpdateMessage();
+        updaterService.FoundUpdate += (sender, version) =>
+        {
+            _latestVersion = version;
+            HasUpdate = true;
+            HasUpdateMessage = GetHasUpdateMessage();
         };
 
         PowerManagement = _lighthouseSettingsService.PowerManagement;
@@ -124,5 +143,10 @@ public partial class MainViewModel : ObservableRecipient
         {
             throw new InvalidProgramException("Clicked item is not a LighthouseListItemViewModel");
         }
+    }
+
+    private string? GetHasUpdateMessage()
+    {
+        return HasUpdate ? string.Format("InfoBar_UpdateFound_Message".GetLocalized(), _latestVersion) : null;
     }
 }

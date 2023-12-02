@@ -16,6 +16,7 @@ public class ActivationService : IActivationService
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
     private readonly IAppLifecycleService _appLifecycleService;
     private readonly IOpenVRService _openVRService;
+    private readonly IUpdaterService _updaterService;
     private UIElement? _shell = null;
 
     public ActivationService(
@@ -24,7 +25,8 @@ public class ActivationService : IActivationService
         IThemeSelectorService themeSelectorService,
         ILighthouseSettingsService lighthouseSettingsService,
         IAppLifecycleService appLifecycleService,
-        IOpenVRService openVRService
+        IOpenVRService openVRService,
+        IUpdaterService updaterService
     )
     {
         _defaultHandler = defaultHandler;
@@ -33,6 +35,7 @@ public class ActivationService : IActivationService
         _lighthouseSettingsService = lighthouseSettingsService;
         _appLifecycleService = appLifecycleService;
         _openVRService = openVRService;
+        _updaterService = updaterService;
     }
 
     public async Task ActivateAsync(object activationArgs)
@@ -87,6 +90,7 @@ public class ActivationService : IActivationService
     private async Task StartupAsync()
     {
         await _themeSelectorService.SetRequestedThemeAsync();
+        await _updaterService.FetchLatestVersion();
         await Task.CompletedTask;
     }
 }

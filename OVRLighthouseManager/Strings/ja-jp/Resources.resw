@@ -198,4 +198,7 @@
   <data name="Shell_Main_BaseStationsDescription.Text" xml:space="preserve">
     <value>管理するベースステーションを選択してください。</value>
   </data>
+  <data name="InfoBar_UpdateFound_Message" xml:space="preserve">
+    <value>新しいバージョン {0} があります。</value>
+  </data>
 </root>
