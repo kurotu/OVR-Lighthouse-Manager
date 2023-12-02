@@ -18,6 +18,7 @@
     <Version>0.0.1-alpha.1</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Styles\Spacing.xaml" />
     <None Remove="Views\LighthouseControl.xaml" />
   </ItemGroup>
 
@@ -51,6 +52,9 @@
     <None Update="manifest.vrmanifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\Spacing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Update="ThirdPartyLicenses.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -17,10 +17,14 @@
     <Thickness x:Key="SmallTopBottomMargin">0,12,0,12</Thickness>
 
     <Thickness x:Key="XSmallLeftMargin">8,0,0,0</Thickness>
+    <Thickness x:Key="XSmallLeftTopMargin">8,8,0,0</Thickness>
+    <Thickness x:Key="XSmallLeftbottomMargin">8,0,0,8</Thickness>
     <Thickness x:Key="XSmallTopMargin">0,8,0,0</Thickness>
+    <Thickness x:Key="XSmallBottomMargin">0,0,0,8</Thickness>
     <Thickness x:Key="XSmallLeftTopRightBottomMargin">8,8,8,8</Thickness>
 
     <Thickness x:Key="XXSmallTopMargin">0,4,0,0</Thickness>
+    <Thickness x:Key="XXSmallBottomMargin">0,0,0,4</Thickness>
     <Thickness x:Key="XXSmallLeftTopRightBottomMargin">4,4,4,4</Thickness>
 
     <Thickness x:Key="NavigationViewContentGridBorderThickness">1,1,0,0</Thickness>

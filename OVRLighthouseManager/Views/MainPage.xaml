@@ -35,7 +35,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="1" Grid.Column="0"
-                    Margin="0, 0, 0, 24"
+                    Margin="{StaticResource MediumBottomMargin}"
                     >
             <ToggleSwitch
                 IsOn="{x:Bind ViewModel.PowerManagement, Mode=OneWay}"
@@ -53,12 +53,12 @@
 
         <StackPanel
             Grid.Row="2" Grid.Column="0"
-            Spacing="8"
-            Margin="0, 0, 0, 4"
+            Spacing="{StaticResource XSmallSpacing}"
+            Margin="{StaticResource XXSmallBottomMargin}"
             >
             <StackPanel
                 Orientation="Horizontal"
-                Spacing="12"
+                Spacing="{StaticResource SmallSpacing}"
                 >
                 <TextBlock x:Uid="Shell_Main_BaseStationsLabel" VerticalAlignment="Center" />
                 <Button
