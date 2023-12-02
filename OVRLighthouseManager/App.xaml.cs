@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
@@ -71,6 +72,10 @@ public partial class App : Application
             Log.Information("Failed to create mutex");
             Environment.Exit(1);
         }
+
+        var attribute = Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
+        Log.Information("Launching version {Version}", attribute?.InformationalVersion);
+
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.
