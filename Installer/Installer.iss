@@ -26,8 +26,10 @@ LicenseFile=..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputBaseFilename=OVRLighthouseManager-{#MyAppVersion}-Installer
-Compression=lzma
+Compression=lzma2/ultra64
 SolidCompression=yes
+LZMAUseSeparateProcess=yes
+LZMADictionarySize=524288
 WizardStyle=modern
 AppMutex="OVRLighthouseManager"
 
