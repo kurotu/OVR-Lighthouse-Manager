@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "OVR Lighthouse Manager"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "0.0.1-alpha.1"
 #define MyAppPublisher "kurotu"
 #define MyAppURL "https://github.com/kurotu/OVR-Lighthouse-Manager"
 #define MyAppExeName "OVRLighthouseManager.exe"
@@ -25,7 +25,7 @@ DisableProgramGroupPage=yes
 LicenseFile=..\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputBaseFilename=OVRLighthouseManager-Installer
+OutputBaseFilename=OVRLighthouseManager-{#MyAppVersion}-Installer
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
