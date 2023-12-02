@@ -62,19 +62,21 @@ public partial class SettingsViewModel : ObservableRecipient
 
     private static string GetVersionDescription()
     {
-        Version version;
+        string versionString;
 
         if (RuntimeHelper.IsMSIX)
         {
             var packageVersion = Package.Current.Id.Version;
 
-            version = new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            var version = new Version(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            versionString = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
         }
         else
         {
-            version = Assembly.GetExecutingAssembly().GetName().Version!;
+            var commit = VersionHelper.GetCommit();
+            versionString = commit == null ? VersionHelper.GetVersion() : $"{VersionHelper.GetVersion()} ({commit[..6]})";
         }
 
-        return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        return $"{"AppDisplayName".GetLocalized()} - {versionString}";
     }
 }

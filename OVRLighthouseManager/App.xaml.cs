@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
@@ -73,8 +72,7 @@ public partial class App : Application
             Environment.Exit(1);
         }
 
-        var attribute = Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
-        Log.Information("Launching version {Version}", attribute?.InformationalVersion);
+        Log.Information("Launching version {Version}", VersionHelper.GetInformationalVersion());
 
         InitializeComponent();
 
