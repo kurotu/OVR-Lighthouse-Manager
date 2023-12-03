@@ -38,7 +38,9 @@ OVR Lighthouse Manager uses the following third party libraries:
  | Microsoft.WindowsAppSDK                                 | 1.4.231008000  | license.txt  | https://www.nuget.org/packages/Microsoft.WindowsAppSDK/1.4.231008000/License | 
  | Microsoft.Xaml.Behaviors.WinUI.Managed                  | 2.0.9          | MIT          | https://licenses.nuget.org/MIT                                               | 
  | Newtonsoft.Json                                         | 13.0.2         | MIT          | https://licenses.nuget.org/MIT                                               | 
+ | Octokit                                                 | 9.0.0          | MIT          | https://licenses.nuget.org/MIT                                               | 
  | OVRSharp                                                | 1.2.0          | MIT          | https://licenses.nuget.org/MIT                                               | 
+ | Semver                                                  | 2.3.0          | MIT          | https://licenses.nuget.org/MIT                                               | 
  | Serilog                                                 | 3.1.1          | Apache-2.0   | https://licenses.nuget.org/Apache-2.0                                        | 
  | Serilog.Sinks.Debug                                     | 2.0.0          | Apache-2.0   | https://licenses.nuget.org/Apache-2.0                                        | 
  | Serilog.Sinks.File                                      | 5.0.0          | Apache-2.0   | https://licenses.nuget.org/Apache-2.0                                        | 
