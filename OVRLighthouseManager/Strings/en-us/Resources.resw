@@ -168,7 +168,7 @@
   <data name="Shell_Main_PowerManagementToggle.Text" xml:space="preserve">
     <value>Manage Bases Stations</value>
   </data>
-  <data name="Shell_Main_ScanButton.Content" xml:space="preserve">
+  <data name="Shell_Main_ScanButtonLabel.Text" xml:space="preserve">
     <value>Scan</value>
   </data>
   <data name="InfoBar_BluetoothLERequired.Message" xml:space="preserve">

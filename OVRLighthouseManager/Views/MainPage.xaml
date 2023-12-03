@@ -6,7 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:OVRLighthouseManager.ViewModels"
     xmlns:local="using:OVRLighthouseManager.Views"
+    xmlns:helpers="using:OVRLighthouseManager.Helpers"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
 
     <Grid x:Name="ContentArea">
         <Grid.ColumnDefinitions>
@@ -71,9 +76,23 @@
                     Grid.Column="0"
                     Grid.Row="1"
                     x:Name="ScanButton"
-                    x:Uid="Shell_Main_ScanButton"
                     Command="{x:Bind ViewModel.ScanCommand}"
-            />
+                >
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <ProgressRing
+                                IsActive="{x:Bind ViewModel.IsScanning, Mode=OneWay}"
+                                Height="8"
+                                Width="8"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Visibility="{x:Bind ViewModel.IsScanning, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Margin="{StaticResource XSmallRightMargin}"
+                                />
+                            <TextBlock x:Uid="Shell_Main_ScanButtonLabel" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
             </StackPanel>
             <TextBlock x:Uid="Shell_Main_BaseStationsDescription"
                        TextWrapping="WrapWholeWords"

@@ -20,6 +20,7 @@
     <Thickness x:Key="XSmallLeftTopMargin">8,8,0,0</Thickness>
     <Thickness x:Key="XSmallLeftbottomMargin">8,0,0,8</Thickness>
     <Thickness x:Key="XSmallTopMargin">0,8,0,0</Thickness>
+    <Thickness x:Key="XSmallRightMargin">0,0,8,0</Thickness>
     <Thickness x:Key="XSmallBottomMargin">0,0,0,8</Thickness>
     <Thickness x:Key="XSmallLeftTopRightBottomMargin">8,8,8,8</Thickness>
 

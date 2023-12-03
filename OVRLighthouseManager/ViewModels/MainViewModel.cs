@@ -37,6 +37,7 @@ public partial class MainViewModel : ObservableRecipient
     public bool CannotUseOpenVR => !_openVRService.IsInitialized;
     public bool CannotUseBluetooth => !_lighthouseService.HasBluetoothLEAdapter();
 
+    public bool IsScanning => _lighthouseService.IsScanning;
     public readonly ICommand ScanCommand;
 
     public MainViewModel(
@@ -102,6 +103,13 @@ public partial class MainViewModel : ObservableRecipient
         Devices = new(devices);
 
         ScanCommand = scanCommand;
+        ScanCommand.CanExecuteChanged += (sender, args) =>
+        {
+            dispatcherQueue.TryEnqueue(() =>
+            {
+                OnPropertyChanged(nameof(IsScanning));
+            });
+        };
         if (ScanCommand.CanExecute(null))
         {
             ScanCommand.Execute(null);
