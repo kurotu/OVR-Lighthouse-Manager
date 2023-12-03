@@ -110,10 +110,6 @@ public partial class MainViewModel : ObservableRecipient
                 OnPropertyChanged(nameof(IsScanning));
             });
         };
-        if (ScanCommand.CanExecute(null))
-        {
-            ScanCommand.Execute(null);
-        }
     }
 
     public async void OnTogglePowerManagement(object sender, RoutedEventArgs e)
