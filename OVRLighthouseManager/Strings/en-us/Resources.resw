@@ -181,7 +181,7 @@
     <value>{0} has been turned on.</value>
   </data>
   <data name="Notification_Scanning" xml:space="preserve">
-    <value>Scanning base stations.</value>
+    <value>Scanning for base stations.</value>
   </data>
   <data name="Notification_Sleep" xml:space="preserve">
     <value>{0} has been put to sleep.</value>
@@ -193,7 +193,7 @@
     <value>When you start SteamVR, they wake up from sleep, and when you exit SteamVR, they go to sleep. Neither HTC VIVE nor Valve Index headset required.</value>
   </data>
   <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
-    <value>Could not connect to SteamVR. Please make sure SteamVR is installed.</value>
+    <value>Could not connect to SteamVR.</value>
   </data>
   <data name="Shell_Main_BaseStationsDescription.Text" xml:space="preserve">
     <value>Select base stations to manage.</value>
