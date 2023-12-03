@@ -32,6 +32,8 @@ LZMAUseSeparateProcess=yes
 LZMADictionarySize=524288
 WizardStyle=modern
 AppMutex="OVRLighthouseManager"
+SetupIconFile="..\OVRLighthouseManager\Assets\WindowIcon.ico"
+UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
