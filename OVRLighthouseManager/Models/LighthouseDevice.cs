@@ -17,13 +17,14 @@ public class LighthouseDevice : IDisposable
     };
 
     public string Name => _device?.Name ?? "(Unknown)";
-    public ulong BluetoothAddress => _device?.BluetoothAddress ?? 0;
+    public ulong BluetoothAddress => _bluetoothAddress;
 
     public bool IsInitialized => _powerCharacteristic != null;
 
     public event EventHandler OnDisconnected = delegate { };
 
-    private readonly BluetoothLEDevice _device;
+    private readonly ulong _bluetoothAddress;
+    private BluetoothLEDevice? _device;
     private GattDeviceService? _controlService;
     private GattCharacteristic? _powerCharacteristic;
 
@@ -34,15 +35,17 @@ public class LighthouseDevice : IDisposable
 
     private LighthouseDevice(BluetoothLEDevice device)
     {
+        _bluetoothAddress = device.BluetoothAddress;
         _device = device;
         _device.ConnectionStatusChanged += Device_ConnectionStatusChanged;
     }
 
     public void Dispose()
     {
-        _device.ConnectionStatusChanged -= Device_ConnectionStatusChanged;
-        _device.Dispose();
         _controlService?.Dispose();
+        _controlService = null;
+        _device?.Dispose();
+        _device = null;
     }
 
     internal static async Task<LighthouseDevice> FromBluetoothAddressAsync(ulong bluetoothAddress)
@@ -59,6 +62,11 @@ public class LighthouseDevice : IDisposable
 
     public async Task<DeviceType> Identify()
     {
+        if (_device == null)
+        {
+            _log.Information($"Device is null, trying to get device from address: {BluetoothAddress:X012}");
+            _device = await BluetoothLEDevice.FromBluetoothAddressAsync(_bluetoothAddress);
+        }
         const int retryCount = 5;
         if (_controlService == null)
         {
@@ -140,6 +148,7 @@ public class LighthouseDevice : IDisposable
 
     public async Task<bool> PowerOnAsync()
     {
+        await Identify();
         if (_powerCharacteristic == null)
         {
             throw new Exception("Power characteristic is null");
@@ -149,6 +158,7 @@ public class LighthouseDevice : IDisposable
 
     public async Task<bool> SleepAsync()
     {
+        await Identify();
         if (_powerCharacteristic == null)
         {
             throw new Exception("Power characteristic is null");
@@ -158,6 +168,7 @@ public class LighthouseDevice : IDisposable
 
     public async Task<bool> StandbyAsync()
     {
+        await Identify();
         if (_powerCharacteristic == null)
         {
             throw new Exception("Power characteristic is null");

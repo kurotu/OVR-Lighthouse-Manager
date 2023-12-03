@@ -127,6 +127,11 @@ public class LighthouseService : ILighthouseService
             _knownLighthouses.Remove(device);
             device.Dispose();
         }
+        var known = _knownDevices.FirstOrDefault(d => d.BluetoothAddress == address);
+        if (known != null)
+        {
+            _knownDevices.Remove(known);
+        }
     }
 
     public bool HasBluetoothLEAdapter()
@@ -220,11 +225,6 @@ public class LighthouseService : ILighthouseService
             lighthouse.OnDisconnected += (sender, args) =>
             {
                 _log.Information("{$name} has been disconnected", lighthouse.Name);
-                if (_knownLighthouses.Contains(lighthouse))
-                {
-                    _knownLighthouses.Remove(lighthouse);
-                }
-                lighthouse.Dispose();
             };
             if (!_knownLighthouses.Any(l => l.BluetoothAddress == lighthouse.BluetoothAddress))
             {
