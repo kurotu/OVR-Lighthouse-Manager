@@ -12,6 +12,7 @@
         <helpers:PowerOnCommand x:Key="powerOnCommand" />
         <helpers:SleepCommand x:Key="sleepCommand" />
         <helpers:StandbyCommand x:Key="standbyCommand" />
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid>
@@ -22,6 +23,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
@@ -44,8 +46,19 @@
                     Text="{x:Bind LighthouseObject.BluetoothAddress, Mode=OneWay}"
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Margin="{StaticResource XSmallLeftbottomMargin}"/>
+        <FontIcon
+            x:Uid="Control_Lighthouse_FoundIcon"
+            Grid.RowSpan="2"
+            Grid.Column="2"
+            Glyph="&#xE7B3;"
+            Width="32"
+            Height="32"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Visibility="{x:Bind LighthouseObject.IsFound, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            />
         <Button
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Grid.RowSpan="2"
                     Style="{StaticResource TextBlockButtonStyle}"
                     >

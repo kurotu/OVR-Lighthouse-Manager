@@ -201,4 +201,7 @@
   <data name="InfoBar_UpdateFound_Message" xml:space="preserve">
     <value>新しいバージョン {0} があります。</value>
   </data>
+  <data name="Control_Lighthouse_FoundIcon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>ベースステーションが見つかりました。</value>
+  </data>
 </root>

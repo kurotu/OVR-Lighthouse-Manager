@@ -201,4 +201,7 @@
   <data name="InfoBar_UpdateFound_Message" xml:space="preserve">
     <value>New version {0} is available.</value>
   </data>
+  <data name="Control_Lighthouse_FoundIcon.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Found in this session.</value>
+  </data>
 </root>

@@ -33,6 +33,17 @@ public partial class LighthouseObject : INotifyPropertyChanged
     }
     private bool _isManaged;
 
+    public bool IsFound
+    {
+        get => _isFound;
+        set
+        {
+            _isFound = value;
+            OnPropertyChanged(nameof(IsFound));
+        }
+    }
+    private bool _isFound;
+
     public string Glyph => IsManaged ? "\uE73D" : "\uE739";
 
     public ICommand RemoveCommand
@@ -68,7 +79,8 @@ public partial class LighthouseObject : INotifyPropertyChanged
         {
             Name = device.Name,
             BluetoothAddress = AddressToStringConverter.AddressToString(device.BluetoothAddress),
-            IsManaged = false
+            IsManaged = false,
+            IsFound = device.IsInitialized,
         };
         return obj;
     }

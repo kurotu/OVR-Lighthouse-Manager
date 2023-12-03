@@ -78,6 +78,7 @@ public partial class MainViewModel : ObservableRecipient
             {
                 Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
                 existing.Name = arg.Name;
+                existing.IsFound = arg.IsInitialized;
             }
         };
 
