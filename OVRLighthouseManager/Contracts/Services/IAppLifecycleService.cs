@@ -8,6 +8,6 @@ namespace OVRLighthouseManager.Contracts.Services;
 
 public interface IAppLifecycleService
 {
-    public void Initialize();
+    public Task OnLaunch();
     public Task OnBeforeAppExit();
 }

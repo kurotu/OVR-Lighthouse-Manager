@@ -29,7 +29,7 @@ class AppLifeCycleService : IAppLifecycleService
         _scanCommand = scanCommand;
     }
 
-    public void Initialize()
+    public async Task OnLaunch()
     {
         _openVRService.OnVRMonitorConnected += async (_, __) =>
         {
@@ -57,7 +57,7 @@ class AppLifeCycleService : IAppLifecycleService
         {
             try
             {
-                OnVRMonitorConnected().Wait();
+                await OnVRMonitorConnected();
             }
             catch (Exception e)
             {

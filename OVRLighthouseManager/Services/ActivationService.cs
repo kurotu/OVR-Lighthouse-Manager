@@ -83,7 +83,6 @@ public class ActivationService : IActivationService
     {
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
         await _lighthouseSettingsService.InitializeAsync().ConfigureAwait(false);
-        _appLifecycleService.Initialize();
         await Task.CompletedTask;
     }
 
@@ -91,6 +90,7 @@ public class ActivationService : IActivationService
     {
         await _themeSelectorService.SetRequestedThemeAsync();
         await _updaterService.FetchLatestVersion();
+        await _appLifecycleService.OnLaunch();
         await Task.CompletedTask;
     }
 }
