@@ -15,7 +15,7 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
-    <Version>0.0.1-alpha.1</Version>
+    <Version>0.0.1-alpha.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Styles\Spacing.xaml" />
