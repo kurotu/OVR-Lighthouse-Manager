@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 
 using OVRLighthouseManager.Activation;
 using OVRLighthouseManager.Contracts.Services;
+using OVRLighthouseManager.Helpers;
 using OVRLighthouseManager.Views;
 using Serilog;
 
@@ -88,6 +89,11 @@ public class ActivationService : IActivationService
 
     private async Task StartupAsync()
     {
+        var scanCommand = App.GetService<ScanCommand>();
+        if (scanCommand!.CanExecute(null))
+        {
+            scanCommand.Execute(null);
+        }
         await _themeSelectorService.SetRequestedThemeAsync();
         await _updaterService.FetchLatestVersion();
         await _appLifecycleService.OnLaunch();
