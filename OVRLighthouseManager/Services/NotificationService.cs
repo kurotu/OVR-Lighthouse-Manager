@@ -48,7 +48,7 @@ public class NotificationService : INotificationService
         var notification = new Notification()
         {
             Message = message,
-            Duration = TimeSpan.FromSeconds(5),
+            Duration = TimeSpan.FromSeconds(3),
             Severity = InfoBarSeverity.Success,
             IsIconVisible = true,
         };
@@ -59,9 +59,7 @@ public class NotificationService : INotificationService
     {
         var notification = new Notification()
         {
-
             Message = message,
-            Duration = TimeSpan.FromSeconds(5),
             Severity = InfoBarSeverity.Warning,
             IsIconVisible = true,
         };
@@ -73,7 +71,6 @@ public class NotificationService : INotificationService
         var notification = new Notification()
         {
             Message = message,
-            Duration = TimeSpan.FromSeconds(5),
             Severity = InfoBarSeverity.Error,
             IsIconVisible = true,
         };
