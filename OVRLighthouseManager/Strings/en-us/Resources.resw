@@ -190,7 +190,7 @@
     <value>{0} has been put to standby.</value>
   </data>
   <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
-    <value>When you start SteamVR, they wake up from sleep, and when you exit SteamVR, they go to sleep. Neither HTC VIVE nor Valve Index headset required.</value>
+    <value>When you start SteamVR, they wake up from sleep, and when you exit SteamVR, they go to sleep. Neither HTC VIVE nor Valve Index required.</value>
   </data>
   <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
     <value>Could not connect to SteamVR.</value>
