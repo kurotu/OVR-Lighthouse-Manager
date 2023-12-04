@@ -10,7 +10,7 @@ You can control the power of the base stations without HTC Vive or Valve Index b
 
 ## Features
 
-- Power control of base stations (power on / sleep / standby)
+- Power control of base stations (power on / sleep / standby) with Bluetooth LE.
 - Power control of base stations linked to start and end of SteamVR
 
 ## Supported Environment
