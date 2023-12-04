@@ -66,6 +66,7 @@ public class LighthouseDevice : IDisposable
         {
             _log.Information($"Device is null, trying to get device from address: {BluetoothAddress:X012}");
             _device = await BluetoothLEDevice.FromBluetoothAddressAsync(_bluetoothAddress);
+            _device.ConnectionStatusChanged += Device_ConnectionStatusChanged;
         }
         const int retryCount = 5;
         if (_controlService == null)

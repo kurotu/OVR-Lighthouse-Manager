@@ -37,7 +37,7 @@ public class LighthouseService : ILighthouseService
         {
             Identifying,
             Unknown,
-            NotLighthouse,
+            // NotLighthouse,
             Lighthouse,
         }
     }
@@ -82,6 +82,7 @@ public class LighthouseService : ILighthouseService
     public void StartScan()
     {
         _log.Debug("StartScan");
+        // _knownDevices.RemoveAll(d => d.DeviceType == KnownDevice.KnownDeviceType.NotLighthouse);
         CheckBluetoothAdapter();
         if (_isScanning)
         {
@@ -243,11 +244,13 @@ public class LighthouseService : ILighthouseService
                     break;
                 case LighthouseDevice.DeviceType.NotLighthouse:
                     _log.Debug($"{device.Name} is not a lighthouse");
-                    device.DeviceType = KnownDevice.KnownDeviceType.NotLighthouse;
+                    device.DeviceType = KnownDevice.KnownDeviceType.Unknown;
+                    lighthouse.Dispose();
                     break;
                 case LighthouseDevice.DeviceType.Unknown:
                     _log.Debug($"{device.Name} is unknown device");
                     device.DeviceType = KnownDevice.KnownDeviceType.Unknown;
+                    lighthouse.Dispose();
                     break;
             }
         }
