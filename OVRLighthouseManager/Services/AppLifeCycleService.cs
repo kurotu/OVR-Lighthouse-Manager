@@ -109,7 +109,6 @@ class AppLifeCycleService : IAppLifecycleService
             Log.Information($"Done {d.Name}: {result}");
         }).ToArray());
 
-        await _scanCommand.StopScan();
         Log.Information("OnVRMonitorConnected Done");
     }
 
