@@ -80,7 +80,7 @@ public partial class LighthouseObject : INotifyPropertyChanged
             Name = device.Name,
             BluetoothAddress = AddressToStringConverter.AddressToString(device.BluetoothAddress),
             IsManaged = false,
-            IsFound = device.IsInitialized,
+            IsFound = true,
         };
         return obj;
     }

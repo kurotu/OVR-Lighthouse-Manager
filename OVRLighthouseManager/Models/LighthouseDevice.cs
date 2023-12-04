@@ -19,8 +19,6 @@ public class LighthouseDevice : IDisposable
     public string Name => _device?.Name ?? "(Unknown)";
     public ulong BluetoothAddress => _bluetoothAddress;
 
-    public bool IsInitialized => _powerCharacteristic != null;
-
     public event EventHandler OnDisconnected = delegate { };
 
     private readonly ulong _bluetoothAddress;

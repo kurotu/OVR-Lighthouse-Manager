@@ -93,13 +93,13 @@ class AppLifeCycleService : IAppLifecycleService
             for (var i = 0; i < retry; i++)
             {
                 device = _lighthouseService.GetLighthouse(d.BluetoothAddress);
-                if (device != null && device.IsInitialized)
+                if (device != null)
                 {
                     break;
                 }
                 await Task.Delay(1000);
             }
-            if (device == null || !device.IsInitialized)
+            if (device == null)
             {
                 Log.Information($"Failed to get device {d.Name}");
                 return;
@@ -135,15 +135,14 @@ class AppLifeCycleService : IAppLifecycleService
                 LighthouseDevice? device = null;
                 for (var i = 0; i < retry; i++)
                 {
-
                     device = _lighthouseService.GetLighthouse(d.BluetoothAddress);
-                    if (device != null && device.IsInitialized)
+                    if (device != null)
                     {
                         break;
                     }
                     await Task.Delay(1000);
                 }
-                if (device == null || !device.IsInitialized)
+                if (device == null)
                 {
                     Log.Information($"Failed to get device {d.Name}");
                     return;
