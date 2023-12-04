@@ -66,7 +66,7 @@ public class LighthouseDevice : IDisposable
             _device = await BluetoothLEDevice.FromBluetoothAddressAsync(_bluetoothAddress);
             _device.ConnectionStatusChanged += Device_ConnectionStatusChanged;
         }
-        const int retryCount = 5;
+        const int retryCount = 2;
         if (_controlService == null)
         {
             GattDeviceServicesResult? result = null;
