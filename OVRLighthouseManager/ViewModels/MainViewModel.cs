@@ -98,6 +98,7 @@ public partial class MainViewModel : ObservableRecipient
         {
             var vm = LighthouseObject.FromLighthouseListItem(d);
             vm.OnClickRemove += OnClickRemoveDevice;
+            vm.IsFound = _lighthouseService.GetLighthouse(d.BluetoothAddress) != null;
             return vm;
         }).ToArray();
         Devices = new(devices);
