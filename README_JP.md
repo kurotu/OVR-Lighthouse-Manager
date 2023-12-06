@@ -11,9 +11,14 @@ HTC Vive や Valve Index なしでも SteamVR の起動・終了に連動して�
 
 <img src="./Screenshots/Screenshot-JP-Light.png" alt="OVR Lighthouse Manager" width="489px" ></img>
 
+## 概要
+
+SteamVR には、SteamVR の起動時にベースステーションを自動的に電源オンにし、SteamVR の終了時にベースステーションを自動的にスリープにする機能があります。しかし、この機能は HTC VIVE や Valve Index がないと動作しません。
+OVR Lighthouse Manager は、Bluetooth LE を使って HTC VIVE や Valve Index なしでもベースステーションの電源を制御することができます。
+
 ## 機能
 
-- Bluetooth LE によるベースステーションの電源制御 (電源オン/スリープ/スタンバイ)
+- Bluetooth LE によるベースステーションの電源制御 (電源オン, スリープ, スタンバイ)
 - SteamVR の起動・終了に連動したベースステーションの電源制御
 
 ## 必要環境

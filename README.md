@@ -12,10 +12,15 @@ You can control the power of the base stations without HTC Vive or Valve Index b
 
 <img src="./Screenshots/Screenshot-EN-Light.png" alt="OVR Lighthouse Manager" width="489px" ></img>
 
+## Introduction
+
+SteamVR has a feature to automatically turn on the base stations when SteamVR starts and sleep them when SteamVR ends. However, this feature does not work without HTC VIVE or Valve Index.
+OVR Lighthouse Manager allows you to control the power of base stations without HTC Vive or Valve Index with Bluetooth LE.
+
 ## Features
 
-- Power control of base stations (power on / sleep / standby) with Bluetooth LE.
-- Power control of base stations linked to start and end of SteamVR
+- Power control of base stations (power on, sleep, standby) with Bluetooth LE.
+- Automated power control of base stations linked to the start and end of SteamVR
 
 ## Required Environment
 
@@ -31,7 +36,7 @@ You can control the power of the base stations without HTC Vive or Valve Index b
 1. Start OVR Lighthouse Manager from the start menu.
 2. The surrounding base stations are automatically listed.
 3. Turn on **Manage Base Stations**.
-4. Select base station you want to link to the start and end of SteamVR from the list.
+4. Select base stations you want to link to the start and end of SteamVR from the list.
 
 After above setup, the software automatically controls the power of base stations by linking to the start and end of SteamVR.
 
