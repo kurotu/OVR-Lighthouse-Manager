@@ -9,6 +9,9 @@ You can control the power of the base stations without HTC Vive or Valve Index b
 <a href="https://kurotu.booth.pm/items/5315515">
     <img src="https://asset.booth.pm/static-images/banner/200x40_01.png" alt="Booth"></img>
 </a>
+<a href="https://kurotu.gumroad.com/l/uaqwv">
+    <img src="https://img.shields.io/badge/GUMROAD-36a9ae?style=for-the-badge&logo=gumroad&logoColor=ping&labelColor=black&color=black" height="40px" alt="Gumroad"></img>
+</a>
 
 <img src="./Screenshots/Screenshot-EN-Light.png" alt="OVR Lighthouse Manager" width="489px" ></img>
 
@@ -16,6 +19,7 @@ You can control the power of the base stations without HTC Vive or Valve Index b
 
 SteamVR has a feature to automatically turn on the base stations when SteamVR starts and sleep them when SteamVR ends. However, this feature does not work without HTC VIVE or Valve Index.
 OVR Lighthouse Manager allows you to control the power of base stations without HTC Vive or Valve Index with Bluetooth LE.
+It would be useful when using the combination of standalone headsets (Quest, PICO, etc.) and VIVE trackers.
 
 ## Features
 
@@ -29,7 +33,7 @@ OVR Lighthouse Manager allows you to control the power of base stations without 
 - SteamVR Base Station 2.0
 - Bluetooth LE
 
-## How to use
+## How to Use
 
 ### Initial Setup
 
