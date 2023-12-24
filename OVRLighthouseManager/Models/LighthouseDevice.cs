@@ -36,6 +36,7 @@ public class LighthouseDevice : IDisposable
         _bluetoothAddress = device.BluetoothAddress;
         _device = device;
         _device.ConnectionStatusChanged += Device_ConnectionStatusChanged;
+        _device.GattServicesChanged += Device_GattServicesChanged;
     }
 
     public void Dispose()
@@ -65,6 +66,7 @@ public class LighthouseDevice : IDisposable
             _log.Information($"Device is null, trying to get device from address: {BluetoothAddress:X012}");
             _device = await BluetoothLEDevice.FromBluetoothAddressAsync(_bluetoothAddress);
             _device.ConnectionStatusChanged += Device_ConnectionStatusChanged;
+            _device.GattServicesChanged += Device_GattServicesChanged;
         }
         const int retryCount = 2;
         if (_controlService == null)
@@ -208,5 +210,26 @@ public class LighthouseDevice : IDisposable
             _powerCharacteristic = null;
             OnDisconnected(this, EventArgs.Empty);
         }
+    }
+
+    private void Device_GattServicesChanged(BluetoothLEDevice sender, object args)
+    {
+        _log.Debug($"{Name} ({BluetoothAddress:X012}) GATT services changed");
+        try
+        {
+            var services = sender.GattServices;
+            if (services != null)
+            {
+                for (var i = 0; i < services.Count; i++)
+                {
+                    _log.Debug($"{Name} services[{i}]: {services[i].Uuid}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"{Name} ({BluetoothAddress:X012}) Failed to get GATT services");
+        }
+        _log.Debug($"{Name} ({BluetoothAddress:X012}) GATT services changed end");
     }
 }
