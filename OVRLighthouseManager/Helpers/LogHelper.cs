@@ -19,8 +19,8 @@ internal static class LogHelper
                 outputTemplate: messageTemplate)
 #if DEBUG
             .WriteTo.Debug(outputTemplate: messageTemplate)
-            .MinimumLevel.Debug()
 #endif
+            .MinimumLevel.Debug()
             .CreateLogger();
     }
 
