@@ -204,4 +204,7 @@
   <data name="Control_Lighthouse_FoundIcon.ToolTipService.ToolTip" xml:space="preserve">
     <value>Found in this session.</value>
   </data>
+  <data name="Settings_OutputDebugToggle.Text" xml:space="preserve">
+    <value>Enable Debug Logs (Exit the app after change)</value>
+  </data>
 </root>

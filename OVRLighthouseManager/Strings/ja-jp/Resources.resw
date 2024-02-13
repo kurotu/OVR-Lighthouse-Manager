@@ -204,4 +204,7 @@
   <data name="Control_Lighthouse_FoundIcon.ToolTipService.ToolTip" xml:space="preserve">
     <value>ベースステーションが見つかりました。</value>
   </data>
+  <data name="Settings_OutputDebugToggle.Text" xml:space="preserve">
+    <value>デバッグログを有効にする (変更後、アプリを終了してください)</value>
+  </data>
 </root>

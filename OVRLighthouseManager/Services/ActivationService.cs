@@ -15,6 +15,7 @@ public class ActivationService : IActivationService
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
+    private readonly IMiscSettingsService _miscSettingsService;
     private readonly IAppLifecycleService _appLifecycleService;
     private readonly IOpenVRService _openVRService;
     private readonly IUpdaterService _updaterService;
@@ -25,6 +26,7 @@ public class ActivationService : IActivationService
         IEnumerable<IActivationHandler> activationHandlers,
         IThemeSelectorService themeSelectorService,
         ILighthouseSettingsService lighthouseSettingsService,
+        IMiscSettingsService miscSettingsService,
         IAppLifecycleService appLifecycleService,
         IOpenVRService openVRService,
         IUpdaterService updaterService
@@ -34,6 +36,7 @@ public class ActivationService : IActivationService
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
         _lighthouseSettingsService = lighthouseSettingsService;
+        _miscSettingsService = miscSettingsService;
         _appLifecycleService = appLifecycleService;
         _openVRService = openVRService;
         _updaterService = updaterService;
@@ -84,6 +87,8 @@ public class ActivationService : IActivationService
     {
         await _themeSelectorService.InitializeAsync().ConfigureAwait(false);
         await _lighthouseSettingsService.InitializeAsync().ConfigureAwait(false);
+        await _miscSettingsService.InitializeAsync().ConfigureAwait(false);
+        LogHelper.InitializeLogger(_miscSettingsService.OutputDebug);
         await Task.CompletedTask;
     }
 

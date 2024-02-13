@@ -6,10 +6,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Microsoft.UI.Xaml;
-
+using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Helpers;
-
 using Windows.ApplicationModel;
 
 namespace OVRLighthouseManager.ViewModels;
@@ -17,9 +16,13 @@ namespace OVRLighthouseManager.ViewModels;
 public partial class SettingsViewModel : ObservableRecipient
 {
     private readonly IThemeSelectorService _themeSelectorService;
+    private readonly IMiscSettingsService _miscSettingsService;
 
     [ObservableProperty]
     private ElementTheme _elementTheme;
+
+    [ObservableProperty]
+    private bool _outputDebug;
 
     [ObservableProperty]
     private string _versionDescription;
@@ -34,10 +37,12 @@ public partial class SettingsViewModel : ObservableRecipient
         get;
     }
 
-    public SettingsViewModel(IThemeSelectorService themeSelectorService)
+    public SettingsViewModel(IThemeSelectorService themeSelectorService, IMiscSettingsService miscSettingsService)
     {
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
+        _miscSettingsService = miscSettingsService;
+        _outputDebug = _miscSettingsService.OutputDebug;
         _versionDescription = GetVersionDescription();
 
         SwitchThemeCommand = new RelayCommand<ElementTheme>(
@@ -58,6 +63,16 @@ public partial class SettingsViewModel : ObservableRecipient
                 UseShellExecute = true,
             });
         });
+        _miscSettingsService = miscSettingsService;
+    }
+
+    public async void OnToggleOutputDebug(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch toggleSwitch)
+        {
+            OutputDebug = toggleSwitch.IsOn;
+            await _miscSettingsService.SetOutputDebugAsync(OutputDebug);
+        }
     }
 
     private static string GetVersionDescription()

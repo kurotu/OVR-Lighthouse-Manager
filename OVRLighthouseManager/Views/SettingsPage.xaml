@@ -14,6 +14,7 @@
         <StackPanel
             x:Name="ContentArea">
             <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                 <TextBlock x:Uid="Settings_Theme" />
 
@@ -51,9 +52,19 @@
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <ToggleSwitch
+                Margin="{StaticResource XXSmallTopMargin}"
+                IsOn="{x:Bind ViewModel.OutputDebug, Mode=OneWay}"
+                Toggled="{x:Bind ViewModel.OnToggleOutputDebug}"
+                >
+                    <ToggleSwitch.Header>
+                        <TextBlock x:Uid="Settings_OutputDebugToggle" />
+                    </ToggleSwitch.Header>
+            </ToggleSwitch>
 
-            <StackPanel Margin="{StaticResource XSmallTopMargin}">
+            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}" />
+
+            <StackPanel Margin="{StaticResource SmallTopMargin}">
                 <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
 
                 <TextBlock

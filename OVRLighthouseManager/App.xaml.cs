@@ -55,7 +55,7 @@ public partial class App : Application
 
     public App()
     {
-        LogHelper.InitializeLogger();
+        LogHelper.InitializeLogger(false);
         var args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
         {
@@ -97,6 +97,7 @@ public partial class App : Application
 
             services.AddSingleton<ILighthouseService, LighthouseService>();
             services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
+            services.AddSingleton<IMiscSettingsService, MiscSettingsService>();
             services.AddSingleton<IOpenVRService, OpenVRService>();
             services.AddSingleton<IAppLifecycleService, AppLifeCycleService>();
             services.AddSingleton<INotificationService, NotificationService>();
