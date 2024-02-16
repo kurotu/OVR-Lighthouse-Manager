@@ -73,7 +73,7 @@ public partial class LighthouseObject : INotifyPropertyChanged
         });
     }
 
-    public static LighthouseObject FromLighthouseDevice(LighthouseDevice device)
+    public static LighthouseObject FromLighthouse(Lighthouse device)
     {
         var obj = new LighthouseObject
         {

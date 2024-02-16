@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Enable Debug Logs` setting to output debug-level logs.
 
+### Changed
+
+- Rewrite Bluetooth LE connection process.
+
 ## [1.0.0] - 2023-12-05
 
 Initial release.

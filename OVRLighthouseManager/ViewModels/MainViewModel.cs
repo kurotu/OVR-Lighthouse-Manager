@@ -15,7 +15,7 @@ namespace OVRLighthouseManager.ViewModels;
 
 public partial class MainViewModel : ObservableRecipient
 {
-    private readonly ILighthouseService _lighthouseService;
+    private readonly ILighthouseDiscoveryService _lighthouseService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
     private readonly IOpenVRService _openVRService;
 
@@ -35,13 +35,13 @@ public partial class MainViewModel : ObservableRecipient
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
     public bool CannotUseOpenVR => !_openVRService.IsInitialized;
-    public bool CannotUseBluetooth => !_lighthouseService.HasBluetoothLEAdapter();
+    public bool CannotUseBluetooth => !BluetoothLEHelper.HasBluetoothLEAdapter();
 
-    public bool IsScanning => _lighthouseService.IsScanning;
+    public bool IsScanning => _lighthouseService.IsDiscovering;
     public readonly ICommand ScanCommand;
 
     public MainViewModel(
-        ILighthouseService lighthouseService,
+        ILighthouseDiscoveryService lighthouseService,
         ILighthouseSettingsService lighthouseSettingsService,
         IOpenVRService openVRService,
         IUpdaterService updaterService,
@@ -53,22 +53,18 @@ public partial class MainViewModel : ObservableRecipient
         _lighthouseSettingsService = lighthouseSettingsService;
         _openVRService = openVRService;
 
-        _lighthouseService.OnFound += (sender, arg) =>
+        _lighthouseService.Found += (sender, arg) =>
         {
+            Log.Debug($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddress)})");
             var address = arg.BluetoothAddress;
             var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == address);
             if (existing == null)
             {
                 dispatcherQueue.TryEnqueue(async () =>
                 {
-                    var d = _lighthouseService.GetLighthouse(address);
-                    if (d == null)
-                    {
-                        Log.Information($"{arg.Name} is not a Lighthouse");
-                        return;
-                    }
-                    var item = LighthouseObject.FromLighthouseDevice(d);
+                    var item = LighthouseObject.FromLighthouse(arg);
                     item.OnClickRemove += OnClickRemoveDevice;
+                    item.IsFound = true;
                     Devices.Add(item);
                     var devices = Devices.Select(d => d.ToListItem()).ToArray();
                     await _lighthouseSettingsService.SetDevicesAsync(devices);
@@ -77,9 +73,12 @@ public partial class MainViewModel : ObservableRecipient
             }
             else
             {
-                Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
-                existing.Name = arg.Name;
-                existing.IsFound = true;
+                dispatcherQueue.TryEnqueue(() =>
+                {
+                    Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
+                    existing.Name = arg.Name;
+                    existing.IsFound = true;
+                });
             }
         };
 
@@ -98,7 +97,7 @@ public partial class MainViewModel : ObservableRecipient
         {
             var vm = LighthouseObject.FromLighthouseListItem(d);
             vm.OnClickRemove += OnClickRemoveDevice;
-            vm.IsFound = _lighthouseService.GetLighthouse(d.BluetoothAddress) != null;
+            vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddress == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
             return vm;
         }).ToArray();
         Devices = new(devices);
@@ -143,7 +142,6 @@ public partial class MainViewModel : ObservableRecipient
             Log.Information($"Remove: {device.Name} ({device.BluetoothAddress})");
             Devices.Remove(device);
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
-            _lighthouseService.RemoveLighthouse(device.BluetoothAddress);
         }
         else
         {

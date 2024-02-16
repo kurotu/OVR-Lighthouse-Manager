@@ -16,15 +16,15 @@ class AppLifeCycleService : IAppLifecycleService
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
-    private readonly ILighthouseService _lighthouseService;
+    private readonly ILighthouseGattService _lighthouseGattService;
     private readonly IOpenVRService _openVRService;
     private readonly ScanCommand _scanCommand;
 
-    public AppLifeCycleService(ILighthouseSettingsService lighthouseSettingsService, ILighthouseService lighthouseService, IOpenVRService openVRService, ScanCommand scanCommand)
+    public AppLifeCycleService(ILighthouseSettingsService lighthouseSettingsService, ILighthouseGattService lighthouseGattService, IOpenVRService openVRService, ScanCommand scanCommand)
     {
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _lighthouseSettingsService = lighthouseSettingsService;
-        _lighthouseService = lighthouseService;
+        _lighthouseGattService = lighthouseGattService;
         _openVRService = openVRService;
         _scanCommand = scanCommand;
     }
@@ -88,25 +88,21 @@ class AppLifeCycleService : IAppLifecycleService
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
         {
-            const int retry = 20;
-            LighthouseDevice? device = null;
-            for (var i = 0; i < retry; i++)
+            Lighthouse lighthouse = new Lighthouse()
             {
-                device = _lighthouseService.GetLighthouse(d.BluetoothAddress);
-                if (device != null)
-                {
-                    break;
-                }
-                await Task.Delay(1000);
-            }
-            if (device == null)
-            {
-                Log.Information($"Failed to get device {d.Name}");
-                return;
-            }
+                Name = d.Name,
+                BluetoothAddress = AddressToStringConverter.StringToAddress(d.BluetoothAddress),
+            };
             Log.Information($"Power On {d.Name}");
-            var result = await device.PowerOnAsync();
-            Log.Information($"Done {d.Name}: {result}");
+            try
+            {
+                await _lighthouseGattService.PowerOnAsync(lighthouse);
+                Log.Information($"Done {d.Name}");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to power on {d.Name}");
+            }
         }).ToArray());
 
         Log.Information("OnVRMonitorConnected Done");
@@ -129,28 +125,21 @@ class AppLifeCycleService : IAppLifecycleService
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
         {
-            await Task.Run(async () =>
+            Lighthouse lighthouse = new Lighthouse()
             {
-                const int retry = 20;
-                LighthouseDevice? device = null;
-                for (var i = 0; i < retry; i++)
-                {
-                    device = _lighthouseService.GetLighthouse(d.BluetoothAddress);
-                    if (device != null)
-                    {
-                        break;
-                    }
-                    await Task.Delay(1000);
-                }
-                if (device == null)
-                {
-                    Log.Information($"Failed to get device {d.Name}");
-                    return;
-                }
-                Log.Information($"Sleep {d.Name}");
-                var result = await device.SleepAsync();
-                Log.Information($"Done {d.Name}: {result}");
-            });
+                Name = d.Name,
+                BluetoothAddress = AddressToStringConverter.StringToAddress(d.BluetoothAddress),
+            };
+            Log.Information($"Sleep {d.Name}");
+            try
+            {
+                await _lighthouseGattService.SleepAsync(lighthouse);
+                Log.Information($"Done {d.Name}");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to sleep {d.Name}");
+            }
         }).ToArray());
 
         await _scanCommand.StopScan();

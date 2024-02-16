@@ -95,7 +95,8 @@ public partial class App : Application
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
 
-            services.AddSingleton<ILighthouseService, LighthouseService>();
+            services.AddSingleton<ILighthouseDiscoveryService, LighthouseDiscoveryService>();
+            services.AddSingleton<ILighthouseGattService, LighthouseGattService>();
             services.AddSingleton<ILighthouseSettingsService, LighthouseSettingsService>();
             services.AddSingleton<IMiscSettingsService, MiscSettingsService>();
             services.AddSingleton<IOpenVRService, OpenVRService>();

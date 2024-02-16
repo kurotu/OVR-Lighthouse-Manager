@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using OVRLighthouseManager.Contracts.Services;
+using OVRLighthouseManager.Models;
 using OVRLighthouseManager.Services;
 using OVRLighthouseManager.ViewModels;
 using Serilog;
@@ -15,12 +16,12 @@ public class ScanCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
 
-    private readonly ILighthouseService _lighthouseService;
+    private readonly ILighthouseDiscoveryService _lighthouseService;
     private readonly INotificationService _notificationService;
     private readonly ILogger _log = LogHelper.ForContext<ScanCommand>();
     private bool _shouldStop = false;
 
-    public ScanCommand(ILighthouseService lighthouseService, INotificationService notificationService)
+    public ScanCommand(ILighthouseDiscoveryService lighthouseService, INotificationService notificationService)
     {
         _lighthouseService = lighthouseService;
         _notificationService = notificationService;
@@ -28,7 +29,7 @@ public class ScanCommand : ICommand
 
     public bool CanExecute(object? parameter)
     {
-        return !_lighthouseService.IsScanning && _lighthouseService.HasBluetoothLEAdapter();
+        return !_lighthouseService.IsDiscovering && BluetoothLEHelper.HasBluetoothLEAdapter();
     }
 
     public async void Execute(object? parameter)
@@ -36,7 +37,7 @@ public class ScanCommand : ICommand
         _log.Debug("Execute");
         _notificationService.Information("Notification_Scanning".GetLocalized());
         _shouldStop = false;
-        _lighthouseService.StartScan();
+        _lighthouseService.StartDiscovery();
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         for (var i = 0; i < 100; i++)
         {
@@ -46,7 +47,7 @@ public class ScanCommand : ICommand
                 break;
             }
         }
-        _lighthouseService.StopScan();
+        _lighthouseService.StopDiscovery();
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         _log.Debug("Execute done");
     }
@@ -55,7 +56,7 @@ public class ScanCommand : ICommand
     {
         _log.Debug("Stop scan");
         _shouldStop = true;
-        while (_lighthouseService.IsScanning)
+        while (_lighthouseService.IsDiscovering)
         {
             await Task.Delay(100);
         }
@@ -66,7 +67,7 @@ public class ScanCommand : ICommand
 public class PowerOnCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
-    private Task<bool>? _task;
+    private Task? _task;
     private readonly ILogger _log = LogHelper.ForContext<PowerOnCommand>();
 
     public bool CanExecute(object? parameter)
@@ -82,26 +83,13 @@ public class PowerOnCommand : ICommand
             try
             {
                 _log.Information($"{lighthouse.Name} Powering on");
-                var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
-                if (device == null)
-                {
-                    throw new Exception("Device not found");
-                }
-                _task = device.PowerOnAsync();
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress) };
+                _task = App.GetService<ILighthouseGattService>().PowerOnAsync(l);
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                var result = await _task;
-                _log.Information($"{lighthouse.Name} Power on result: {result}");
+                await _task;
                 _task = null;
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-
-                if (result)
-                {
-                    notification.Success(string.Format("Notification_PowerOn".GetLocalized(), lighthouse.Name));
-                }
-                else
-                {
-                    notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name));
-                }
+                notification.Success(string.Format("Notification_PowerOn".GetLocalized(), lighthouse.Name));
             }
             catch (Exception ex)
             {
@@ -120,7 +108,7 @@ public class SleepCommand : ICommand
 {
 
     public event EventHandler? CanExecuteChanged;
-    private Task<bool>? _task;
+    private Task? _task;
     private readonly ILogger _log = LogHelper.ForContext<SleepCommand>();
 
     public bool CanExecute(object? parameter)
@@ -136,26 +124,13 @@ public class SleepCommand : ICommand
             try
             {
                 _log.Information($"{lighthouse.Name} Sleeping");
-                var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
-                if (device == null)
-                {
-                    throw new Exception("Device not found");
-                }
-                _task = device.SleepAsync();
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress) };
+                _task = App.GetService<ILighthouseGattService>().SleepAsync(l);
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                var reulst = await _task;
-                _log.Information($"{lighthouse.Name} Sleep result: {reulst}");
+                await _task;
                 _task = null;
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-
-                if (reulst)
-                {
-                    notification.Success(string.Format("Notification_Sleep".GetLocalized(), lighthouse.Name));
-                }
-                else
-                {
-                    notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name));
-                }
+                notification.Success(string.Format("Notification_Sleep".GetLocalized(), lighthouse.Name));
             }
             catch (Exception ex)
             {
@@ -173,7 +148,7 @@ public class SleepCommand : ICommand
 public class StandbyCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
-    private Task<bool>? _task;
+    private Task? _task;
     private readonly ILogger _log = LogHelper.ForContext<StandbyCommand>();
 
     public bool CanExecute(object? parameter)
@@ -189,26 +164,13 @@ public class StandbyCommand : ICommand
             try
             {
                 _log.Information($"{lighthouse.Name} Standby");
-                var device = App.GetService<ILighthouseService>().GetLighthouse(lighthouse.BluetoothAddress);
-                if (device == null)
-                {
-                    throw new Exception("Device not found");
-                }
-                _task = device.StandbyAsync();
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress) };
+                _task = App.GetService<ILighthouseGattService>().StandbyAsync(l);
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-                var result = await _task;
-                _log.Information($"{lighthouse.Name} Standby result: {result}");
+                await _task;
                 _task = null;
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-
-                if (result)
-                {
-                    notification.Success(string.Format("Notification_Standby".GetLocalized(), lighthouse.Name));
-                }
-                else
-                {
-                    notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name));
-                }
+                notification.Success(string.Format("Notification_Standby".GetLocalized(), lighthouse.Name));
             }
             catch (Exception ex)
             {
