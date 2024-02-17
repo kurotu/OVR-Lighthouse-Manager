@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Minimize the window on launched by SteamVR` setting to minimize the window.
 - `Enable Debug Logs` setting to output debug-level logs.
 
 ### Changed

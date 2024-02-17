@@ -13,7 +13,7 @@
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
-    <Grid x:Name="ContentArea">
+    <Grid x:Name="ContentArea" Margin="{StaticResource NavigationViewPageContentRightMargin}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>

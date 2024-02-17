@@ -22,6 +22,9 @@ public partial class SettingsViewModel : ObservableRecipient
     private ElementTheme _elementTheme;
 
     [ObservableProperty]
+    private bool _minimizeOnLaunchedByOpenVR;
+
+    [ObservableProperty]
     private bool _outputDebug;
 
     [ObservableProperty]
@@ -42,6 +45,7 @@ public partial class SettingsViewModel : ObservableRecipient
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
         _miscSettingsService = miscSettingsService;
+        _minimizeOnLaunchedByOpenVR = _miscSettingsService.MinimizeOnLaunchedByOpenVR;
         _outputDebug = _miscSettingsService.OutputDebug;
         _versionDescription = GetVersionDescription();
 
@@ -63,7 +67,16 @@ public partial class SettingsViewModel : ObservableRecipient
                 UseShellExecute = true,
             });
         });
-        _miscSettingsService = miscSettingsService;
+    }
+
+    public async void OnToggleMinimizeOnLaunchedByOpenVR(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch toggleSwitch)
+        {
+
+            MinimizeOnLaunchedByOpenVR = toggleSwitch.IsOn;
+            await _miscSettingsService.SetMinimizeOnLaunchedByOpenVRAsync(MinimizeOnLaunchedByOpenVR);
+        }
     }
 
     public async void OnToggleOutputDebug(object sender, RoutedEventArgs e)

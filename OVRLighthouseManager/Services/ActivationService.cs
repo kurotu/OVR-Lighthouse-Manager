@@ -102,6 +102,10 @@ public class ActivationService : IActivationService
         await _themeSelectorService.SetRequestedThemeAsync();
         await _updaterService.FetchLatestVersion();
         await _appLifecycleService.OnLaunch();
+        if (_openVRService.IsVRMonitorConnected && _miscSettingsService.MinimizeOnLaunchedByOpenVR)
+        {
+            App.MainWindow.Minimize();
+        }
         await Task.CompletedTask;
     }
 }

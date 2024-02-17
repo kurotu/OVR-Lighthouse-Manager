@@ -207,4 +207,7 @@
   <data name="Settings_OutputDebugToggle.Text" xml:space="preserve">
     <value>Enable Debug Logs (Exit the app after change)</value>
   </data>
+  <data name="Settings_MinimizeOnLaunchedByOpenVRToggle.Text" xml:space="preserve">
+    <value>Minimize the window on launched by SteamVR.</value>
+  </data>
 </root>

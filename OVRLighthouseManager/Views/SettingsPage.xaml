@@ -10,49 +10,60 @@
     <Page.Resources>
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
     </Page.Resources>
-    <Grid>
-        <StackPanel
+    <ScrollView>
+        <Grid Margin="{StaticResource NavigationViewPageContentRightMargin}">
+            <StackPanel
             x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
-            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock x:Uid="Settings_Theme" />
 
-                <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <RadioButton
+                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                        <RadioButton
                         x:Uid="Settings_Theme_Light"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
                         FontSize="15"
                         GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Light</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton
+                            <RadioButton.CommandParameter>
+                                <xaml:ElementTheme>Light</xaml:ElementTheme>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                        <RadioButton
                         x:Uid="Settings_Theme_Dark"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
                         FontSize="15"
                         GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton
+                            <RadioButton.CommandParameter>
+                                <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                        <RadioButton
                         x:Uid="Settings_Theme_Default"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
                         FontSize="15"
                         GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Default</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
+                            <RadioButton.CommandParameter>
+                                <xaml:ElementTheme>Default</xaml:ElementTheme>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
 
-            <ToggleSwitch
+                <ToggleSwitch
+                Margin="{StaticResource XXSmallTopMargin}"
+                IsOn="{x:Bind ViewModel.MinimizeOnLaunchedByOpenVR, Mode=OneWay}"
+                Toggled="{x:Bind ViewModel.OnToggleMinimizeOnLaunchedByOpenVR}"
+                >
+                    <ToggleSwitch.Header>
+                        <TextBlock x:Uid="Settings_MinimizeOnLaunchedByOpenVRToggle" />
+                    </ToggleSwitch.Header>
+                </ToggleSwitch>
+
+                <ToggleSwitch
                 Margin="{StaticResource XXSmallTopMargin}"
                 IsOn="{x:Bind ViewModel.OutputDebug, Mode=OneWay}"
                 Toggled="{x:Bind ViewModel.OnToggleOutputDebug}"
@@ -60,23 +71,24 @@
                     <ToggleSwitch.Header>
                         <TextBlock x:Uid="Settings_OutputDebugToggle" />
                     </ToggleSwitch.Header>
-            </ToggleSwitch>
+                </ToggleSwitch>
 
-            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}" />
+                <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}" />
 
-            <StackPanel Margin="{StaticResource SmallTopMargin}">
-                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
+                <StackPanel Margin="{StaticResource SmallTopMargin}">
+                    <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
 
-                <TextBlock
+                    <TextBlock
                     x:Uid="Settings_AboutDescription"
                     Margin="{StaticResource XSmallTopMargin}"
                     Style="{ThemeResource BodyTextBlockStyle}" />
-                <HyperlinkButton
+                    <HyperlinkButton
                     x:Uid="SettingsPage_ThirdPartyLicensesLink"
                     Margin="{StaticResource SettingsPageHyperlinkButtonMargin}"
                     Command="{x:Bind ViewModel.ThirdPartyLicensesLinkCommand}"
                     />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
-    </Grid>
+        </Grid>
+    </ScrollView>
 </Page>

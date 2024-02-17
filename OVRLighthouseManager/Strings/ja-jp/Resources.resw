@@ -207,4 +207,7 @@
   <data name="Settings_OutputDebugToggle.Text" xml:space="preserve">
     <value>デバッグログを有効にする (変更後、アプリを終了してください)</value>
   </data>
+  <data name="Settings_MinimizeOnLaunchedByOpenVRToggle.Text" xml:space="preserve">
+    <value>SteamVRから起動されたときウィンドウを最小化する</value>
+  </data>
 </root>
