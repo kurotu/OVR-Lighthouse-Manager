@@ -210,4 +210,7 @@
   <data name="Settings_MinimizeOnLaunchedByOpenVRToggle.Text" xml:space="preserve">
     <value>Minimize the window on launched by SteamVR.</value>
   </data>
+  <data name="Settings_MinimizeToTrayToggle.Text" xml:space="preserve">
+    <value>Miminize to the task tray icon</value>
+  </data>
 </root>

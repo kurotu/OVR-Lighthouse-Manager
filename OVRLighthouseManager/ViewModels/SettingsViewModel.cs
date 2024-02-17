@@ -25,6 +25,9 @@ public partial class SettingsViewModel : ObservableRecipient
     private bool _minimizeOnLaunchedByOpenVR;
 
     [ObservableProperty]
+    private bool _minimizeToTray;
+
+    [ObservableProperty]
     private bool _outputDebug;
 
     [ObservableProperty]
@@ -76,6 +79,15 @@ public partial class SettingsViewModel : ObservableRecipient
 
             MinimizeOnLaunchedByOpenVR = toggleSwitch.IsOn;
             await _miscSettingsService.SetMinimizeOnLaunchedByOpenVRAsync(MinimizeOnLaunchedByOpenVR);
+        }
+    }
+
+    public async void OnToggleMinimizeToTray(object sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleSwitch toggleSwitch)
+        {
+            MinimizeToTray = toggleSwitch.IsOn;
+            await _miscSettingsService.SetMinimizeToTray(MinimizeToTray);
         }
     }
 

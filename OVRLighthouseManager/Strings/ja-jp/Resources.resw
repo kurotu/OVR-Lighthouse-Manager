@@ -210,4 +210,7 @@
   <data name="Settings_MinimizeOnLaunchedByOpenVRToggle.Text" xml:space="preserve">
     <value>SteamVRから起動されたときウィンドウを最小化する</value>
   </data>
+  <data name="Settings_MinimizeToTrayToggle.Text" xml:space="preserve">
+    <value>最小化したときタスクトレイに格納する</value>
+  </data>
 </root>

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -83,5 +84,18 @@ public sealed partial class ShellPage : Page
         var result = navigationService.GoBack();
 
         args.Handled = result;
+    }
+
+    [RelayCommand]
+    public void ShowWindow()
+    {
+        App.MainWindow.Activate();
+    }
+
+    [RelayCommand]
+    public void ExitApplication()
+    {
+        // Somehow App.Current.Exit() doesn't exit the process.
+        Environment.Exit(0);
     }
 }

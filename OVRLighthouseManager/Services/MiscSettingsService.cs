@@ -4,9 +4,15 @@ namespace OVRLighthouseManager.Services;
 internal class MiscSettingsService : IMiscSettingsService
 {
     private const string SettingsKey_MinimizeOnLaunchedByOpenVR = "MinimizeOnLaunchedByOpenVR";
+    private const string SettingsKey_MinimizeToTray = "MinimizeToTray";
     private const string SettingsKey_OutputDebug = "OutputDebug";
 
     public bool MinimizeOnLaunchedByOpenVR
+    {
+        get; set;
+    }
+
+    public bool MinimizeToTray
     {
         get; set;
     }
@@ -29,6 +35,12 @@ internal class MiscSettingsService : IMiscSettingsService
         await SaveMinimizeOnLaunchedByOpenVRInSettingsAsync(MinimizeOnLaunchedByOpenVR);
     }
 
+    public async Task SetMinimizeToTray(bool minimizeToTray)
+    {
+        MinimizeToTray = minimizeToTray;
+        await SaveMinimizeToTrayInSettingsAsync(MinimizeToTray);
+    }
+
     public async Task SetOutputDebugAsync(bool outputDebug)
     {
         OutputDebug = outputDebug;
@@ -39,6 +51,7 @@ internal class MiscSettingsService : IMiscSettingsService
     {
         OutputDebug = await LoadOutputDebugFromSettingsAsync();
         MinimizeOnLaunchedByOpenVR = await LoadMinimizeOnLaunchedByOpenVRFromSettingsAsync();
+        MinimizeToTray = await LoadMinimizeToTrayFromSettingsAsync();
         await Task.CompletedTask;
     }
 
@@ -50,6 +63,16 @@ internal class MiscSettingsService : IMiscSettingsService
     private async Task<bool> LoadMinimizeOnLaunchedByOpenVRFromSettingsAsync()
     {
         return await _localSettingsService.ReadSettingAsync<bool>(SettingsKey_MinimizeOnLaunchedByOpenVR);
+    }
+
+    private async Task SaveMinimizeToTrayInSettingsAsync(bool minimizeToTray)
+    {
+        await _localSettingsService.SaveSettingAsync(SettingsKey_MinimizeToTray, minimizeToTray);
+    }
+
+    private async Task<bool> LoadMinimizeToTrayFromSettingsAsync()
+    {
+        return await _localSettingsService.ReadSettingAsync<bool>(SettingsKey_MinimizeToTray);
     }
 
     private async Task SaveOutputDebugInSettingsAsync(bool outputDebug)

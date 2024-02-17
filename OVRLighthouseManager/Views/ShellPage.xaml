@@ -10,6 +10,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:behaviors2="using:CommunityToolkit.WinUI.Behaviors"
+    xmlns:tb="using:H.NotifyIcon"
     Loaded="OnLoaded">
 
     <Grid>
@@ -88,5 +89,26 @@
                 <behaviors2:StackedNotificationsBehavior x:Name="NotificationQueue" />
             </interactivity:Interaction.Behaviors>
         </muxc:InfoBar>
+
+        <tb:TaskbarIcon
+            ToolTipText="OVR Lighthouse Manager"
+            IconSource="/Assets/WindowIcon.ico"
+            MenuActivation="LeftOrRightClick"
+            >
+            <tb:TaskbarIcon.ContextFlyout>
+                <MenuFlyout AreOpenCloseAnimationsEnabled="False">
+                    <MenuFlyoutItem
+                        Command="{x:Bind ShowWindowCommand}"
+                        Text="Show Window"
+                    />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem
+                        Command="{x:Bind ExitApplicationCommand}"
+                        Text="Exit"
+                    />
+                </MenuFlyout>
+            </tb:TaskbarIcon.ContextFlyout>
+        </tb:TaskbarIcon>
+
     </Grid>
 </Page>

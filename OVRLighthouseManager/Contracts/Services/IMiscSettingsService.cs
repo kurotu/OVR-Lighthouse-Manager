@@ -12,6 +12,11 @@ public interface IMiscSettingsService
         get;
     }
 
+    public bool MinimizeToTray
+    {
+        get;
+    }
+
     public bool OutputDebug
     {
         get;
@@ -19,5 +24,6 @@ public interface IMiscSettingsService
 
     public Task InitializeAsync();
     public Task SetMinimizeOnLaunchedByOpenVRAsync(bool minimizeOnLaunchedByOpenVR);
+    public Task SetMinimizeToTray(bool minimizeToTray);
     public Task SetOutputDebugAsync(bool outputDebug);
 }

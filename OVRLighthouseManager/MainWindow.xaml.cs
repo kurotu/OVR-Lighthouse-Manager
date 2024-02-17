@@ -1,12 +1,14 @@
 ﻿using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Helpers;
-
+using Serilog;
 using Windows.UI.ViewManagement;
 
 namespace OVRLighthouseManager;
 
 public sealed partial class MainWindow : WindowEx
 {
+    public bool IsMinimizedToTray = false;
+
     private Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
 
     private UISettings settings;
@@ -24,6 +26,25 @@ public sealed partial class MainWindow : WindowEx
         dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         settings = new UISettings();
         settings.ColorValuesChanged += Settings_ColorValuesChanged; // cannot use FrameworkElement.ActualThemeChanged event
+
+        AppWindow.Changed += (_, __) =>
+        {
+            var mainWindow = (MainWindow)App.MainWindow;
+            if (App.MainWindow.WindowState != WindowState.Minimized)
+            {
+                mainWindow.IsMinimizedToTray = false;
+            }
+            if (mainWindow.IsMinimizedToTray)
+            {
+                return;
+            }
+            if (App.MainWindow.WindowState == WindowState.Minimized && App.GetService<IMiscSettingsService>().MinimizeToTray)
+            {
+                Log.Information("Minimize to tray");
+                mainWindow.IsMinimizedToTray = true;
+                this.Hide();
+            }
+        };
     }
 
     // this handles updating the caption button colors correctly when indows system theme is changed

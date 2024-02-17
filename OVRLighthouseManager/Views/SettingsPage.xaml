@@ -64,6 +64,16 @@
                 </ToggleSwitch>
 
                 <ToggleSwitch
+                    Margin="{StaticResource XXSmallTopMargin}"
+                    IsOn="{x:Bind ViewModel.MinimizeToTray, Mode=OneWay}"
+                    Toggled="{x:Bind ViewModel.OnToggleMinimizeToTray}"
+                >
+                    <ToggleSwitch.Header>
+                        <TextBlock x:Uid="Settings_MinimizeToTrayToggle" />
+                    </ToggleSwitch.Header>
+                </ToggleSwitch>
+
+                <ToggleSwitch
                 Margin="{StaticResource XXSmallTopMargin}"
                 IsOn="{x:Bind ViewModel.OutputDebug, Mode=OneWay}"
                 Toggled="{x:Bind ViewModel.OnToggleOutputDebug}"
