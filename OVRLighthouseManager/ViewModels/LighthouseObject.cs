@@ -22,6 +22,8 @@ public partial class LighthouseObject : INotifyPropertyChanged
         get; set;
     }
 
+    public string? Id;
+
     public bool IsManaged
     {
         get => _isManaged;
@@ -91,6 +93,7 @@ public partial class LighthouseObject : INotifyPropertyChanged
         {
             Name = item.Name,
             BluetoothAddress = item.BluetoothAddress,
+            Id = item.Id,
             IsManaged = item.IsManaged,
         };
         return obj;
@@ -102,6 +105,7 @@ public partial class LighthouseObject : INotifyPropertyChanged
         {
             Name = Name,
             BluetoothAddress = BluetoothAddress,
+            Id = Id,
             IsManaged = IsManaged
         };
     }

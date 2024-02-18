@@ -14,6 +14,11 @@ public class LighthouseListItem
         get; set;
     }
 
+    public required string? Id
+    {
+        get; set;
+    }
+
     public bool IsManaged
     {
         get; set;

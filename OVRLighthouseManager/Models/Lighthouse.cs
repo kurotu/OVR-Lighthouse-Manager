@@ -12,4 +12,28 @@ public class Lighthouse
     {
         get; set;
     }
+
+    /**
+     * Used to control Lighthouse V1.
+     */
+    public string? Id
+    {
+        get; set;
+    }
+
+    public LighthouseVersion Version
+    {
+        get
+        {
+            if (Name.StartsWith("HTC BS"))
+            {
+                return LighthouseVersion.V1;
+            }
+            if (Name.StartsWith("LHB-"))
+            {
+                return LighthouseVersion.V2;
+            }
+            return LighthouseVersion.Unknown;
+        }
+    }
 }

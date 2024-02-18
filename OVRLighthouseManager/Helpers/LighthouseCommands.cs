@@ -83,7 +83,7 @@ public class PowerOnCommand : ICommand
             try
             {
                 _log.Information($"{lighthouse.Name} Powering on");
-                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress) };
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress), Id = lighthouse.Id };
                 _task = App.GetService<ILighthouseGattService>().PowerOnAsync(l);
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 await _task;
@@ -124,7 +124,7 @@ public class SleepCommand : ICommand
             try
             {
                 _log.Information($"{lighthouse.Name} Sleeping");
-                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress) };
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress), Id = lighthouse.Id };
                 _task = App.GetService<ILighthouseGattService>().SleepAsync(l);
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 await _task;
@@ -153,6 +153,11 @@ public class StandbyCommand : ICommand
 
     public bool CanExecute(object? parameter)
     {
+        var isV1 = parameter is LighthouseObject lighthouse && new Lighthouse { Name = lighthouse.Name }.Version == LighthouseVersion.V1;
+        if (isV1)
+        {
+            return false;
+        }
         return _task == null || _task.IsCompleted;
     }
 
@@ -164,7 +169,7 @@ public class StandbyCommand : ICommand
             try
             {
                 _log.Information($"{lighthouse.Name} Standby");
-                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress) };
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = AddressToStringConverter.StringToAddress(lighthouse.BluetoothAddress), Id = lighthouse.Id };
                 _task = App.GetService<ILighthouseGattService>().StandbyAsync(l);
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);
                 await _task;
