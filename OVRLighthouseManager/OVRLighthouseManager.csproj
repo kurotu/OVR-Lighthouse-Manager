@@ -20,6 +20,7 @@
   <ItemGroup>
     <None Remove="Styles\Spacing.xaml" />
     <None Remove="Views\LighthouseControl.xaml" />
+    <None Remove="Views\LighthouseV1IdInputDialog.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,6 +62,9 @@
     <None Update="manifest.vrmanifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\LighthouseV1IdInputDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\Spacing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

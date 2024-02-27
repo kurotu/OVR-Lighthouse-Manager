@@ -97,6 +97,7 @@ public partial class MainViewModel : ObservableRecipient
         {
             var vm = LighthouseObject.FromLighthouseListItem(d);
             vm.OnClickRemove += OnClickRemoveDevice;
+            vm.OnEditId += OnEditId;
             vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddress == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
             return vm;
         }).ToArray();
@@ -146,6 +147,19 @@ public partial class MainViewModel : ObservableRecipient
         else
         {
             throw new InvalidProgramException("Clicked item is not a LighthouseListItemViewModel");
+        }
+    }
+
+    public async void OnEditId(object? sender, EventArgs args)
+    {
+        if (sender is LighthouseObject lh)
+        {
+            Devices.First(d => d.BluetoothAddress == lh.BluetoothAddress).Id = lh.Id;
+            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
+        }
+        else
+        {
+            throw new InvalidProgramException("Sender is not a LighthouseObject");
         }
     }
 

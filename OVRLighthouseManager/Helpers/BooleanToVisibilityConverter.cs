@@ -9,6 +9,10 @@ internal class BooleanToVisibilityConverter : IValueConverter
     {
         if (value is bool b)
         {
+            if (parameter is string p && bool.Parse(p))
+            {
+                b = !b;
+            }
             return b ? Visibility.Visible : Visibility.Collapsed;
         }
         throw new ArgumentException("ExceptionBooleanToVisibilityConverterParameterMustBeABoolean");
@@ -18,6 +22,10 @@ internal class BooleanToVisibilityConverter : IValueConverter
     {
         if (value is Visibility visibility)
         {
+            if (parameter is string p && bool.Parse(p))
+            {
+                return visibility != Visibility.Visible;
+            }
             return visibility == Visibility.Visible;
         }
         throw new ArgumentException("ExceptionBooleanToVisibilityConverterParameterMustBeAVisibility");

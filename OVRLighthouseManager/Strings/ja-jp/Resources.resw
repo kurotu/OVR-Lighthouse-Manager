@@ -213,4 +213,25 @@
   <data name="Settings_MinimizeToTrayToggle.Text" xml:space="preserve">
     <value>最小化したときタスクトレイに格納する</value>
   </data>
+  <data name="Control_Lighthouse_MissingId.ToolTipService.ToolTip" xml:space="preserve">
+    <value>ベースステーションのIDを入力してください。</value>
+  </data>
+  <data name="LighthouseV1IdDialog.CloseButtonText" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="LighthouseV1IdDialog.PrimaryButtonText" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="LighthouseV1IdDialog.Title" xml:space="preserve">
+    <value>ベースステーションのIDを入力</value>
+  </data>
+  <data name="LighthouseV1IdDialog_IdDescription.Text" xml:space="preserve">
+    <value>数字またはA～Fで8文字入力してください。</value>
+  </data>
+  <data name="LighthouseV1IdDialog_IdTextBox.Header" xml:space="preserve">
+    <value>IDはベースステーション背面のラベルに記載されています。</value>
+  </data>
+  <data name="Menu_EditId.Text" xml:space="preserve">
+    <value>IDを編集</value>
+  </data>
 </root>

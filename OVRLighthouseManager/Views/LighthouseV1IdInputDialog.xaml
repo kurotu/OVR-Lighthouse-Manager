@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Uid="LighthouseV1IdDialog"
+    x:Class="OVRLighthouseManager.Views.LighthouseV1IdInputDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="using:OVRLighthouseManager.Helpers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    mc:Ignorable="d"
+    
+    IsPrimaryButtonEnabled="{Binding (ui:TextBoxExtensions.IsValid), ElementName=IdValidator}"
+    DefaultButton="Primary"
+    Style="{StaticResource DefaultContentDialogStyle}"
+    >
+
+    <ContentDialog.Resources>
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ContentDialog.Resources>
+
+    <StackPanel>
+        <TextBox
+            x:Uid="LighthouseV1IdDialog_IdTextBox"
+            Name="IdValidator"
+            ui:TextBoxExtensions.Regex="^[0-9a-fA-F]{8}$"
+            Text="{x:Bind Id, Mode=TwoWay}"
+            >
+        </TextBox>
+        <TextBlock
+            x:Uid="LighthouseV1IdDialog_IdDescription"
+            Foreground="{StaticResource AccentTextFillColorPrimaryBrush}"
+            Visibility="{Binding (ui:TextBoxExtensions.IsValid), ElementName=IdValidator, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=True}"
+            >
+            8 characters hexadecimal
+        </TextBlock>
+    </StackPanel>
+</ContentDialog>
