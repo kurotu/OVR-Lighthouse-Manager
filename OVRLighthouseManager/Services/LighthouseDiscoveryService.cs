@@ -62,7 +62,7 @@ public class LighthouseDiscoveryService : ILighthouseDiscoveryService
     private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
     {
         _log.Debug("DeviceWatcher Added: {Name} ({Id})", args.Name, args.Id);
-        var isLighthouse = args.Name.StartsWith("LHB-");
+        var isLighthouse = new Lighthouse { Name = args.Name }.Version != LighthouseVersion.Unknown;
         if (isLighthouse && !_foundLighthouses.ContainsKey(args.Id))
         {
             var device = BluetoothLEDevice.FromIdAsync(args.Id).AsTask().Result;

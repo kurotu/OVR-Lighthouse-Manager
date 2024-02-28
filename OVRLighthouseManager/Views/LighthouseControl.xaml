@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:OVRLighthouseManager.Helpers"
+    xmlns:local="using:OVRLighthouseManager.Views"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -23,6 +24,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
@@ -46,10 +48,30 @@
                     Text="{x:Bind LighthouseObject.BluetoothAddress, Mode=OneWay}"
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Margin="{StaticResource XSmallLeftbottomMargin}"/>
+        <Button
+            Grid.RowSpan="2"
+            Grid.Column="2"
+            BorderThickness="0" Background="Transparent"
+            Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
+            CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
+            Width="32"
+            Height="32"
+            Padding="0"
+            Visibility="{x:Bind LighthouseObject.RequiresId, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            >
+            <FontIcon
+                x:Uid="Control_Lighthouse_MissingId"
+                Glyph="&#xE7BA;"
+                Width="32"
+                Height="32"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+            />
+        </Button>
         <FontIcon
             x:Uid="Control_Lighthouse_FoundIcon"
             Grid.RowSpan="2"
-            Grid.Column="2"
+            Grid.Column="3"
             Glyph="&#xE7B3;"
             Width="32"
             Height="32"
@@ -58,7 +80,7 @@
             Visibility="{x:Bind LighthouseObject.IsFound, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
             />
         <Button
-                    Grid.Column="3"
+                    Grid.Column="4"
                     Grid.RowSpan="2"
                     Style="{StaticResource TextBlockButtonStyle}"
                     >
@@ -89,6 +111,11 @@
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutSeparator />
+                    <MenuFlyoutItem
+                        x:Uid="Menu_EditId"
+                        Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
+                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
+                        />
                     <MenuFlyoutItem
                         x:Uid="Menu_Remove"
                         Command="{x:Bind LighthouseObject.RemoveCommand, Mode=OneWay}"

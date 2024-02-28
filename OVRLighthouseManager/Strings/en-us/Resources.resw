@@ -213,4 +213,25 @@
   <data name="Settings_MinimizeToTrayToggle.Text" xml:space="preserve">
     <value>Miminize to the task tray icon</value>
   </data>
+  <data name="Control_Lighthouse_MissingId.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Enter base station ID.</value>
+  </data>
+  <data name="LighthouseV1IdDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="LighthouseV1IdDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="LighthouseV1IdDialog.Title" xml:space="preserve">
+    <value>Enter base station ID</value>
+  </data>
+  <data name="LighthouseV1IdDialog_IdDescription.Text" xml:space="preserve">
+    <value>Enter 8 characters using numbers or A-F.</value>
+  </data>
+  <data name="LighthouseV1IdDialog_IdTextBox.Header" xml:space="preserve">
+    <value>The ID is printed on the back label of the base station.</value>
+  </data>
+  <data name="Menu_EditId.Text" xml:space="preserve">
+    <value>Edit ID</value>
+  </data>
 </root>

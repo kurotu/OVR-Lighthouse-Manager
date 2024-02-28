@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
 using Serilog;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Bluetooth;
@@ -11,8 +12,14 @@ namespace OVRLighthouseManager.Services;
 
 class LighthouseGattService : ILighthouseGattService
 {
-    private static readonly Guid ControlService = new("00001523-1212-efde-1523-785feabcd124");
-    private static readonly Guid PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
+    private static readonly Guid V1ControlService = new("0000cb00-0000-1000-8000-00805f9b34fb");
+    private static readonly Guid V1PowerCharacteristic = new("0000cb01-0000-1000-8000-00805f9b34fb");
+
+    private static readonly Guid V2ControlService = new("00001523-1212-efde-1523-785feabcd124");
+    private static readonly Guid V2PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
+
+    private static readonly Regex _v1SerialRegex = new(@"HTC BS \w\w(\w\w\w\w)", RegexOptions.Compiled);
+
     private static readonly ILogger _log = LogHelper.ForContext<LighthouseGattService>();
 
     private readonly ILighthouseDiscoveryService _lighthouseDiscoveryService;
@@ -24,25 +31,91 @@ class LighthouseGattService : ILighthouseGattService
 
     public async Task PowerOnAsync(Lighthouse lighthouse)
     {
-        await WritePowerCharacteristic(lighthouse, 0x01);
+        if (lighthouse.Version == LighthouseVersion.V1)
+        {
+            await ControlV1Async(lighthouse, true);
+        }
+        else
+        {
+            await WriteV2PowerCharacteristic(lighthouse, 0x01);
+        }
     }
 
     public async Task SleepAsync(Lighthouse lighthouse)
     {
-        await WritePowerCharacteristic(lighthouse, 0x00);
+        if (lighthouse.Version == LighthouseVersion.V1)
+        {
+            await ControlV1Async(lighthouse, false);
+        }
+        else
+        {
+            await WriteV2PowerCharacteristic(lighthouse, 0x00);
+        }
     }
 
     public async Task StandbyAsync(Lighthouse lighthouse)
     {
-        await WritePowerCharacteristic(lighthouse, 0x02);
+        if (lighthouse.Version == LighthouseVersion.V1)
+        {
+            throw new LighthouseGattException("Standby is not supported on V1 lighthouses");
+        }
+        await WriteV2PowerCharacteristic(lighthouse, 0x02);
     }
 
-    private async Task WritePowerCharacteristic(Lighthouse lighthouse, byte data)
+    private async Task ControlV1Async(Lighthouse lighthouse, bool powerOn)
+    {
+        byte[] bytes;
+        if (powerOn)
+        {
+            bytes = new byte[] { 0x12, 0x00, 0x00, 0x00 };
+        }
+        else
+        {
+            bytes = new byte[] { 0x12, 0x02, 0x00, 0x01 };
+        }
+
+        if (string.IsNullOrEmpty(lighthouse.Id))
+        {
+            throw new LighthouseGattException("ID is missing in lighthouse settings");
+        }
+        if (lighthouse.Id.Length != 8)
+        {
+            throw new LighthouseGattException($"Invalid ID length: {lighthouse.Id} ({lighthouse.Id.Length})");
+        }
+
+        // convert id to byte array
+        var idBytes = Enumerable.Range(0, lighthouse.Id.Length)
+            .Where(x => x % 2 == 0)
+            .Select(x => Convert.ToByte(lighthouse.Id.Substring(x, 2), 16));
+
+        bytes = bytes
+            .Concat(idBytes.Reverse())
+            .Concat(Enumerable.Repeat<byte>(0x00, 12))
+            .ToArray();
+
+        if (bytes.Length != 20)
+        {
+            throw new LighthouseGattException("Invalid byte array length");
+        }
+
+        await WriteV1PowerCharacteristic(lighthouse, bytes);
+    }
+
+    private async Task WriteV1PowerCharacteristic(Lighthouse lighthouse, byte[] data)
     {
         var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddress);
-        using var service = await GetControlService(device);
-        var characteristic = await GetPowerCharacteristic(service);
+        using var service = await GetService(device, V1ControlService);
+        var characteristic = await GetCharacteristic(service, V1PowerCharacteristic);
         await WriteCharacteristicAsync(characteristic, data);
+    }
+
+
+    private async Task WriteV2PowerCharacteristic(Lighthouse lighthouse, byte data)
+    {
+        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddress);
+        using var service = await GetService(device, V2ControlService);
+        var characteristic = await GetCharacteristic(service, V2PowerCharacteristic);
+        await WriteCharacteristicAsync(characteristic, new byte[] { data });
     }
 
     private async Task<BluetoothLEDevice> GetBluetoothLEDeviceAsync(ulong address)
@@ -61,13 +134,13 @@ class LighthouseGattService : ILighthouseGattService
         throw new LighthouseGattException("Lighthouse not found");
     }
 
-    private static async Task<GattDeviceService> GetControlService(BluetoothLEDevice device)
+    private static async Task<GattDeviceService> GetService(BluetoothLEDevice device, Guid serviceGuid)
     {
         const int retryCount = 5;
         var status = GattCommunicationStatus.Success;
         for (var i = 0; i < retryCount; i++)
         {
-            var result = await device.GetGattServicesForUuidAsync(ControlService, BluetoothCacheMode.Uncached);
+            var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Uncached);
             status = result.Status;
             switch (status)
             {
@@ -76,26 +149,26 @@ class LighthouseGattService : ILighthouseGattService
                     {
                         return result.Services[0];
                     }
-                    _log.Error($"Failed to get control service ({device.Name}): No services found");
+                    _log.Error($"Failed to get service ({device.Name}): No services found");
                     break;
                 case GattCommunicationStatus.Unreachable:
                 case GattCommunicationStatus.ProtocolError:
                 case GattCommunicationStatus.AccessDenied:
-                    _log.Error($"Failed to get control service ({device.Name}): {result.Status}");
+                    _log.Error($"Failed to get service ({device.Name}): {result.Status}");
                     break;
             }
             await Task.Delay(200);
         }
-        throw new Exception($"Failed to get control service ({device.Name}): {status}");
+        throw new Exception($"Failed to get service ({device.Name}): {status}");
     }
 
-    private static async Task<GattCharacteristic> GetPowerCharacteristic(GattDeviceService service)
+    private static async Task<GattCharacteristic> GetCharacteristic(GattDeviceService service, Guid characteristicGuid)
     {
         const int retryCount = 5;
         var status = GattCommunicationStatus.Success;
         for (var i = 0; i < retryCount; i++)
         {
-            var characteristic = await service.GetCharacteristicsForUuidAsync(PowerCharacteristic, BluetoothCacheMode.Cached);
+            var characteristic = await service.GetCharacteristicsForUuidAsync(characteristicGuid, BluetoothCacheMode.Cached);
             status = characteristic.Status;
             switch (status)
             {
@@ -104,26 +177,26 @@ class LighthouseGattService : ILighthouseGattService
                     {
                         return characteristic.Characteristics[0];
                     }
-                    _log.Error($"Failed to get power characteristic ({service.Device.Name}): No characteristics found");
+                    _log.Error($"Failed to get characteristic ({service.Device.Name}): No characteristics found");
                     break;
                 case GattCommunicationStatus.Unreachable:
                 case GattCommunicationStatus.ProtocolError:
                 case GattCommunicationStatus.AccessDenied:
-                    _log.Error($"Failed to get power characteristic ({service.Device.Name}): {status}");
+                    _log.Error($"Failed to get characteristic ({service.Device.Name}): {status}");
                     break;
             }
             await Task.Delay(200);
         }
-        throw new LighthouseGattException($"Failed to get power characteristic ({service.Device.Name}): {status}");
+        throw new LighthouseGattException($"Failed to get characteristic ({service.Device.Name}): {status}");
     }
 
-    private static async Task WriteCharacteristicAsync(GattCharacteristic characteristic, byte data)
+    private static async Task WriteCharacteristicAsync(GattCharacteristic characteristic, byte[] data)
     {
         const int retryCount = 5;
         GattCommunicationStatus status = GattCommunicationStatus.Success;
         for (var i = 0; i < retryCount; i++)
         {
-            status = await characteristic.WriteValueAsync(new byte[] { data }.AsBuffer());
+            status = await characteristic.WriteValueAsync(data.AsBuffer());
             switch (status)
             {
                 case GattCommunicationStatus.Success:
