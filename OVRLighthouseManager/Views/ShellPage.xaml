@@ -93,7 +93,8 @@
         <tb:TaskbarIcon
             ToolTipText="OVR Lighthouse Manager"
             IconSource="/Assets/WindowIcon.ico"
-            MenuActivation="LeftOrRightClick"
+            LeftClickCommand="{x:Bind ShowWindowCommand}"
+            MenuActivation="RightClick"
             >
             <tb:TaskbarIcon.ContextFlyout>
                 <MenuFlyout AreOpenCloseAnimationsEnabled="False">
