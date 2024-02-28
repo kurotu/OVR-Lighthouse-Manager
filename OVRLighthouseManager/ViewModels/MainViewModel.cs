@@ -62,11 +62,11 @@ public partial class MainViewModel : ObservableRecipient
             {
                 dispatcherQueue.TryEnqueue(async () =>
                 {
-                    var item = LighthouseObject.FromLighthouse(arg);
+                    var item = new LighthouseObject(arg, true);
                     item.OnClickRemove += OnClickRemoveDevice;
                     item.IsFound = true;
                     Devices.Add(item);
-                    var devices = Devices.Select(d => d.ToListItem()).ToArray();
+                    var devices = Devices.Select(d => d.Lighthouse).ToArray();
                     await _lighthouseSettingsService.SetDevicesAsync(devices);
                     Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
                 });
@@ -76,7 +76,6 @@ public partial class MainViewModel : ObservableRecipient
                 dispatcherQueue.TryEnqueue(() =>
                 {
                     Log.Information($"Updated: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
-                    existing.Name = arg.Name;
                     existing.IsFound = true;
                 });
             }
@@ -95,7 +94,7 @@ public partial class MainViewModel : ObservableRecipient
         PowerManagement = _lighthouseSettingsService.PowerManagement;
         var devices = _lighthouseSettingsService.Devices.Select(d =>
         {
-            var vm = LighthouseObject.FromLighthouseListItem(d);
+            var vm = new LighthouseObject(d, true);
             vm.OnClickRemove += OnClickRemoveDevice;
             vm.OnEditId += OnEditId;
             vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddressValue == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
@@ -128,7 +127,7 @@ public partial class MainViewModel : ObservableRecipient
         {
             device.SetManaged(!device.IsManaged);
             Log.Information($"Clicked: {device.Name} ({device.BluetoothAddress}) : {device.IsManaged}");
-            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
+            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.Lighthouse).ToArray());
         }
         else
         {
@@ -142,7 +141,7 @@ public partial class MainViewModel : ObservableRecipient
         {
             Log.Information($"Remove: {device.Name} ({device.BluetoothAddress})");
             Devices.Remove(device);
-            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
+            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.Lighthouse).ToArray());
         }
         else
         {
@@ -155,7 +154,7 @@ public partial class MainViewModel : ObservableRecipient
         if (sender is LighthouseObject lh)
         {
             Devices.First(d => d.BluetoothAddress == lh.BluetoothAddress).Id = lh.Id;
-            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.ToListItem()).ToArray());
+            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.Lighthouse).ToArray());
         }
         else
         {
