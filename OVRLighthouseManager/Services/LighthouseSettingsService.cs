@@ -18,10 +18,10 @@ class LighthouseSettingsService : ILighthouseSettingsService
         get; set;
     }
 
-    public List<LighthouseListItem> Devices
+    public List<Lighthouse> Devices
     {
         get; set;
-    } = new List<LighthouseListItem>();
+    } = new List<Lighthouse>();
 
     private readonly ILocalSettingsService _localSettingsService;
 
@@ -43,7 +43,7 @@ class LighthouseSettingsService : ILighthouseSettingsService
         await SavePowerManagementInSettingsAsync(PowerManagement);
     }
 
-    public async Task SetDevicesAsync(LighthouseListItem[] devices)
+    public async Task SetDevicesAsync(Lighthouse[] devices)
     {
         Devices = devices.ToList();
         await SaveDevicesInSettingsAsync(Devices);
@@ -66,19 +66,19 @@ class LighthouseSettingsService : ILighthouseSettingsService
 
     #region Devices
 
-    private async Task SaveDevicesInSettingsAsync(List<LighthouseListItem> devices)
+    private async Task SaveDevicesInSettingsAsync(List<Lighthouse> devices)
     {
         await _localSettingsService.SaveSettingAsync(SettingsKey_Devices, devices);
     }
 
-    private async Task<List<LighthouseListItem>> LoadDevicesFromSettingsAsync()
+    private async Task<List<Lighthouse>> LoadDevicesFromSettingsAsync()
     {
-        var devices = await _localSettingsService.ReadSettingAsync<List<LighthouseListItem>>(SettingsKey_Devices);
+        var devices = await _localSettingsService.ReadSettingAsync<List<Lighthouse>>(SettingsKey_Devices);
         if (devices != null)
         {
             return devices;
         }
-        return new List<LighthouseListItem>();
+        return new List<Lighthouse>();
     }
 
     #endregion

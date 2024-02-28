@@ -103,7 +103,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private async Task WriteV1PowerCharacteristic(Lighthouse lighthouse, byte[] data)
     {
-        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddress);
+        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
         using var service = await GetService(device, V1ControlService);
         var characteristic = await GetCharacteristic(service, V1PowerCharacteristic);
         await WriteCharacteristicAsync(characteristic, data);
@@ -112,7 +112,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private async Task WriteV2PowerCharacteristic(Lighthouse lighthouse, byte data)
     {
-        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddress);
+        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
         using var service = await GetService(device, V2ControlService);
         var characteristic = await GetCharacteristic(service, V2PowerCharacteristic);
         await WriteCharacteristicAsync(characteristic, new byte[] { data });

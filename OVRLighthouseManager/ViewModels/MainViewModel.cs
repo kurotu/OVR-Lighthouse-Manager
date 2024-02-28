@@ -55,8 +55,8 @@ public partial class MainViewModel : ObservableRecipient
 
         _lighthouseService.Found += (sender, arg) =>
         {
-            Log.Debug($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddress)})");
-            var address = arg.BluetoothAddress;
+            Log.Debug($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(arg.BluetoothAddressValue)})");
+            var address = arg.BluetoothAddressValue;
             var existing = Devices.FirstOrDefault(d => AddressToStringConverter.StringToAddress(d.BluetoothAddress) == address);
             if (existing == null)
             {
@@ -98,7 +98,7 @@ public partial class MainViewModel : ObservableRecipient
             var vm = LighthouseObject.FromLighthouseListItem(d);
             vm.OnClickRemove += OnClickRemoveDevice;
             vm.OnEditId += OnEditId;
-            vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddress == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
+            vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddressValue == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
             return vm;
         }).ToArray();
         Devices = new(devices);

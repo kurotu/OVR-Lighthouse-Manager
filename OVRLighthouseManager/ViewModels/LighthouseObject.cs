@@ -83,7 +83,7 @@ public partial class LighthouseObject : INotifyPropertyChanged
     public event EventHandler OnClickRemove = delegate { };
     public event EventHandler OnEditId = delegate { };
 
-    public LighthouseListItem ListItem
+    public Lighthouse ListItem
     {
         set
         {
@@ -120,14 +120,14 @@ public partial class LighthouseObject : INotifyPropertyChanged
         var obj = new LighthouseObject
         {
             Name = device.Name,
-            BluetoothAddress = AddressToStringConverter.AddressToString(device.BluetoothAddress),
+            BluetoothAddress = AddressToStringConverter.AddressToString(device.BluetoothAddressValue),
             IsManaged = false,
             IsFound = true,
         };
         return obj;
     }
 
-    public static LighthouseObject FromLighthouseListItem(LighthouseListItem item)
+    public static LighthouseObject FromLighthouseListItem(Lighthouse item)
     {
         var obj = new LighthouseObject
         {
@@ -139,9 +139,9 @@ public partial class LighthouseObject : INotifyPropertyChanged
         return obj;
     }
 
-    public LighthouseListItem ToListItem()
+    public Lighthouse ToListItem()
     {
-        return new LighthouseListItem()
+        return new Lighthouse()
         {
             Name = Name,
             BluetoothAddress = BluetoothAddress,

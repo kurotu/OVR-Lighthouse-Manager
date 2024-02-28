@@ -71,9 +71,9 @@ public class LighthouseDiscoveryService : ILighthouseDiscoveryService
                 _log.Error("Failed to get BluetoothLEDevice for {Name} ({Id})", args.Name, args.Id);
                 return;
             }
-            var lighthouse = new Lighthouse { Name = args.Name, BluetoothAddress = device.BluetoothAddress };
+            var lighthouse = new Lighthouse { Name = args.Name, BluetoothAddress = AddressToStringConverter.AddressToString(device.BluetoothAddress) };
             _foundLighthouses[args.Id] = lighthouse;
-            _log.Information($"Found: {lighthouse.Name} ({AddressToStringConverter.AddressToString(lighthouse.BluetoothAddress)})");
+            _log.Information($"Found: {lighthouse.Name} ({AddressToStringConverter.AddressToString(lighthouse.BluetoothAddressValue)})");
             Found.Invoke(this, lighthouse);
         }
     }
