@@ -74,9 +74,13 @@ class LighthouseGattService : ILighthouseGattService
             bytes = new byte[] { 0x12, 0x02, 0x00, 0x01 };
         }
 
-        if (lighthouse.Id == null)
+        if (string.IsNullOrEmpty(lighthouse.Id))
         {
-            throw new LighthouseGattException("Id is missing in lighthouse settings");
+            throw new LighthouseGattException("ID is missing in lighthouse settings");
+        }
+        if (lighthouse.Id.Length != 8)
+        {
+            throw new LighthouseGattException($"Invalid ID length: {lighthouse.Id} ({lighthouse.Id.Length})");
         }
 
         // convert id to byte array
