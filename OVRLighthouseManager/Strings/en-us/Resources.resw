@@ -211,7 +211,7 @@
     <value>Minimize the window on launched by SteamVR.</value>
   </data>
   <data name="Settings_MinimizeToTrayToggle.Text" xml:space="preserve">
-    <value>Miminize to the task tray icon</value>
+    <value>Miminize to the icon in the taskbar notification area.</value>
   </data>
   <data name="Control_Lighthouse_MissingId.ToolTipService.ToolTip" xml:space="preserve">
     <value>Enter base station ID.</value>

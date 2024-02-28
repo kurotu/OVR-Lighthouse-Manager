@@ -211,7 +211,7 @@
     <value>SteamVRから起動されたときウィンドウを最小化する</value>
   </data>
   <data name="Settings_MinimizeToTrayToggle.Text" xml:space="preserve">
-    <value>最小化したときタスクトレイに格納する</value>
+    <value>最小化したときタスクバーの通知領域のアイコンに格納する</value>
   </data>
   <data name="Control_Lighthouse_MissingId.ToolTipService.ToolTip" xml:space="preserve">
     <value>ベースステーションのIDを入力してください。</value>
