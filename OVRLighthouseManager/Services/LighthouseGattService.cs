@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
 using Serilog;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Bluetooth;
@@ -17,8 +16,6 @@ class LighthouseGattService : ILighthouseGattService
 
     private static readonly Guid V2ControlService = new("00001523-1212-efde-1523-785feabcd124");
     private static readonly Guid V2PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
-
-    private static readonly Regex _v1SerialRegex = new(@"HTC BS \w\w(\w\w\w\w)", RegexOptions.Compiled);
 
     private static readonly ILogger _log = LogHelper.ForContext<LighthouseGattService>();
 
