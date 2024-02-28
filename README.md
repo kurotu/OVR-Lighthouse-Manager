@@ -30,7 +30,7 @@ It would be useful when using the combination of standalone headsets (Quest, PIC
 
 - Windows 11
 - Windows 10 version 1809 or later
-- SteamVR Base Station 2.0
+- SteamVR Base Station 1.0 or 2.0
 - Bluetooth LE
 
 ## How to Use
@@ -42,7 +42,11 @@ It would be useful when using the combination of standalone headsets (Quest, PIC
 3. Turn on **Manage Base Stations**.
 4. Select base stations you want to link to the start and end of SteamVR from the list.
 
+> [!NOTE]
+> Enter ID (8 characters) printed on the back label when using base station 1.0.
+
 After above setup, the software automatically controls the power of base stations by linking to the start and end of SteamVR.
+Registration with startup or serviceization is not required.
 
 ## License
 

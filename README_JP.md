@@ -29,7 +29,7 @@ OVR Lighthouse Manager は、Bluetooth LE を使って HTC VIVE や Valve Index 
 
 - Windows 11
 - Windows 10 バージョン 1809 以降
-- SteamVR ベースステーション 2.0
+- SteamVR ベースステーション 1.0 / 2.0
 - Bluetooth LE
 
 ## 使い方
@@ -41,7 +41,11 @@ OVR Lighthouse Manager は、Bluetooth LE を使って HTC VIVE や Valve Index 
 3. 「ベースステーションの電源を管理する」をオンにします。
 4. SteamVR の起動・終了に連動させたいベースステーションをリストから選びます。
 
+> [!NOTE]
+> ベースステーション 1.0 を使う場合は、背面ラベルに印刷された ID (8桁の英数字) を入力してください。
+
 以降、SteamVR の起動・終了に連動して自動的にベースステーションの電源を制御します。
+スタートアップへの登録やサービス化は不要です。
 
 ## ライセンス
 
