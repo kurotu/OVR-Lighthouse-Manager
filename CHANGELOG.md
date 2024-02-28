@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for Base Station 1.0.
 - Task tray icon.
 - `Minimize the window on launched by SteamVR` setting to minimize the window.
 - `Minimize to the task tray icon` setting to hide the window.
