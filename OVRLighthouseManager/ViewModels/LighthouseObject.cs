@@ -68,29 +68,6 @@ public partial class LighthouseObject : INotifyPropertyChanged
     public Lighthouse Lighthouse => _lighthouse;
     private readonly Lighthouse _lighthouse;
 
-    /*
-    public LighthouseObject()
-    {
-        Name = "";
-        BluetoothAddress = "";
-        EditIdCommand = new RelayCommand<LighthouseObject>(async (parameter) =>
-        {
-            var dialog = new LighthouseV1IdInputDialog();
-            dialog.Id = parameter?.Id ?? "";
-            dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                parameter!.Id = dialog.Id;
-                OnEditId(parameter, EventArgs.Empty);
-            }
-        });
-        RemoveCommand = new RelayCommand<LighthouseObject>((parameter) =>
-        {
-            parameter?.OnClickRemove(parameter, EventArgs.Empty);
-        });
-    }*/
-
     public LighthouseObject(Lighthouse device, bool isFound)
     {
         _lighthouse = device;
