@@ -103,19 +103,48 @@ class LighthouseGattService : ILighthouseGattService
 
     private async Task WriteV1PowerCharacteristic(Lighthouse lighthouse, byte[] data)
     {
-        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
-        using var service = await GetService(device, V1ControlService);
-        var characteristic = await GetCharacteristic(service, V1PowerCharacteristic);
-        await WriteCharacteristicAsync(characteristic, data);
+        await WritePowerCharacteristicAsync(lighthouse, V1ControlService, V1PowerCharacteristic, data);
     }
 
 
     private async Task WriteV2PowerCharacteristic(Lighthouse lighthouse, byte data)
     {
-        var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
-        using var service = await GetService(device, V2ControlService);
-        var characteristic = await GetCharacteristic(service, V2PowerCharacteristic);
-        await WriteCharacteristicAsync(characteristic, new byte[] { data });
+        await WritePowerCharacteristicAsync(lighthouse, V2ControlService, V2PowerCharacteristic, new byte[] { data });
+    }
+
+    private async Task WritePowerCharacteristicAsync(Lighthouse lighthouse, Guid controlService, Guid powerCharacteristic, byte[] data)
+    {
+        if (!BluetoothLEHelper.HasBluetoothLEAdapter())
+        {
+            throw new LighthouseGattException("Bluetooth LE adapter not found");
+        }
+
+        const int retryCount = 5;
+        Exception? lastException = null;
+        for (var i = 0; i < retryCount; i++)
+        {
+            try
+            {
+                var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
+                using var service = await GetService(device, controlService);
+                var characteristic = await GetCharacteristic(service, powerCharacteristic);
+                await WriteCharacteristicAsync(characteristic, data);
+                _log.Information($"Succeeded to write power characteristic for {lighthouse.Name}");
+                return;
+            }
+            catch (InvalidProgramException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                lastException = e;
+                _log.Error(e, "Failed to write power characteristic");
+                await Task.Delay(200);
+            }
+        }
+        _log.Error($"Failed to write power characteristic in {retryCount} retries");
+        throw lastException!;
     }
 
     private async Task<BluetoothLEDevice> GetBluetoothLEDeviceAsync(ulong address)
@@ -136,79 +165,54 @@ class LighthouseGattService : ILighthouseGattService
 
     private static async Task<GattDeviceService> GetService(BluetoothLEDevice device, Guid serviceGuid)
     {
-        const int retryCount = 5;
-        var status = GattCommunicationStatus.Success;
-        for (var i = 0; i < retryCount; i++)
+        var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Uncached);
+        switch (result.Status)
         {
-            var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Uncached);
-            status = result.Status;
-            switch (status)
-            {
-                case GattCommunicationStatus.Success:
-                    if (result.Services.Count > 0)
-                    {
-                        return result.Services[0];
-                    }
-                    _log.Error($"Failed to get service ({device.Name}): No services found");
-                    break;
-                case GattCommunicationStatus.Unreachable:
-                case GattCommunicationStatus.ProtocolError:
-                case GattCommunicationStatus.AccessDenied:
-                    _log.Error($"Failed to get service ({device.Name}): {result.Status}");
-                    break;
-            }
-            await Task.Delay(200);
+            case GattCommunicationStatus.Success:
+                if (result.Services.Count > 0)
+                {
+                    return result.Services[0];
+                }
+                throw new LighthouseGattException($"Failed to get service ({device.Name}): No services found");
+            case GattCommunicationStatus.Unreachable:
+            case GattCommunicationStatus.ProtocolError:
+            case GattCommunicationStatus.AccessDenied:
+                throw new LighthouseGattException($"Failed to get service ({device.Name}): {result.Status}");
         }
-        throw new Exception($"Failed to get service ({device.Name}): {status}");
+        throw new InvalidProgramException($"Unexpected status: {result.Status}");
     }
 
     private static async Task<GattCharacteristic> GetCharacteristic(GattDeviceService service, Guid characteristicGuid)
     {
-        const int retryCount = 5;
-        var status = GattCommunicationStatus.Success;
-        for (var i = 0; i < retryCount; i++)
+        var characteristic = await service.GetCharacteristicsForUuidAsync(characteristicGuid, BluetoothCacheMode.Cached);
+        switch (characteristic.Status)
         {
-            var characteristic = await service.GetCharacteristicsForUuidAsync(characteristicGuid, BluetoothCacheMode.Cached);
-            status = characteristic.Status;
-            switch (status)
-            {
-                case GattCommunicationStatus.Success:
-                    if (characteristic.Characteristics.Count > 0)
-                    {
-                        return characteristic.Characteristics[0];
-                    }
-                    _log.Error($"Failed to get characteristic ({service.Device.Name}): No characteristics found");
-                    break;
-                case GattCommunicationStatus.Unreachable:
-                case GattCommunicationStatus.ProtocolError:
-                case GattCommunicationStatus.AccessDenied:
-                    _log.Error($"Failed to get characteristic ({service.Device.Name}): {status}");
-                    break;
-            }
-            await Task.Delay(200);
+            case GattCommunicationStatus.Success:
+                if (characteristic.Characteristics.Count > 0)
+                {
+                    return characteristic.Characteristics[0];
+                }
+                throw new LighthouseGattException($"Failed to get characteristic ({service.Device.Name}): No characteristics found");
+            case GattCommunicationStatus.Unreachable:
+            case GattCommunicationStatus.ProtocolError:
+            case GattCommunicationStatus.AccessDenied:
+                throw new LighthouseGattException($"Failed to get characteristic ({service.Device.Name}): {characteristic.Status}");
         }
-        throw new LighthouseGattException($"Failed to get characteristic ({service.Device.Name}): {status}");
+        throw new InvalidProgramException($"Unexpected status: {characteristic.Status}");
     }
 
     private static async Task WriteCharacteristicAsync(GattCharacteristic characteristic, byte[] data)
     {
-        const int retryCount = 5;
-        GattCommunicationStatus status = GattCommunicationStatus.Success;
-        for (var i = 0; i < retryCount; i++)
+        var status = await characteristic.WriteValueAsync(data.AsBuffer());
+        switch (status)
         {
-            status = await characteristic.WriteValueAsync(data.AsBuffer());
-            switch (status)
-            {
-                case GattCommunicationStatus.Success:
-                    return;
-                case GattCommunicationStatus.Unreachable:
-                case GattCommunicationStatus.ProtocolError:
-                case GattCommunicationStatus.AccessDenied:
-                    _log.Error($"Failed to write characteristic ({characteristic.Service.Device.Name}): {status}");
-                    break;
-            }
-            await Task.Delay(200);
+            case GattCommunicationStatus.Success:
+                return;
+            case GattCommunicationStatus.Unreachable:
+            case GattCommunicationStatus.ProtocolError:
+            case GattCommunicationStatus.AccessDenied:
+                throw new LighthouseGattException($"Failed to write characteristic ({characteristic.Service.Device.Name}): {status}");
         }
-        throw new LighthouseGattException($"Failed to write characteristic ({characteristic.Service.Device.Name}): {status}");
+        throw new InvalidProgramException($"Unexpected status: {status}");
     }
 }
