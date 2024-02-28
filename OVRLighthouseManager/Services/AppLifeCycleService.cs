@@ -91,7 +91,7 @@ class AppLifeCycleService : IAppLifecycleService
             Lighthouse lighthouse = new Lighthouse()
             {
                 Name = d.Name,
-                BluetoothAddress = AddressToStringConverter.StringToAddress(d.BluetoothAddress),
+                BluetoothAddress = d.BluetoothAddress,
             };
             Log.Information($"Power On {d.Name}");
             try
@@ -128,7 +128,7 @@ class AppLifeCycleService : IAppLifecycleService
             Lighthouse lighthouse = new Lighthouse()
             {
                 Name = d.Name,
-                BluetoothAddress = AddressToStringConverter.StringToAddress(d.BluetoothAddress),
+                BluetoothAddress = d.BluetoothAddress,
             };
             Log.Information($"Sleep {d.Name}");
             try

@@ -13,49 +13,31 @@ using OVRLighthouseManager.Views;
 namespace OVRLighthouseManager.ViewModels;
 public partial class LighthouseObject : INotifyPropertyChanged
 {
-    public string Name
-    {
-        get; set;
-    }
+    public string Name => _lighthouse.Name;
 
-    public string BluetoothAddress
-    {
-        get; set;
-    }
+    public string BluetoothAddress => _lighthouse.BluetoothAddress;
 
-    public bool RequiresId
-    {
-        get
-        {
-            var l = new Lighthouse()
-            {
-                Name = Name,
-            };
-            return l.Version == LighthouseVersion.V1 && string.IsNullOrEmpty(Id);
-        }
-    }
+    public bool RequiresId => _lighthouse.Version == LighthouseVersion.V1 && string.IsNullOrEmpty(_lighthouse.Id);
 
     public string? Id
     {
-        get => _id;
+        get => _lighthouse.Id;
         set
         {
-            _id = value;
+            _lighthouse.Id = value;
             OnPropertyChanged(nameof(RequiresId));
         }
     }
-    private string? _id;
 
     public bool IsManaged
     {
-        get => _isManaged;
+        get => _lighthouse.IsManaged;
         set
         {
-            _isManaged = value;
+            _lighthouse.IsManaged = value;
             OnPropertyChanged(nameof(IsManaged));
         }
     }
-    private bool _isManaged;
 
     public bool IsFound
     {
@@ -83,16 +65,10 @@ public partial class LighthouseObject : INotifyPropertyChanged
     public event EventHandler OnClickRemove = delegate { };
     public event EventHandler OnEditId = delegate { };
 
-    public LighthouseListItem ListItem
-    {
-        set
-        {
-            Name = value.Name;
-            BluetoothAddress = value.BluetoothAddress;
-            IsManaged = value.IsManaged;
-        }
-    }
+    public Lighthouse Lighthouse => _lighthouse;
+    private readonly Lighthouse _lighthouse;
 
+    /*
     public LighthouseObject()
     {
         Name = "";
@@ -113,41 +89,28 @@ public partial class LighthouseObject : INotifyPropertyChanged
         {
             parameter?.OnClickRemove(parameter, EventArgs.Empty);
         });
-    }
+    }*/
 
-    public static LighthouseObject FromLighthouse(Lighthouse device)
+    public LighthouseObject(Lighthouse device, bool isFound)
     {
-        var obj = new LighthouseObject
+        _lighthouse = device;
+        IsFound = isFound;
+        EditIdCommand = new RelayCommand<LighthouseObject>(async (parameter) =>
         {
-            Name = device.Name,
-            BluetoothAddress = AddressToStringConverter.AddressToString(device.BluetoothAddress),
-            IsManaged = false,
-            IsFound = true,
-        };
-        return obj;
-    }
-
-    public static LighthouseObject FromLighthouseListItem(LighthouseListItem item)
-    {
-        var obj = new LighthouseObject
+            var dialog = new LighthouseV1IdInputDialog();
+            dialog.Id = parameter?.Id ?? "";
+            dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                parameter!.Id = dialog.Id;
+                OnEditId(parameter, EventArgs.Empty);
+            }
+        });
+        RemoveCommand = new RelayCommand<LighthouseObject>((parameter) =>
         {
-            Name = item.Name,
-            BluetoothAddress = item.BluetoothAddress,
-            Id = item.Id,
-            IsManaged = item.IsManaged,
-        };
-        return obj;
-    }
-
-    public LighthouseListItem ToListItem()
-    {
-        return new LighthouseListItem()
-        {
-            Name = Name,
-            BluetoothAddress = BluetoothAddress,
-            Id = Id,
-            IsManaged = IsManaged
-        };
+            parameter?.OnClickRemove(parameter, EventArgs.Empty);
+        });
     }
 
     public void SetManaged(bool managed)

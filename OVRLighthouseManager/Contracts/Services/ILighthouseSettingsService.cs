@@ -9,12 +9,12 @@ public interface ILighthouseSettingsService
         get;
     }
 
-    public List<LighthouseListItem> Devices
+    public List<Lighthouse> Devices
     {
         get;
     }
 
     public Task InitializeAsync();
     public Task SetPowerManagementAsync(bool powerManagement);
-    public Task SetDevicesAsync(LighthouseListItem[] device);
+    public Task SetDevicesAsync(Lighthouse[] device);
 }
