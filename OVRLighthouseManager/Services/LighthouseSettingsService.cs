@@ -58,8 +58,12 @@ class LighthouseSettingsService : ILighthouseSettingsService
 
     public async Task<bool> LoadPowerManagementFromSettingsAsync()
     {
-        var powerManagement = await _localSettingsService.ReadSettingAsync<bool>(SettingsKey_PowerManagement);
-        return powerManagement;
+        var powerManagement = await _localSettingsService.ReadSettingAsync<bool?>(SettingsKey_PowerManagement);
+        if (!powerManagement.HasValue)
+        {
+            return true;
+        }
+        return powerManagement.Value;
     }
 
     #endregion

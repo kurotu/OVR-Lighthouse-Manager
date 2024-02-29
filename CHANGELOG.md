@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Rewrite Bluetooth LE connection process.
+- Change default `Manage Base Stations` setting to `On`.
 - Change the logs folder to `%APPDATA%\Local\OVR-Lighthouse-Manager\Logs`.
 
 ## [1.0.0] - 2023-12-05
