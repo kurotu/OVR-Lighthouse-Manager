@@ -10,7 +10,7 @@ internal static class LogHelper
 {
     public static void InitializeLogger(bool enableDebugOutput)
     {
-        var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OVRLighthouseManager", "log-.txt");
+        var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OVRLighthouseManager", "Logs", "log-.txt");
         var messageTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {SourceContext}: {Message:lj}{NewLine}{Exception}";
         var conf = new LoggerConfiguration()
             .Enrich.WithProperty("SourceContext", "OVRLighthouseManager")
