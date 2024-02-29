@@ -47,6 +47,9 @@ jobs:
     - name: Update ThirdPartyLicenses.html
       run: pandoc -f markdown -t html -o OVRLighthouseManager/ThirdPartyLicenses.html ThirdPartyLicenses.md
 
+    - name: Update bundled markdown
+      run: cp *.md OVRLighthouseManager/
+
     - name: Build
       run: .\Scripts\Publish.ps1
 
