@@ -18,9 +18,31 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Documents\CHANGELOG.md" />
+    <None Remove="Documents\LICENSE" />
+    <None Remove="Documents\README.md" />
+    <None Remove="Documents\README_JP.md" />
+    <None Remove="Documents\ThirdPartyLicenses.html" />
     <None Remove="Styles\Spacing.xaml" />
     <None Remove="Views\LighthouseControl.xaml" />
     <None Remove="Views\LighthouseV1IdInputDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documents\CHANGELOG.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Documents\LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Documents\README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Documents\README_JP.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Documents\ThirdPartyLicenses.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -56,11 +78,11 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="LICENSE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="manifest.vrmanifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="README.md">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Page Update="Views\LighthouseV1IdInputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -68,9 +90,6 @@
     <Page Update="Styles\Spacing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="ThirdPartyLicenses.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Page Update="Views\LighthouseControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

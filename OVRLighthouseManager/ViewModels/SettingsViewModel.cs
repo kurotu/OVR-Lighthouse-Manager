@@ -64,7 +64,7 @@ public partial class SettingsViewModel : ObservableRecipient
 
         ThirdPartyLicensesLinkCommand = new RelayCommand(() =>
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "ThirdPartyLicenses.html");
+            var path = Path.Combine(AppContext.BaseDirectory, "Documents", "ThirdPartyLicenses.html");
             Process.Start(new ProcessStartInfo(path)
             {
                 UseShellExecute = true,
