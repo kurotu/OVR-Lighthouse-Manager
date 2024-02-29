@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Minimize to the task tray icon` setting to hide the window.
 - `Enable Debug Logs` setting to output debug-level logs.
 
+### Fixed
+
+- Settings file was modified by multiple threads at the same time.
+
 ### Changed
 
 - Rewrite Bluetooth LE connection process.
