@@ -88,15 +88,10 @@ class AppLifeCycleService : IAppLifecycleService
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
         {
-            Lighthouse lighthouse = new Lighthouse()
-            {
-                Name = d.Name,
-                BluetoothAddress = d.BluetoothAddress,
-            };
             Log.Information($"Power On {d.Name}");
             try
             {
-                await _lighthouseGattService.PowerOnAsync(lighthouse);
+                await _lighthouseGattService.PowerOnAsync(d);
                 Log.Information($"Done {d.Name}");
             }
             catch (Exception e)
@@ -125,15 +120,10 @@ class AppLifeCycleService : IAppLifecycleService
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
         {
-            Lighthouse lighthouse = new Lighthouse()
-            {
-                Name = d.Name,
-                BluetoothAddress = d.BluetoothAddress,
-            };
             Log.Information($"Sleep {d.Name}");
             try
             {
-                await _lighthouseGattService.SleepAsync(lighthouse);
+                await _lighthouseGattService.SleepAsync(d);
                 Log.Information($"Done {d.Name}");
             }
             catch (Exception e)
