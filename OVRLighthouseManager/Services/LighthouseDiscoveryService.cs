@@ -16,6 +16,8 @@ public class LighthouseDiscoveryService : ILighthouseDiscoveryService
 
     private bool _isDiscovering = false;
     private readonly DeviceWatcher _watcher;
+    private readonly DeviceWatcher _pairedDeviceWatcher;
+
     private readonly Dictionary<string, Lighthouse> _foundLighthouses = new();
     private readonly ILogger _log = LogHelper.ForContext<LighthouseDiscoveryService>();
 
@@ -40,6 +42,12 @@ public class LighthouseDiscoveryService : ILighthouseDiscoveryService
         {
             _log.Debug("DeviceWatcher Stopped");
         };
+
+        _pairedDeviceWatcher = DeviceInformation.CreateWatcher(
+            BluetoothLEDevice.GetDeviceSelectorFromPairingState(true),
+            requestedProperties,
+            DeviceInformationKind.Device);
+        _pairedDeviceWatcher.Added += DeviceWatcher_Added;
     }
 
     public void StartDiscovery()
@@ -51,11 +59,13 @@ public class LighthouseDiscoveryService : ILighthouseDiscoveryService
         _isDiscovering = true;
         _foundLighthouses.Clear();
         _watcher.Start();
+        _pairedDeviceWatcher.Start();
     }
 
     public void StopDiscovery()
     {
         _watcher.Stop();
+        _pairedDeviceWatcher.Stop();
         _isDiscovering = false;
     }
 
