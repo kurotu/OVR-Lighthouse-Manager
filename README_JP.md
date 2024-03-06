@@ -44,7 +44,7 @@ OVR Lighthouse Manager は、Bluetooth LE を使って HTC VIVE や Valve Index 
 > [!IMPORTANT]
 > #### Base Station 1.0 の注意点
 > - ベースステーションの背面ラベルに印刷された ID (8桁の英数字) を入力してください。
-> - Windows はデバイスの追加を促す通知を表示しますが、無視してください。
+> - Windows はデバイスの追加を促す通知を表示しますが、無視してもかまいません。
 
 以降、SteamVR の起動・終了に連動して自動的にベースステーションの電源を制御します。
 スタートアップへの登録やサービス化は不要です。

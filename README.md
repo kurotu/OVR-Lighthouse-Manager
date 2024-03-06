@@ -45,7 +45,7 @@ It would be useful when using the combination of standalone headsets (Quest, PIC
 > [!IMPORTANT]
 > #### Base Station 1.0 Notice
 > - Enter ID (8 characters) printed on the back label of the base station.
-> - Windows will prompt notification to add the device, but it's not needed.
+> - Windows will prompt notification to add the device, but you can ignore.
 
 After above setup, the software automatically controls the power of base stations by linking to the start and end of SteamVR.
 Registration with startup or serviceization is not required.
