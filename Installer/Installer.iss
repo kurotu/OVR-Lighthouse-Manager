@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "OVR Lighthouse Manager"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "kurotu"
 #define MyAppURL "https://github.com/kurotu/OVR-Lighthouse-Manager"
 #define MyAppExeName "OVRLighthouseManager.exe"
