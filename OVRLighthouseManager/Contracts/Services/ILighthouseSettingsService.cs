@@ -9,6 +9,11 @@ public interface ILighthouseSettingsService
         get;
     }
 
+    public PowerDownMode PowerDownMode
+    {
+        get;
+    }
+
     public List<Lighthouse> Devices
     {
         get;
@@ -16,5 +21,6 @@ public interface ILighthouseSettingsService
 
     public Task InitializeAsync();
     public Task SetPowerManagementAsync(bool powerManagement);
+    public Task SetPowerDownModeAsync(PowerDownMode powerDownMode);
     public Task SetDevicesAsync(Lighthouse[] device);
 }

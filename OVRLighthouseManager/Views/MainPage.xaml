@@ -60,6 +60,13 @@
                        TextWrapping="WrapWholeWords"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        />
+            <RadioButtons
+                SelectedIndex="{x:Bind ViewModel.PowerDownModeIndex}"
+                SelectionChanged="{x:Bind ViewModel.OnSelectPowerDownMode}"
+                >
+                <RadioButton x:Uid="Shell_Main_PowerDownMode_Standby" />
+                <RadioButton x:Uid="Shell_Main_PowerDownMode_Sleep" />
+            </RadioButtons>
         </StackPanel>
 
         <StackPanel

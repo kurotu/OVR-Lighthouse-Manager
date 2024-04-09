@@ -120,15 +120,36 @@ class AppLifeCycleService : IAppLifecycleService
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
         await Task.WhenAll(managedDevices.Select(async d =>
         {
-            Log.Information($"Sleep {d.Name}");
-            try
+            var powerDownMode = _lighthouseSettingsService.PowerDownMode;
+            if (powerDownMode == PowerDownMode.Sleep || d.Version == LighthouseVersion.V1)
             {
-                await _lighthouseGattService.SleepAsync(d);
-                Log.Information($"Done {d.Name}");
+                Log.Information($"Sleep {d.Name}");
+                try
+                {
+                    await _lighthouseGattService.SleepAsync(d);
+                    Log.Information($"Done {d.Name}");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, $"Failed to sleep {d.Name}");
+                }
             }
-            catch (Exception e)
+            else if (powerDownMode == PowerDownMode.Standby)
             {
-                Log.Error(e, $"Failed to sleep {d.Name}");
+                Log.Information($"Standby {d.Name}");
+                try
+                {
+                    await _lighthouseGattService.StandbyAsync(d);
+                    Log.Information($"Done {d.Name}");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, $"Failed to standby {d.Name}");
+                }
+            }
+            else
+            {
+                throw new InvalidProgramException("Unknown PowerDownMode");
             }
         }).ToArray());
 

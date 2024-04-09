@@ -11,9 +11,15 @@ namespace OVRLighthouseManager.Services;
 class LighthouseSettingsService : ILighthouseSettingsService
 {
     private const string SettingsKey_PowerManagement = "PowerManagement";
+    private const string SettingsKey_PowerDownMode = "PowerDownMode";
     private const string SettingsKey_Devices = "Devices";
 
     public bool PowerManagement
+    {
+        get; set;
+    }
+
+    public PowerDownMode PowerDownMode
     {
         get; set;
     }
@@ -33,6 +39,7 @@ class LighthouseSettingsService : ILighthouseSettingsService
     public async Task InitializeAsync()
     {
         PowerManagement = await LoadPowerManagementFromSettingsAsync();
+        PowerDownMode = await LoadPowerDownModeFromSettingsAsync();
         Devices = await LoadDevicesFromSettingsAsync();
         await Task.CompletedTask;
     }
@@ -41,6 +48,12 @@ class LighthouseSettingsService : ILighthouseSettingsService
     {
         PowerManagement = powerManagement;
         await SavePowerManagementInSettingsAsync(PowerManagement);
+    }
+
+    public async Task SetPowerDownModeAsync(PowerDownMode powerDownMode)
+    {
+        PowerDownMode = powerDownMode;
+        await SavePowerDownModeInSettingsAsync(PowerDownMode);
     }
 
     public async Task SetDevicesAsync(Lighthouse[] devices)
@@ -64,6 +77,25 @@ class LighthouseSettingsService : ILighthouseSettingsService
             return true;
         }
         return powerManagement.Value;
+    }
+
+    #endregion
+
+    #region PowerDownMode
+
+    private async Task SavePowerDownModeInSettingsAsync(PowerDownMode powerDownMode)
+    {
+        await _localSettingsService.SaveSettingAsync(SettingsKey_PowerDownMode, powerDownMode.ToString());
+    }
+
+    private async Task<PowerDownMode> LoadPowerDownModeFromSettingsAsync()
+    {
+        var powerDownModeName = await _localSettingsService.ReadSettingAsync<string>(SettingsKey_PowerDownMode);
+        if (Enum.TryParse(powerDownModeName, out PowerDownMode powerDownMode))
+        {
+            return powerDownMode;
+        }
+        return PowerDownMode.Sleep;
     }
 
     #endregion

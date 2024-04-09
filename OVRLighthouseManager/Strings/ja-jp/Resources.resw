@@ -190,7 +190,7 @@
     <value>{0}をスタンバイ状態にしました。</value>
   </data>
   <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
-    <value>SteamVRを起動するとスリープ状態から復帰し、SteamVRを終了するとスリープ状態にします。HTC VIVEおよびValve Indexは必要ありません。</value>
+    <value>SteamVRを起動するとスタンバイ状態から復帰し、SteamVRを終了するとスタンバイ状態にします。HTC VIVEおよびValve Indexは必要ありません。</value>
   </data>
   <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
     <value>SteamVRに接続できませんでした。</value>
@@ -233,5 +233,17 @@
   </data>
   <data name="Menu_EditId.Text" xml:space="preserve">
     <value>IDを編集</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Sleep.Content" xml:space="preserve">
+    <value>スリープ</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Sleep.ToolTipService.ToolTip" xml:space="preserve">
+    <value>ベースステーションのレーザーとモーターの電源を切ります。</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Standby.Content" xml:space="preserve">
+    <value>スタンバイ</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Standby.ToolTipService.ToolTip" xml:space="preserve">
+    <value>ベースステーションのレーザーのみ電源を切ります。(ベースステーション2.0のみ)</value>
   </data>
 </root>

@@ -190,7 +190,7 @@
     <value>{0} has been put to standby.</value>
   </data>
   <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
-    <value>When you start SteamVR, they wake up from sleep, and when you exit SteamVR, they go to sleep. Neither HTC VIVE nor Valve Index required.</value>
+    <value>When you start SteamVR, they wake up from standby, and when you exit SteamVR, they go to standby. Neither HTC VIVE nor Valve Index required.</value>
   </data>
   <data name="InfoBar_OpenVRRequired.Message" xml:space="preserve">
     <value>Could not connect to SteamVR.</value>
@@ -233,5 +233,17 @@
   </data>
   <data name="Menu_EditId.Text" xml:space="preserve">
     <value>Edit ID</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Sleep.Content" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Sleep.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power off lasers and motors.</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Standby.Content" xml:space="preserve">
+    <value>Standby</value>
+  </data>
+  <data name="Shell_Main_PowerDownMode_Standby.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Power off only lasers (Only for Base Station 2.0).</value>
   </data>
 </root>

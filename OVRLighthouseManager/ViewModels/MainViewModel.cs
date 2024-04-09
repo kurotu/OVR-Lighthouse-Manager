@@ -30,6 +30,9 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     private bool _powerManagement;
 
+    [ObservableProperty]
+    private int _powerDownModeIndex;
+
     public ObservableCollection<LighthouseObject> Devices = new();
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
@@ -92,6 +95,8 @@ public partial class MainViewModel : ObservableRecipient
         };
 
         PowerManagement = _lighthouseSettingsService.PowerManagement;
+        PowerDownModeIndex = (int)_lighthouseSettingsService.PowerDownMode;
+
         var devices = _lighthouseSettingsService.Devices.Select(d =>
         {
             var vm = new LighthouseObject(d, true);
@@ -118,6 +123,15 @@ public partial class MainViewModel : ObservableRecipient
         {
             PowerManagement = toggleSwitch.IsOn;
             await _lighthouseSettingsService.SetPowerManagementAsync(PowerManagement);
+        }
+    }
+
+    public async void OnSelectPowerDownMode(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is RadioButtons radioButtons)
+        {
+            PowerDownModeIndex = radioButtons.SelectedIndex;
+            await _lighthouseSettingsService.SetPowerDownModeAsync((PowerDownMode)PowerDownModeIndex);
         }
     }
 
