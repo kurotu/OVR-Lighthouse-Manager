@@ -162,7 +162,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private static async Task<GattDeviceService> GetService(BluetoothLEDevice device, Guid serviceGuid)
     {
-        var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Uncached);
+        var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Cached);
         switch (result.Status)
         {
             case GattCommunicationStatus.Success:
