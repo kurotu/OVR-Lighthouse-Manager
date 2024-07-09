@@ -86,7 +86,7 @@ class AppLifeCycleService : IAppLifecycleService
         }
 
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
-        await Task.WhenAll(managedDevices.Select(async d =>
+        foreach (var d in managedDevices)
         {
             Log.Information($"Power On {d.Name}");
             try
@@ -98,7 +98,8 @@ class AppLifeCycleService : IAppLifecycleService
             {
                 Log.Error(e, $"Failed to power on {d.Name}");
             }
-        }).ToArray());
+            await Task.Delay(200);
+        }
 
         Log.Information("OnVRMonitorConnected Done");
     }
@@ -118,7 +119,7 @@ class AppLifeCycleService : IAppLifecycleService
         }
 
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
-        await Task.WhenAll(managedDevices.Select(async d =>
+        foreach (var d in managedDevices)
         {
             var powerDownMode = _lighthouseSettingsService.PowerDownMode;
             if (powerDownMode == PowerDownMode.Sleep || d.Version == LighthouseVersion.V1)
@@ -151,7 +152,8 @@ class AppLifeCycleService : IAppLifecycleService
             {
                 throw new InvalidProgramException("Unknown PowerDownMode");
             }
-        }).ToArray());
+            await Task.Delay(200);
+        }
 
         await _scanCommand.StopScan();
 
