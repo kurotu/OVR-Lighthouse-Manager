@@ -116,7 +116,7 @@ class LighthouseGattService : ILighthouseGattService
             throw new LighthouseGattException("Bluetooth LE adapter not found");
         }
 
-        const int retryCount = 5;
+        const int retryCount = 10;
         Exception? lastException = null;
         for (var i = 0; i < retryCount; i++)
         {
@@ -137,7 +137,7 @@ class LighthouseGattService : ILighthouseGattService
             {
                 lastException = e;
                 _log.Error(e, "Failed to write power characteristic");
-                await Task.Delay(200);
+                await Task.Delay(500);
             }
         }
         _log.Error($"Failed to write power characteristic in {retryCount} retries");
@@ -146,7 +146,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private async Task<BluetoothLEDevice> GetBluetoothLEDeviceAsync(ulong address)
     {
-        const int retryCount = 5;
+        const int retryCount = 10;
         for (var i = 0; i < retryCount; i++)
         {
             var device = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
@@ -155,7 +155,7 @@ class LighthouseGattService : ILighthouseGattService
                 return device;
             }
             _lighthouseDiscoveryService.StartDiscovery();
-            await Task.Delay(200);
+            await Task.Delay(500);
         }
         throw new LighthouseGattException("Lighthouse not found");
     }
