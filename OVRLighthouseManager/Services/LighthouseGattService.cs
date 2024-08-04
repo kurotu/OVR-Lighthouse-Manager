@@ -122,7 +122,7 @@ class LighthouseGattService : ILighthouseGattService
         {
             try
             {
-                var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
+                using var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
                 using var service = await GetService(device, controlService);
                 var characteristic = await GetCharacteristic(service, powerCharacteristic);
                 await WriteCharacteristicAsync(characteristic, data);
