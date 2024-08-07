@@ -64,6 +64,9 @@ jobs:
     - name: Remove the pfx
       run: Remove-Item -path GitHubActionsWorkflow.pfx
 
+    - name: Find msix
+      run: Get-ChildItem -Recurse -Filter *.msix
+
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload MSIX package
       uses: actions/upload-artifact@v2
