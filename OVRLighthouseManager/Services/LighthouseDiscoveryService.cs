@@ -75,7 +75,7 @@ public class LighthouseDiscoveryService : ILighthouseDiscoveryService
         var isLighthouse = new Lighthouse { Name = args.Name }.Version != LighthouseVersion.Unknown;
         if (isLighthouse && !_foundLighthouses.ContainsKey(args.Id))
         {
-            var device = BluetoothLEDevice.FromIdAsync(args.Id).AsTask().Result;
+            using var device = BluetoothLEDevice.FromIdAsync(args.Id).AsTask().Result;
             if (device == null)
             {
                 _log.Error("Failed to get BluetoothLEDevice for {Name} ({Id})", args.Name, args.Id);

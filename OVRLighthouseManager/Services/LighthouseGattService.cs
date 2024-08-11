@@ -116,13 +116,13 @@ class LighthouseGattService : ILighthouseGattService
             throw new LighthouseGattException("Bluetooth LE adapter not found");
         }
 
-        const int retryCount = 5;
+        const int retryCount = 10;
         Exception? lastException = null;
         for (var i = 0; i < retryCount; i++)
         {
             try
             {
-                var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
+                using var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
                 using var service = await GetService(device, controlService);
                 var characteristic = await GetCharacteristic(service, powerCharacteristic);
                 await WriteCharacteristicAsync(characteristic, data);
@@ -137,7 +137,7 @@ class LighthouseGattService : ILighthouseGattService
             {
                 lastException = e;
                 _log.Error(e, "Failed to write power characteristic");
-                await Task.Delay(200);
+                await Task.Delay(500);
             }
         }
         _log.Error($"Failed to write power characteristic in {retryCount} retries");
@@ -146,7 +146,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private async Task<BluetoothLEDevice> GetBluetoothLEDeviceAsync(ulong address)
     {
-        const int retryCount = 5;
+        const int retryCount = 10;
         for (var i = 0; i < retryCount; i++)
         {
             var device = await BluetoothLEDevice.FromBluetoothAddressAsync(address);
@@ -155,14 +155,14 @@ class LighthouseGattService : ILighthouseGattService
                 return device;
             }
             _lighthouseDiscoveryService.StartDiscovery();
-            await Task.Delay(200);
+            await Task.Delay(500);
         }
         throw new LighthouseGattException("Lighthouse not found");
     }
 
     private static async Task<GattDeviceService> GetService(BluetoothLEDevice device, Guid serviceGuid)
     {
-        var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Uncached);
+        var result = await device.GetGattServicesForUuidAsync(serviceGuid, BluetoothCacheMode.Cached);
         switch (result.Status)
         {
             case GattCommunicationStatus.Success:
