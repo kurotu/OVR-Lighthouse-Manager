@@ -25,7 +25,6 @@
     <None Remove="Documents\ThirdPartyLicenses.html" />
     <None Remove="Styles\Spacing.xaml" />
     <None Remove="Views\LighthouseControl.xaml" />
-    <None Remove="Views\LighthouseV1IdInputDialog.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documents\CHANGELOG.md">
@@ -84,9 +83,6 @@
     <None Update="README.md">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <Page Update="Views\LighthouseV1IdInputDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Update="Styles\Spacing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

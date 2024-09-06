@@ -48,26 +48,7 @@
                     Text="{x:Bind LighthouseObject.BluetoothAddress, Mode=OneWay}"
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Margin="{StaticResource XSmallLeftbottomMargin}"/>
-        <Button
-            Grid.RowSpan="2"
-            Grid.Column="2"
-            BorderThickness="0" Background="Transparent"
-            Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
-            CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
-            Width="32"
-            Height="32"
-            Padding="0"
-            Visibility="{x:Bind LighthouseObject.RequiresId, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-            >
-            <FontIcon
-                x:Uid="Control_Lighthouse_MissingId"
-                Glyph="&#xE7BA;"
-                Width="32"
-                Height="32"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-            />
-        </Button>
+
         <FontIcon
             x:Uid="Control_Lighthouse_FoundIcon"
             Grid.RowSpan="2"
@@ -111,11 +92,6 @@
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutSeparator />
-                    <MenuFlyoutItem
-                        x:Uid="Menu_EditId"
-                        Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
-                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
-                        />
                     <MenuFlyoutItem
                         x:Uid="Menu_Remove"
                         Command="{x:Bind LighthouseObject.RemoveCommand, Mode=OneWay}"

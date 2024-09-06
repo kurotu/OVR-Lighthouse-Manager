@@ -17,18 +17,6 @@ public partial class LighthouseObject : INotifyPropertyChanged
 
     public string BluetoothAddress => _lighthouse.BluetoothAddress;
 
-    public bool RequiresId => _lighthouse.Version == LighthouseVersion.V1 && string.IsNullOrEmpty(_lighthouse.Id);
-
-    public string? Id
-    {
-        get => _lighthouse.Id;
-        set
-        {
-            _lighthouse.Id = value;
-            OnPropertyChanged(nameof(RequiresId));
-        }
-    }
-
     public bool IsManaged
     {
         get => _lighthouse.IsManaged;
@@ -52,18 +40,12 @@ public partial class LighthouseObject : INotifyPropertyChanged
 
     public string Glyph => IsManaged ? "\uE73D" : "\uE739";
 
-    public ICommand EditIdCommand
-    {
-        get;
-    }
-
     public ICommand RemoveCommand
     {
         get;
     }
 
     public event EventHandler OnClickRemove = delegate { };
-    public event EventHandler OnEditId = delegate { };
 
     public Lighthouse Lighthouse => _lighthouse;
     private readonly Lighthouse _lighthouse;
@@ -72,18 +54,6 @@ public partial class LighthouseObject : INotifyPropertyChanged
     {
         _lighthouse = device;
         IsFound = isFound;
-        EditIdCommand = new RelayCommand<LighthouseObject>(async (parameter) =>
-        {
-            var dialog = new LighthouseV1IdInputDialog();
-            dialog.Id = parameter?.Id ?? "";
-            dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                parameter!.Id = dialog.Id;
-                OnEditId(parameter, EventArgs.Empty);
-            }
-        });
         RemoveCommand = new RelayCommand<LighthouseObject>((parameter) =>
         {
             parameter?.OnClickRemove(parameter, EventArgs.Empty);

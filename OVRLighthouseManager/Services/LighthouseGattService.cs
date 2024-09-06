@@ -6,6 +6,7 @@ using OVRLighthouseManager.Models;
 using OVRLighthouseManager.Contracts.Services;
 using OVRLighthouseManager.Exceptions;
 using OVRLighthouseManager.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OVRLighthouseManager.Services;
 
@@ -30,7 +31,7 @@ class LighthouseGattService : ILighthouseGattService
     {
         if (lighthouse.Version == LighthouseVersion.V1)
         {
-            await ControlV1Async(lighthouse, true);
+            await WriteV1PowerCharacteristic(lighthouse, 0x00, 0x00);
         }
         else
         {
@@ -42,7 +43,7 @@ class LighthouseGattService : ILighthouseGattService
     {
         if (lighthouse.Version == LighthouseVersion.V1)
         {
-            await ControlV1Async(lighthouse, false);
+            await WriteV1PowerCharacteristic(lighthouse, 0x02, 0x01);
         }
         else
         {
@@ -52,57 +53,33 @@ class LighthouseGattService : ILighthouseGattService
 
     public async Task StandbyAsync(Lighthouse lighthouse)
     {
-        if (lighthouse.Version == LighthouseVersion.V1)
+        if ( lighthouse.Version == LighthouseVersion.V1 )
         {
-            throw new LighthouseGattException("Standby is not supported on V1 lighthouses");
-        }
-        await WriteV2PowerCharacteristic(lighthouse, 0x02);
-    }
-
-    private async Task ControlV1Async(Lighthouse lighthouse, bool powerOn)
-    {
-        byte[] bytes;
-        if (powerOn)
-        {
-            bytes = new byte[] { 0x12, 0x00, 0x00, 0x00 };
+            await WriteV1PowerCharacteristic(lighthouse, 0x01, 0x04);
         }
         else
         {
-            bytes = new byte[] { 0x12, 0x02, 0x00, 0x01 };
+            await WriteV2PowerCharacteristic(lighthouse, 0x02);
         }
-
-        if (string.IsNullOrEmpty(lighthouse.Id))
-        {
-            throw new LighthouseGattException("ID is missing in lighthouse settings");
-        }
-        if (lighthouse.Id.Length != 8)
-        {
-            throw new LighthouseGattException($"Invalid ID length: {lighthouse.Id} ({lighthouse.Id.Length})");
-        }
-
-        // convert id to byte array
-        var idBytes = Enumerable.Range(0, lighthouse.Id.Length)
-            .Where(x => x % 2 == 0)
-            .Select(x => Convert.ToByte(lighthouse.Id.Substring(x, 2), 16));
-
-        bytes = bytes
-            .Concat(idBytes.Reverse())
-            .Concat(Enumerable.Repeat<byte>(0x00, 12))
-            .ToArray();
-
-        if (bytes.Length != 20)
-        {
-            throw new LighthouseGattException("Invalid byte array length");
-        }
-
-        await WriteV1PowerCharacteristic(lighthouse, bytes);
     }
 
-    private async Task WriteV1PowerCharacteristic(Lighthouse lighthouse, byte[] data)
+    private async Task WriteV1PowerCharacteristic(Lighthouse lighthouse, byte cmd, byte val)
     {
-        await WritePowerCharacteristicAsync(lighthouse, V1ControlService, V1PowerCharacteristic, data);
+        // Lighthouse 1.0 commands are of the following form:
+        // 0x12 : HTC MAGIC
+        // command ::
+        //     0x00 : Power On
+        //     0x02 : Sleep
+        //     0x01 : Standby
+        // 0x00
+        // value ::
+        //     0x00 : Power On
+        //     0x01 : Sleep
+        //     0x04 : Standby
+        // 4 bytes representing base station ID. If all are set to 0xFF it'll execute.
+        // 12 bytes set to 0
+        await WritePowerCharacteristicAsync(lighthouse, V1ControlService, V1PowerCharacteristic, new byte[] { 0x12, cmd, 0x00, val, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } );
     }
-
 
     private async Task WriteV2PowerCharacteristic(Lighthouse lighthouse, byte data)
     {

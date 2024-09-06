@@ -122,7 +122,7 @@ class AppLifeCycleService : IAppLifecycleService
         foreach (var d in managedDevices)
         {
             var powerDownMode = _lighthouseSettingsService.PowerDownMode;
-            if (powerDownMode == PowerDownMode.Sleep || d.Version == LighthouseVersion.V1)
+            if (powerDownMode == PowerDownMode.Sleep)
             {
                 Log.Information($"Sleep {d.Name}");
                 try
