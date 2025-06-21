@@ -246,4 +246,10 @@
   <data name="Shell_Main_PowerDownMode_Standby.ToolTipService.ToolTip" xml:space="preserve">
     <value>Power off only lasers (Only for Base Station 2.0).</value>
   </data>
+  <data name="Shell_Main_PowerAll_AllOff.Text" xml:space="preserve">
+    <value>All Off</value>
+  </data>
+  <data name="Shell_Main_PowerAll_AllOn.Text" xml:space="preserve">
+    <value>All On</value>
+  </data>
 </root>
