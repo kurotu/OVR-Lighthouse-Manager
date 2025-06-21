@@ -162,6 +162,9 @@
   <data name="Menu_Standby.Text" xml:space="preserve">
     <value>スタンバイ</value>
   </data>
+  <data name="Menu_Identify.Text" xml:space="preserve">
+    <value />
+  </data>
   <data name="Shell_Main_BaseStationsLabel.Text" xml:space="preserve">
     <value>ベースステーション</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="Notification_Standby" xml:space="preserve">
     <value>{0}をスタンバイ状態にしました。</value>
+  </data>
+  <data name="Notification_Identify" xml:space="preserve">
+    <value>{0}</value>
   </data>
   <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
     <value>SteamVRを起動するとスタンバイ状態から復帰し、SteamVRを終了するとスタンバイ状態にします。HTC VIVEおよびValve Indexは必要ありません。</value>
