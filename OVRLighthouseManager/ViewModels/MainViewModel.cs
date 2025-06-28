@@ -104,7 +104,6 @@ public partial class MainViewModel : ObservableRecipient
         PowerManagement = _lighthouseSettingsService.PowerManagement;
         PowerDownModeIndex = (int)_lighthouseSettingsService.PowerDownMode;
 
-        _powerAllCommand.SetPowerDownMode((PowerDownMode)PowerDownModeIndex);
         _powerAllCommand.CanExecuteChanged += (sender, args) =>
         {
             dispatcherQueue.TryEnqueue(() =>
@@ -149,7 +148,6 @@ public partial class MainViewModel : ObservableRecipient
         if (sender is RadioButtons radioButtons)
         {
             PowerDownModeIndex = radioButtons.SelectedIndex;
-            _powerAllCommand.SetPowerDownMode((PowerDownMode)PowerDownModeIndex);
             await _lighthouseSettingsService.SetPowerDownModeAsync((PowerDownMode)PowerDownModeIndex);
         }
     }
