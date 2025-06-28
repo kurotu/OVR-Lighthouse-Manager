@@ -8,12 +8,13 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Contracts.Services;
+using OVRLighthouseManager.Contracts.ViewModels;
 using OVRLighthouseManager.Helpers;
 using Windows.ApplicationModel;
 
 namespace OVRLighthouseManager.ViewModels;
 
-public partial class SettingsViewModel : ObservableRecipient
+public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly IMiscSettingsService _miscSettingsService;
@@ -70,6 +71,17 @@ public partial class SettingsViewModel : ObservableRecipient
                 UseShellExecute = true,
             });
         });
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        MinimizeOnLaunchedByOpenVR = _miscSettingsService.MinimizeOnLaunchedByOpenVR;
+        OutputDebug = _miscSettingsService.OutputDebug;
+        MinimizeToTray = _miscSettingsService.MinimizeToTray;
+    }
+
+    public void OnNavigatedFrom()
+    {
     }
 
     public async void OnToggleMinimizeOnLaunchedByOpenVR(object sender, RoutedEventArgs e)
