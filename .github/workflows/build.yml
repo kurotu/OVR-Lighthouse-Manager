@@ -20,17 +20,17 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
 
     - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
     - name: Restore
       run: dotnet restore $env:Solution_Name
@@ -54,7 +54,7 @@ jobs:
       run: .\Scripts\Publish.ps1
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: build-artifact
         path: Installer/Output
@@ -69,16 +69,16 @@ jobs:
 
     steps:
     - name: Download Artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: build-artifact
 
     - name: Determine prerelease
       id: prerelease
-      run: echo ::set-output name=prerelease::${{ contains(github.ref, '-') }}
+      run: echo "prerelease=${{ contains(github.ref, '-') }}" >> $GITHUB_OUTPUT
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: |
           *.exe
