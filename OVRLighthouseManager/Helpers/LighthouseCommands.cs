@@ -12,9 +12,9 @@ using Serilog;
 
 namespace OVRLighthouseManager.Helpers;
 
-public class ScanCommand : ICommand
+public class ScanCommand : AsyncCommandBase
 {
-    public event EventHandler? CanExecuteChanged;
+    public override event EventHandler? CanExecuteChanged;
 
     private readonly ILighthouseDiscoveryService _lighthouseService;
     private readonly INotificationService _notificationService;
@@ -27,12 +27,12 @@ public class ScanCommand : ICommand
         _notificationService = notificationService;
     }
 
-    public bool CanExecute(object? parameter)
+    public override bool CanExecute(object? parameter)
     {
         return !_lighthouseService.IsDiscovering && BluetoothLEHelper.HasBluetoothLEAdapter();
     }
 
-    public async void Execute(object? parameter)
+    public async override Task ExecuteAsync(object? parameter)
     {
         _log.Debug("Execute");
         _notificationService.Information("Notification_Scanning".GetLocalized());
@@ -64,18 +64,18 @@ public class ScanCommand : ICommand
     }
 }
 
-public class PowerOnCommand : ICommand
+public class PowerOnCommand : AsyncCommandBase
 {
-    public event EventHandler? CanExecuteChanged;
+    public override event EventHandler? CanExecuteChanged;
     private Task? _task;
     private readonly ILogger _log = LogHelper.ForContext<PowerOnCommand>();
 
-    public bool CanExecute(object? parameter)
+    public override bool CanExecute(object? parameter)
     {
         return _task == null || _task.IsCompleted;
     }
 
-    public async void Execute(object? parameter)
+    public async override Task ExecuteAsync(object? parameter)
     {
         if (parameter is LighthouseObject lighthouse)
         {
@@ -104,19 +104,19 @@ public class PowerOnCommand : ICommand
     }
 }
 
-public class SleepCommand : ICommand
+public class SleepCommand : AsyncCommandBase
 {
 
-    public event EventHandler? CanExecuteChanged;
+    public override event EventHandler? CanExecuteChanged;
     private Task? _task;
     private readonly ILogger _log = LogHelper.ForContext<SleepCommand>();
 
-    public bool CanExecute(object? parameter)
+    public override bool CanExecute(object? parameter)
     {
         return _task == null || _task.IsCompleted;
     }
 
-    public async void Execute(object? parameter)
+    public async override Task ExecuteAsync(object? parameter)
     {
         if (parameter is LighthouseObject lighthouse)
         {
@@ -145,13 +145,13 @@ public class SleepCommand : ICommand
     }
 }
 
-public class StandbyCommand : ICommand
+public class StandbyCommand : AsyncCommandBase
 {
-    public event EventHandler? CanExecuteChanged;
+    public override event EventHandler? CanExecuteChanged;
     private Task? _task;
     private readonly ILogger _log = LogHelper.ForContext<StandbyCommand>();
 
-    public bool CanExecute(object? parameter)
+    public override bool CanExecute(object? parameter)
     {
         var isV1 = parameter is LighthouseObject lighthouse && new Lighthouse { Name = lighthouse.Name }.Version == LighthouseVersion.V1;
         if (isV1)
@@ -161,7 +161,7 @@ public class StandbyCommand : ICommand
         return _task == null || _task.IsCompleted;
     }
 
-    public async void Execute(object? parameter)
+    public async override Task ExecuteAsync(object? parameter)
     {
         if (parameter is LighthouseObject lighthouse)
         {
@@ -190,98 +190,71 @@ public class StandbyCommand : ICommand
     }
 }
 
-public class PowerAllCommand : ICommand
+public class PowerAllCommand : AsyncCommandBase
 {
-    public event EventHandler? CanExecuteChanged;
+    public override event EventHandler? CanExecuteChanged;
 
-    private List<(LighthouseObject lighthouse, ICommand powerOn, ICommand powerDown)> lighthouses = new();
-
-    private PowerDownMode powerDownMode = PowerDownMode.Sleep;
-    private bool powerDownModeChangeQueued = false;
-
-    public void SetPowerDownMode(PowerDownMode powerDownMode)
+    public PowerAllCommandOperation Operation
     {
-        this.powerDownMode = powerDownMode;
-
-        if (CanExecute())
-        {
-            ApplyPowerDownMode();
-        }
-        else
-        {
-            // Wait until any outstanding commands are done to apply the mode change
-            powerDownModeChangeQueued = true;
-        }
+        get; private set;
     }
 
-    private void ApplyPowerDownMode()
+    public override bool CanExecute(object? parameter)
     {
-        for (var i = 0; i < lighthouses.Count; i++)
+        var param = parameter as PowerAllCommandParameter;
+        return Operation == PowerAllCommandOperation.None && param.Lighthouses.Any(l => l.IsManaged);
+    }
+
+    public async override Task ExecuteAsync(object? parameter)
+    {
+        try
         {
-            lighthouses[i].powerOn.CanExecuteChanged -= SubcommandCanExecuteChanged;
-            lighthouses[i].powerDown.CanExecuteChanged -= SubcommandCanExecuteChanged;
-            lighthouses[i] = NewCommandsTuple(lighthouses[i].lighthouse);
+            var param = parameter as PowerAllCommandParameter;
+
+            Operation = param.Command switch
+            {
+                "powerOn" => PowerAllCommandOperation.PowerOn,
+                "powerDown" => PowerAllCommandOperation.PowerDown,
+                _ => PowerAllCommandOperation.None
+            };
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+            var settings = App.GetService<ILighthouseSettingsService>();
+            foreach (var lighthouse in param.Lighthouses.Where(l => l.IsManaged))
+            {
+                switch (Operation)
+                {
+                    case PowerAllCommandOperation.PowerOn:
+                        var powerOn = new PowerOnCommand();
+                        await powerOn.ExecuteAsync(lighthouse);
+                        break;
+                    case PowerAllCommandOperation.PowerDown:
+                        if (settings.PowerDownMode == PowerDownMode.Sleep || lighthouse.Lighthouse.Version == LighthouseVersion.V1)
+                        {
+                            var sleep = new SleepCommand();
+                            await sleep.ExecuteAsync(lighthouse);
+                        }
+                        else
+                        {
+                            var standby = new StandbyCommand();
+                            await standby.ExecuteAsync(lighthouse);
+                        }
+                        break;
+                    default:
+                        continue;
+                }
+            }
         }
-        powerDownModeChangeQueued = false;
-    }
-
-    private (LighthouseObject lighthouse, ICommand powerOn, ICommand powerOff) NewCommandsTuple(LighthouseObject l)
-    {
-        ICommand powerOn = new PowerOnCommand();
-        powerOn.CanExecuteChanged += SubcommandCanExecuteChanged;
-
-        ICommand powerDown = powerDownMode == PowerDownMode.Sleep || l.Lighthouse.Version == LighthouseVersion.V1 ? new SleepCommand() : new StandbyCommand();
-        powerDown.CanExecuteChanged += SubcommandCanExecuteChanged;
-
-        return (l, powerOn, powerDown);
-    }
-
-    public void AddLighthouse(LighthouseObject lighthouse)
-    {
-        if (!lighthouses.Any(x => x.lighthouse == lighthouse))
+        finally
         {
-            lighthouses.Add(NewCommandsTuple(lighthouse));
-        }
-    }
-
-    public void RemoveLighthouse(LighthouseObject lighthouse)
-    {
-        var i = lighthouses.FindIndex(x => x.lighthouse == lighthouse);
-        if (i >= 0) {
-            lighthouses[i].powerOn.CanExecuteChanged -= SubcommandCanExecuteChanged;
-            lighthouses[i].powerDown.CanExecuteChanged -= SubcommandCanExecuteChanged;
-            lighthouses.RemoveAt(i);
+            Operation = PowerAllCommandOperation.None;
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+}
 
-    private void SubcommandCanExecuteChanged(object? sender, EventArgs e)
-    {
-        if (powerDownModeChangeQueued && CanExecute())
-        {
-            ApplyPowerDownMode();
-        }
-
-        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    public bool CanExecute()
-    {
-        return lighthouses.All(x => x.powerOn.CanExecute(x.lighthouse) && x.powerDown.CanExecute(x.lighthouse));
-    }
-
-    public bool CanExecute(object? _) => CanExecute();
-
-    public void Execute(bool on)
-    {
-        foreach ((var lighthouse, var powerOn, var powerDown) in lighthouses)
-        {
-            if (lighthouse.IsManaged)
-            {
-                (on ? powerOn : powerDown).Execute(lighthouse);
-            }
-        }
-    }
-
-    public void Execute(object? parameter) => Execute(parameter as string == "powerOn");
+public class PowerAllCommandParameter
+{
+    public string Command { get; set; } = string.Empty;
+    public IEnumerable<LighthouseObject> Lighthouses { get; set; } = Enumerable.Empty<LighthouseObject>();
 }

@@ -10,6 +10,7 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <helpers:PowerAllCommandParameter x:Key="PowerAllCommandParameter" />
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
@@ -104,17 +105,19 @@
                         Grid.Row="1"
                         x:Name="PowerOnAll"
                         Command="{x:Bind ViewModel.PowerAllCommand}"
-                        CommandParameter="powerOn"
                         >
+                    <Button.CommandParameter>
+                        <helpers:PowerAllCommandParameter Command="powerOn" Lighthouses="{x:Bind ViewModel.Devices, Mode=OneWay}" />
+                    </Button.CommandParameter>
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ProgressRing
-                                IsActive="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay}"
+                                IsActive="{x:Bind ViewModel.IsDoingPowerOnAll, Mode=OneWay}"
                                 Height="8"
                                 Width="8"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Visibility="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Visibility="{x:Bind ViewModel.IsDoingPowerOnAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Margin="{StaticResource XSmallRightMargin}"
                                 />
                             <TextBlock x:Uid="Shell_Main_PowerAll_AllOn" />
@@ -125,17 +128,19 @@
                         Grid.Row="1"
                         x:Name="PowerOffAll"
                         Command="{x:Bind ViewModel.PowerAllCommand}"
-                        CommandParameter="powerDown"
                         >
+                    <Button.CommandParameter>
+                        <helpers:PowerAllCommandParameter Command="powerDown" Lighthouses="{x:Bind ViewModel.Devices, Mode=OneWay}" />
+                    </Button.CommandParameter>
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ProgressRing
-                                IsActive="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay}"
+                                IsActive="{x:Bind ViewModel.IsDoingPowerOffAll, Mode=OneWay}"
                                 Height="8"
                                 Width="8"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Visibility="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Visibility="{x:Bind ViewModel.IsDoingPowerOffAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Margin="{StaticResource XSmallRightMargin}"
                                 />
                             <TextBlock x:Uid="Shell_Main_PowerAll_AllOff" />
