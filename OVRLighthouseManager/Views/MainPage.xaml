@@ -10,6 +10,7 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <helpers:PowerAllCommandParameter x:Key="PowerAllCommandParameter" />
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Page.Resources>
 
@@ -104,8 +105,10 @@
                         Grid.Row="1"
                         x:Name="PowerOnAll"
                         Command="{x:Bind ViewModel.PowerAllCommand}"
-                        CommandParameter="powerOn"
                         >
+                    <Button.CommandParameter>
+                        <helpers:PowerAllCommandParameter Command="powerOn" Lighthouses="{x:Bind ViewModel.Devices, Mode=OneWay}" />
+                    </Button.CommandParameter>
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ProgressRing
@@ -125,8 +128,10 @@
                         Grid.Row="1"
                         x:Name="PowerOffAll"
                         Command="{x:Bind ViewModel.PowerAllCommand}"
-                        CommandParameter="powerDown"
                         >
+                    <Button.CommandParameter>
+                        <helpers:PowerAllCommandParameter Command="powerDown" Lighthouses="{x:Bind ViewModel.Devices, Mode=OneWay}" />
+                    </Button.CommandParameter>
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ProgressRing

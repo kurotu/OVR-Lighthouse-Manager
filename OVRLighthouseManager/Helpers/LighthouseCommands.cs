@@ -199,35 +199,19 @@ public class PowerAllCommand : AsyncCommandBase
         get; private set;
     }
 
-    private readonly List<LighthouseObject> lighthouses = new();
-
-    public void AddLighthouse(LighthouseObject lighthouse)
+    public override bool CanExecute(object? parameter)
     {
-        if (!lighthouses.Any(x => x == lighthouse))
-        {
-            lighthouses.Add(lighthouse);
-        }
+        var param = parameter as PowerAllCommandParameter;
+        return Operation == PowerAllCommandOperation.None && param.Lighthouses.Any(l => l.IsManaged);
     }
-
-    public void RemoveLighthouse(LighthouseObject lighthouse)
-    {
-        lighthouses.Remove(lighthouse);
-    }
-
-    public bool CanExecute()
-    {
-        return Operation == PowerAllCommandOperation.None && lighthouses.Any(l => l.IsManaged);
-    }
-
-    public override bool CanExecute(object? _) => CanExecute();
 
     public async override Task ExecuteAsync(object? parameter)
     {
         try
         {
-            var command = parameter as string;
+            var param = parameter as PowerAllCommandParameter;
 
-            Operation = command switch
+            Operation = param.Command switch
             {
                 "powerOn" => PowerAllCommandOperation.PowerOn,
                 "powerDown" => PowerAllCommandOperation.PowerDown,
@@ -235,10 +219,8 @@ public class PowerAllCommand : AsyncCommandBase
             };
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
-            var on = command == "powerOn";
-
             var settings = App.GetService<ILighthouseSettingsService>();
-            foreach (var lighthouse in lighthouses.Where(l => l.IsManaged))
+            foreach (var lighthouse in param.Lighthouses.Where(l => l.IsManaged))
             {
                 switch (Operation)
                 {
@@ -269,4 +251,10 @@ public class PowerAllCommand : AsyncCommandBase
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+}
+
+public class PowerAllCommandParameter
+{
+    public string Command { get; set; } = string.Empty;
+    public IEnumerable<LighthouseObject> Lighthouses { get; set; } = Enumerable.Empty<LighthouseObject>();
 }
