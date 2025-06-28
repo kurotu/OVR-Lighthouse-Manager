@@ -194,6 +194,8 @@ public class PowerAllCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;
 
+    public PowerAllCommandOperation Operation { get; private set; }
+
     private List<(LighthouseObject lighthouse, ICommand powerOn, ICommand powerDown)> lighthouses = new();
 
     private PowerDownMode powerDownMode = PowerDownMode.Sleep;
@@ -262,6 +264,11 @@ public class PowerAllCommand : ICommand
             ApplyPowerDownMode();
         }
 
+        if (CanExecute())
+        {
+            Operation = PowerAllCommandOperation.None;
+        }
+
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -283,5 +290,17 @@ public class PowerAllCommand : ICommand
         }
     }
 
-    public void Execute(object? parameter) => Execute(parameter as string == "powerOn");
+    public void Execute(object? parameter)
+    {
+        var command = parameter as string;
+
+        Operation = command switch
+        {
+            "powerOn" => PowerAllCommandOperation.PowerOn,
+            "powerDown" => PowerAllCommandOperation.PowerDown,
+            _ => PowerAllCommandOperation.None
+        };
+
+        Execute(command == "powerOn");
+    }
 }

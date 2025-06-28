@@ -109,12 +109,12 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ProgressRing
-                                IsActive="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay}"
+                                IsActive="{x:Bind ViewModel.IsDoingPowerOnAll, Mode=OneWay}"
                                 Height="8"
                                 Width="8"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Visibility="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Visibility="{x:Bind ViewModel.IsDoingPowerOnAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Margin="{StaticResource XSmallRightMargin}"
                                 />
                             <TextBlock x:Uid="Shell_Main_PowerAll_AllOn" />
@@ -130,12 +130,12 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <ProgressRing
-                                IsActive="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay}"
+                                IsActive="{x:Bind ViewModel.IsDoingPowerOffAll, Mode=OneWay}"
                                 Height="8"
                                 Width="8"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Visibility="{x:Bind ViewModel.IsDoingPowerAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Visibility="{x:Bind ViewModel.IsDoingPowerOffAll, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Margin="{StaticResource XSmallRightMargin}"
                                 />
                             <TextBlock x:Uid="Shell_Main_PowerAll_AllOff" />

@@ -46,7 +46,8 @@ public partial class MainViewModel : ObservableRecipient
     private readonly PowerAllCommand _powerAllCommand = new();
 
     public ICommand PowerAllCommand => _powerAllCommand;
-    public bool IsDoingPowerAll => !_powerAllCommand.CanExecute();
+    public bool IsDoingPowerOnAll => !_powerAllCommand.CanExecute() && _powerAllCommand.Operation == PowerAllCommandOperation.PowerOn;
+    public bool IsDoingPowerOffAll => !_powerAllCommand.CanExecute() && _powerAllCommand.Operation == PowerAllCommandOperation.PowerDown;
 
     public MainViewModel(
         ILighthouseDiscoveryService lighthouseService,
@@ -108,7 +109,8 @@ public partial class MainViewModel : ObservableRecipient
         {
             dispatcherQueue.TryEnqueue(() =>
             {
-                OnPropertyChanged(nameof(IsDoingPowerAll));
+                OnPropertyChanged(nameof(IsDoingPowerOnAll));
+                OnPropertyChanged(nameof(IsDoingPowerOffAll));
             });
         };
 
