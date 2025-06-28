@@ -189,3 +189,99 @@ public class StandbyCommand : ICommand
         }
     }
 }
+
+public class PowerAllCommand : ICommand
+{
+    public event EventHandler? CanExecuteChanged;
+
+    private List<(LighthouseObject lighthouse, ICommand powerOn, ICommand powerDown)> lighthouses = new();
+
+    private PowerDownMode powerDownMode = PowerDownMode.Sleep;
+    private bool powerDownModeChangeQueued = false;
+
+    public void SetPowerDownMode(PowerDownMode powerDownMode)
+    {
+        this.powerDownMode = powerDownMode;
+
+        if (CanExecute())
+        {
+            ApplyPowerDownMode();
+        }
+        else
+        {
+            // Wait until any outstanding commands are done to apply the mode change
+            powerDownModeChangeQueued = true;
+        }
+    }
+
+    private void ApplyPowerDownMode()
+    {
+        for (var i = 0; i < lighthouses.Count; i++)
+        {
+            lighthouses[i].powerOn.CanExecuteChanged -= SubcommandCanExecuteChanged;
+            lighthouses[i].powerDown.CanExecuteChanged -= SubcommandCanExecuteChanged;
+            lighthouses[i] = NewCommandsTuple(lighthouses[i].lighthouse);
+        }
+        powerDownModeChangeQueued = false;
+    }
+
+    private (LighthouseObject lighthouse, ICommand powerOn, ICommand powerOff) NewCommandsTuple(LighthouseObject l)
+    {
+        ICommand powerOn = new PowerOnCommand();
+        powerOn.CanExecuteChanged += SubcommandCanExecuteChanged;
+
+        ICommand powerDown = powerDownMode == PowerDownMode.Sleep || l.Lighthouse.Version == LighthouseVersion.V1 ? new SleepCommand() : new StandbyCommand();
+        powerDown.CanExecuteChanged += SubcommandCanExecuteChanged;
+
+        return (l, powerOn, powerDown);
+    }
+
+    public void AddLighthouse(LighthouseObject lighthouse)
+    {
+        if (!lighthouses.Any(x => x.lighthouse == lighthouse))
+        {
+            lighthouses.Add(NewCommandsTuple(lighthouse));
+        }
+    }
+
+    public void RemoveLighthouse(LighthouseObject lighthouse)
+    {
+        var i = lighthouses.FindIndex(x => x.lighthouse == lighthouse);
+        if (i >= 0) {
+            lighthouses[i].powerOn.CanExecuteChanged -= SubcommandCanExecuteChanged;
+            lighthouses[i].powerDown.CanExecuteChanged -= SubcommandCanExecuteChanged;
+            lighthouses.RemoveAt(i);
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    private void SubcommandCanExecuteChanged(object? sender, EventArgs e)
+    {
+        if (powerDownModeChangeQueued && CanExecute())
+        {
+            ApplyPowerDownMode();
+        }
+
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public bool CanExecute()
+    {
+        return lighthouses.All(x => x.powerOn.CanExecute(x.lighthouse) && x.powerDown.CanExecute(x.lighthouse));
+    }
+
+    public bool CanExecute(object? _) => CanExecute();
+
+    public void Execute(bool on)
+    {
+        foreach ((var lighthouse, var powerOn, var powerDown) in lighthouses)
+        {
+            if (lighthouse.IsManaged)
+            {
+                (on ? powerOn : powerDown).Execute(lighthouse);
+            }
+        }
+    }
+
+    public void Execute(object? parameter) => Execute(parameter as string == "powerOn");
+}

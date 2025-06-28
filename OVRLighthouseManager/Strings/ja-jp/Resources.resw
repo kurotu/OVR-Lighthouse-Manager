@@ -246,4 +246,10 @@
   <data name="Shell_Main_PowerDownMode_Standby.ToolTipService.ToolTip" xml:space="preserve">
     <value>ベースステーションのレーザーのみ電源を切ります。(ベースステーション2.0のみ)</value>
   </data>
+  <data name="Shell_Main_PowerAll_AllOff.Text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Shell_Main_PowerAll_AllOn.Text" xml:space="preserve">
+    <value />
+  </data>
 </root>

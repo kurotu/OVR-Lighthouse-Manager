@@ -43,6 +43,11 @@ public partial class MainViewModel : ObservableRecipient
     public bool IsScanning => _lighthouseService.IsDiscovering;
     public readonly ICommand ScanCommand;
 
+    private readonly PowerAllCommand _powerAllCommand = new();
+
+    public ICommand PowerAllCommand => _powerAllCommand;
+    public bool IsDoingPowerAll => !_powerAllCommand.CanExecute();
+
     public MainViewModel(
         ILighthouseDiscoveryService lighthouseService,
         ILighthouseSettingsService lighthouseSettingsService,
@@ -72,6 +77,7 @@ public partial class MainViewModel : ObservableRecipient
                     var devices = Devices.Select(d => d.Lighthouse).ToArray();
                     await _lighthouseSettingsService.SetDevicesAsync(devices);
                     Log.Information($"Found: {arg.Name} ({AddressToStringConverter.AddressToString(address)})");
+                    _powerAllCommand.AddLighthouse(item);
                 });
             }
             else
@@ -97,12 +103,22 @@ public partial class MainViewModel : ObservableRecipient
         PowerManagement = _lighthouseSettingsService.PowerManagement;
         PowerDownModeIndex = (int)_lighthouseSettingsService.PowerDownMode;
 
+        _powerAllCommand.SetPowerDownMode((PowerDownMode)PowerDownModeIndex);
+        _powerAllCommand.CanExecuteChanged += (sender, args) =>
+        {
+            dispatcherQueue.TryEnqueue(() =>
+            {
+                OnPropertyChanged(nameof(IsDoingPowerAll));
+            });
+        };
+
         var devices = _lighthouseSettingsService.Devices.Select(d =>
         {
             var vm = new LighthouseObject(d, true);
             vm.OnClickRemove += OnClickRemoveDevice;
             vm.OnEditId += OnEditId;
             vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddressValue == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
+            _powerAllCommand.AddLighthouse(vm);
             return vm;
         }).ToArray();
         Devices = new(devices);
@@ -131,6 +147,7 @@ public partial class MainViewModel : ObservableRecipient
         if (sender is RadioButtons radioButtons)
         {
             PowerDownModeIndex = radioButtons.SelectedIndex;
+            _powerAllCommand.SetPowerDownMode((PowerDownMode)PowerDownModeIndex);
             await _lighthouseSettingsService.SetPowerDownModeAsync((PowerDownMode)PowerDownModeIndex);
         }
     }
