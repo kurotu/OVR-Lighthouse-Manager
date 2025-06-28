@@ -247,9 +247,9 @@
     <value>ベースステーションのレーザーのみ電源を切ります。(ベースステーション2.0のみ)</value>
   </data>
   <data name="Shell_Main_PowerAll_AllOff.Text" xml:space="preserve">
-    <value />
+    <value>全てオフ</value>
   </data>
   <data name="Shell_Main_PowerAll_AllOn.Text" xml:space="preserve">
-    <value />
+    <value>全てオン</value>
   </data>
 </root>
