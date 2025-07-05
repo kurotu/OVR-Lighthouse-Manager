@@ -258,3 +258,48 @@ public class PowerAllCommandParameter
     public string Command { get; set; } = string.Empty;
     public IEnumerable<LighthouseObject> Lighthouses { get; set; } = Enumerable.Empty<LighthouseObject>();
 }
+
+public class IdentifyCommand : AsyncCommandBase
+{
+    public override event EventHandler? CanExecuteChanged;
+    private Task? _task;
+    private readonly ILogger _log = LogHelper.ForContext<IdentifyCommand>();
+
+    public override bool CanExecute(object? parameter)
+    {
+        var isV1 = parameter is LighthouseObject lighthouse && new Lighthouse { Name = lighthouse.Name }.Version == LighthouseVersion.V1;
+        if (isV1)
+        {
+            return false;
+        }
+        return _task == null || _task.IsCompleted;
+    }
+
+    public async override Task ExecuteAsync(object? parameter)
+    {
+        if (parameter is LighthouseObject lighthouse)
+        {
+            var notification = App.GetService<INotificationService>();
+            try
+            {
+                _log.Information($"{lighthouse.Name} Identify");
+                var l = new Lighthouse { Name = lighthouse.Name, BluetoothAddress = lighthouse.BluetoothAddress, Id = lighthouse.Id };
+                _task = App.GetService<ILighthouseGattService>().IdentifyAsync(l);
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                await _task;
+                _task = null;
+                CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+                notification.Success(string.Format("Notification_Identify".GetLocalized(), lighthouse.Name));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"{lighthouse.Name} Failed to identify");
+                notification.Error(string.Format("Notification_CommunicationError".GetLocalized(), lighthouse.Name) + "\n" + ex.Message);
+            }
+        }
+        else
+        {
+            throw new ArgumentException("Invalid parameter");
+        }
+    }
+}

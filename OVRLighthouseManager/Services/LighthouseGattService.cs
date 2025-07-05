@@ -16,6 +16,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private static readonly Guid V2ControlService = new("00001523-1212-efde-1523-785feabcd124");
     private static readonly Guid V2PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
+    private static readonly Guid V2IdentifyCharacteristic = new("00008421-1212-efde-1523-785feabcd124");
 
     private static readonly ILogger _log = LogHelper.ForContext<LighthouseGattService>();
 
@@ -57,6 +58,15 @@ class LighthouseGattService : ILighthouseGattService
             throw new LighthouseGattException("Standby is not supported on V1 lighthouses");
         }
         await WriteV2PowerCharacteristic(lighthouse, 0x02);
+    }
+
+    public async Task IdentifyAsync(Lighthouse lighthouse)
+    {
+        if (lighthouse.Version == LighthouseVersion.V1)
+        {
+            throw new LighthouseGattException("Identify is not supported for V1 lighthouses");
+        }
+        await WritePowerCharacteristicAsync(lighthouse, V2ControlService, V2IdentifyCharacteristic, new byte[] { 0x01 });
     }
 
     private async Task ControlV1Async(Lighthouse lighthouse, bool powerOn)

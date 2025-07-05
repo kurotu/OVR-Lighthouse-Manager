@@ -13,6 +13,7 @@
         <helpers:PowerOnCommand x:Key="powerOnCommand" />
         <helpers:SleepCommand x:Key="sleepCommand" />
         <helpers:StandbyCommand x:Key="standbyCommand" />
+        <helpers:IdentifyCommand x:Key="identifyCommand" />
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
@@ -108,6 +109,12 @@
                     <MenuFlyoutItem
                         x:Uid="Menu_Standby"
                         Command="{StaticResource standbyCommand}"
+                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
+                        />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem
+                        x:Uid="Menu_Identify"
+                        Command="{StaticResource identifyCommand}"
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                     <MenuFlyoutSeparator />

@@ -162,6 +162,9 @@
   <data name="Menu_Standby.Text" xml:space="preserve">
     <value>Standby</value>
   </data>
+  <data name="Menu_Identify.Text" xml:space="preserve">
+    <value>Identify</value>
+  </data>
   <data name="Shell_Main_BaseStationsLabel.Text" xml:space="preserve">
     <value>Base Stations</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="Notification_Standby" xml:space="preserve">
     <value>{0} has been put to standby.</value>
+  </data>
+  <data name="Notification_Identify" xml:space="preserve">
+    <value>{0} is identifying itself.</value>
   </data>
   <data name="Shell_Main_PowerManagementDescription.Text" xml:space="preserve">
     <value>When you start SteamVR, they wake up from standby, and when you exit SteamVR, they go to standby. Neither HTC VIVE nor Valve Index required.</value>

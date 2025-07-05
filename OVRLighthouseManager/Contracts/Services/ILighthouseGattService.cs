@@ -13,4 +13,6 @@ internal interface ILighthouseGattService
     public Task SleepAsync(Lighthouse lighthouse);
 
     public Task StandbyAsync(Lighthouse lighthouse);
+
+    public Task IdentifyAsync(Lighthouse lighthouse);
 }
