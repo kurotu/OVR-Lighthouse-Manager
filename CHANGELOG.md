@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- "All On" and "All Off" buttons to the base stations list.
+- `All On` and `All Off` buttons to the base stations list.
+- `Identify` menu button to identify base stations. Their LED will blink white for a while.
+
+### Changed
+- Unnecessary menu items are now hidden based on base station version.
 
 ### Fixed
 - Changed settings were not reflected to the settings page after backing to the main page.
