@@ -201,16 +201,21 @@ public class PowerAllCommand : AsyncCommandBase
 
     public override bool CanExecute(object? parameter)
     {
-        var param = parameter as PowerAllCommandParameter;
+        if (parameter is not PowerAllCommandParameter param)
+        {
+            throw new InvalidProgramException("parameter must be PowerAllCommandParameter");
+        }
         return Operation == PowerAllCommandOperation.None && param.Lighthouses.Any(l => l.IsManaged);
     }
 
     public async override Task ExecuteAsync(object? parameter)
     {
+        if (parameter is not PowerAllCommandParameter param)
+        {
+            throw new InvalidProgramException("parameter must be PowerAllCommandParameter");
+        }
         try
         {
-            var param = parameter as PowerAllCommandParameter;
-
             Operation = param.Command switch
             {
                 "powerOn" => PowerAllCommandOperation.PowerOn,
