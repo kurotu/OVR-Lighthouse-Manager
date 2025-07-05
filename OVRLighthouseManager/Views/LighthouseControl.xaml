@@ -58,7 +58,7 @@
             Width="32"
             Height="32"
             Padding="0"
-            Visibility="{x:Bind LighthouseObject.RequiresId, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Visibility="{x:Bind LighthouseObject.IsMissingId, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
             >
             <FontIcon
                 x:Uid="Control_Lighthouse_MissingId"
@@ -116,12 +116,16 @@
                         x:Uid="Menu_Identify"
                         Command="{StaticResource identifyCommand}"
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
+                        Visibility="{x:Bind LighthouseObject.SupportsIdentify, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                         />
-                    <MenuFlyoutSeparator />
+                    <MenuFlyoutSeparator
+                        Visibility="{x:Bind LighthouseObject.SupportsIdentify, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        />
                     <MenuFlyoutItem
                         x:Uid="Menu_EditId"
                         Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
                         CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
+                        Visibility="{x:Bind LighthouseObject.RequiresId, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                         />
                     <MenuFlyoutItem
                         x:Uid="Menu_Remove"

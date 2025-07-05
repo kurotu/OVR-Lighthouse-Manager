@@ -17,7 +17,10 @@ public partial class LighthouseObject : INotifyPropertyChanged
 
     public string BluetoothAddress => _lighthouse.BluetoothAddress;
 
-    public bool RequiresId => _lighthouse.Version == LighthouseVersion.V1 && string.IsNullOrEmpty(_lighthouse.Id);
+    public bool RequiresId => _lighthouse.Version == LighthouseVersion.V1;
+    public bool IsMissingId => RequiresId && string.IsNullOrEmpty(_lighthouse.Id);
+
+    public bool SupportsIdentify => _lighthouse.Version == LighthouseVersion.V2;
 
     public string? Id
     {
