@@ -258,4 +258,10 @@
   <data name="Shell_Main_PowerAll_AllOn.Text" xml:space="preserve">
     <value>All On</value>
   </data>
+  <data name="Settings_SendSimultaneously.Text" xml:space="preserve">
+    <value>Simultaneously send messages to multiple base stations</value>
+  </data>
+  <data name="Settings_SendSimultaneouslyWarning.Text" xml:space="preserve">
+    <value>Possibly may cause unstable communication.</value>
+  </data>
 </root>

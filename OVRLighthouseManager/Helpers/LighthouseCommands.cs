@@ -225,28 +225,42 @@ public class PowerAllCommand : AsyncCommandBase
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
             var settings = App.GetService<ILighthouseSettingsService>();
+            var tasks = new List<Func<Task>>();
             foreach (var lighthouse in param.Lighthouses.Where(l => l.IsManaged))
             {
                 switch (Operation)
                 {
                     case PowerAllCommandOperation.PowerOn:
                         var powerOn = new PowerOnCommand();
-                        await powerOn.ExecuteAsync(lighthouse);
+                        tasks.Add(() => powerOn.ExecuteAsync(lighthouse));
                         break;
                     case PowerAllCommandOperation.PowerDown:
                         if (settings.PowerDownMode == PowerDownMode.Sleep || lighthouse.Lighthouse.Version == LighthouseVersion.V1)
                         {
                             var sleep = new SleepCommand();
-                            await sleep.ExecuteAsync(lighthouse);
+                            tasks.Add(() => sleep.ExecuteAsync(lighthouse));
                         }
                         else
                         {
                             var standby = new StandbyCommand();
-                            await standby.ExecuteAsync(lighthouse);
+                            tasks.Add(() => standby.ExecuteAsync(lighthouse));
                         }
                         break;
                     default:
                         continue;
+                }
+            }
+
+            if (settings.SendSimultaneously)
+            {
+                await Task.WhenAll(tasks.Select(t => t()));
+            }
+            else
+            {
+                foreach (var task in tasks)
+                {
+                    await task();
+                    await Task.Delay(200);
                 }
             }
         }
