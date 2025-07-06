@@ -74,6 +74,23 @@
                 </ToggleSwitch>
 
                 <ToggleSwitch
+                    Margin="{StaticResource XXSmallTopMargin}"
+                    IsOn="{x:Bind ViewModel.MinimizeToTray, Mode=OneWay}"
+                    Toggled="{x:Bind ViewModel.OnToggleSendSimultaneously}"
+                >
+                    <ToggleSwitch.Header>
+                        <StackPanel>
+                            <TextBlock x:Uid="Settings_SendSimultaneously" />
+                            <TextBlock
+                                x:Uid="Settings_SendSimultaneouslyWarning"
+                                Foreground="{ThemeResource SystemControlErrorTextForegroundBrush}"
+                                FontSize="12"
+                            />
+                        </StackPanel>
+                    </ToggleSwitch.Header>
+                </ToggleSwitch>
+
+                <ToggleSwitch
                 Margin="{StaticResource XXSmallTopMargin}"
                 IsOn="{x:Bind ViewModel.OutputDebug, Mode=OneWay}"
                 Toggled="{x:Bind ViewModel.OnToggleOutputDebug}"

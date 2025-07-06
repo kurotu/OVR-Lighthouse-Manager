@@ -86,19 +86,35 @@ class AppLifeCycleService : IAppLifecycleService
         }
 
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
+        var tasks = new List<Func<Task>>();
         foreach (var d in managedDevices)
         {
-            Log.Information($"Power On {d.Name}");
-            try
+            tasks.Add(async () =>
             {
-                await _lighthouseGattService.PowerOnAsync(d);
-                Log.Information($"Done {d.Name}");
-            }
-            catch (Exception e)
+                Log.Information($"Power On {d.Name}");
+                try
+                {
+                    await _lighthouseGattService.PowerOnAsync(d);
+                    Log.Information($"Done {d.Name}");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, $"Failed to power on {d.Name}");
+                }
+            });
+        }
+
+        if (_lighthouseSettingsService.SendSimultaneously)
+        {
+            await Task.WhenAll(tasks.Select(t => t()));
+        }
+        else
+        {
+            foreach (var task in tasks)
             {
-                Log.Error(e, $"Failed to power on {d.Name}");
+                await task();
+                await Task.Delay(200);
             }
-            await Task.Delay(200);
         }
 
         Log.Information("OnVRMonitorConnected Done");
@@ -119,40 +135,56 @@ class AppLifeCycleService : IAppLifecycleService
         }
 
         var managedDevices = _lighthouseSettingsService.Devices.Where(d => d.IsManaged).ToArray();
+        var tasks = new List<Func<Task>>();
         foreach (var d in managedDevices)
         {
-            var powerDownMode = _lighthouseSettingsService.PowerDownMode;
-            if (powerDownMode == PowerDownMode.Sleep || d.Version == LighthouseVersion.V1)
+            tasks.Add(async () =>
             {
-                Log.Information($"Sleep {d.Name}");
-                try
+                var powerDownMode = _lighthouseSettingsService.PowerDownMode;
+                if (powerDownMode == PowerDownMode.Sleep || d.Version == LighthouseVersion.V1)
                 {
-                    await _lighthouseGattService.SleepAsync(d);
-                    Log.Information($"Done {d.Name}");
+                    Log.Information($"Sleep {d.Name}");
+                    try
+                    {
+                        await _lighthouseGattService.SleepAsync(d);
+                        Log.Information($"Done {d.Name}");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, $"Failed to sleep {d.Name}");
+                    }
                 }
-                catch (Exception e)
+                else if (powerDownMode == PowerDownMode.Standby)
                 {
-                    Log.Error(e, $"Failed to sleep {d.Name}");
+                    Log.Information($"Standby {d.Name}");
+                    try
+                    {
+                        await _lighthouseGattService.StandbyAsync(d);
+                        Log.Information($"Done {d.Name}");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, $"Failed to standby {d.Name}");
+                    }
                 }
-            }
-            else if (powerDownMode == PowerDownMode.Standby)
+                else
+                {
+                    throw new InvalidProgramException("Unknown PowerDownMode");
+                }
+            });
+        }
+
+        if (_lighthouseSettingsService.SendSimultaneously)
+        {
+            await Task.WhenAll(tasks.Select(t => t()));
+        }
+        else
+        {
+            foreach(var task in tasks)
             {
-                Log.Information($"Standby {d.Name}");
-                try
-                {
-                    await _lighthouseGattService.StandbyAsync(d);
-                    Log.Information($"Done {d.Name}");
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, $"Failed to standby {d.Name}");
-                }
+                await task();
+                await Task.Delay(200);
             }
-            else
-            {
-                throw new InvalidProgramException("Unknown PowerDownMode");
-            }
-            await Task.Delay(200);
         }
 
         await _scanCommand.StopScan();

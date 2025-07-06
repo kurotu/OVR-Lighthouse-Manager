@@ -18,6 +18,7 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 {
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly IMiscSettingsService _miscSettingsService;
+    private readonly ILighthouseSettingsService _lighthouseSettingsService;
 
     [ObservableProperty]
     private ElementTheme _elementTheme;
@@ -27,6 +28,9 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
 
     [ObservableProperty]
     private bool _minimizeToTray;
+
+    [ObservableProperty]
+    private bool _sendSimultaneously;
 
     [ObservableProperty]
     private bool _outputDebug;
@@ -44,12 +48,16 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         get;
     }
 
-    public SettingsViewModel(IThemeSelectorService themeSelectorService, IMiscSettingsService miscSettingsService)
+    public SettingsViewModel(IThemeSelectorService themeSelectorService, IMiscSettingsService miscSettingsService, ILighthouseSettingsService lighthouseSettingsService)
     {
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
+
         _miscSettingsService = miscSettingsService;
+        _lighthouseSettingsService = lighthouseSettingsService;
+
         _minimizeOnLaunchedByOpenVR = _miscSettingsService.MinimizeOnLaunchedByOpenVR;
+        _sendSimultaneously = _lighthouseSettingsService.SendSimultaneously;
         _outputDebug = _miscSettingsService.OutputDebug;
         _versionDescription = GetVersionDescription();
 
@@ -100,6 +108,15 @@ public partial class SettingsViewModel : ObservableRecipient, INavigationAware
         {
             MinimizeToTray = toggleSwitch.IsOn;
             await _miscSettingsService.SetMinimizeToTray(MinimizeToTray);
+        }
+    }
+
+    public async void OnToggleSendSimultaneously(object sender, RoutedEventArgs e)
+    {
+        if(sender is ToggleSwitch toggleSwitch)
+        {
+            SendSimultaneously = toggleSwitch.IsOn;
+            await _lighthouseSettingsService.SetSendSimultaneously(SendSimultaneously);
         }
     }
 

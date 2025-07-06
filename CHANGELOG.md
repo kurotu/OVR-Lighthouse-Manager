@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `All On` and `All Off` buttons to the base stations list.
 - `Identify` menu button to identify base stations. Their LED will blink white for a while.
+- Option to send messages to multiple base stations simultaneously.
 
 ### Changed
 - Unnecessary menu items are now hidden based on base station version.

@@ -12,6 +12,7 @@ class LighthouseSettingsService : ILighthouseSettingsService
 {
     private const string SettingsKey_PowerManagement = "PowerManagement";
     private const string SettingsKey_PowerDownMode = "PowerDownMode";
+    private const string SettingsKey_SendSimultaneously = "SendSimultaneously";
     private const string SettingsKey_Devices = "Devices";
 
     public bool PowerManagement
@@ -20,6 +21,11 @@ class LighthouseSettingsService : ILighthouseSettingsService
     }
 
     public PowerDownMode PowerDownMode
+    {
+        get; set;
+    }
+
+    public bool SendSimultaneously
     {
         get; set;
     }
@@ -40,6 +46,7 @@ class LighthouseSettingsService : ILighthouseSettingsService
     {
         PowerManagement = await LoadPowerManagementFromSettingsAsync();
         PowerDownMode = await LoadPowerDownModeFromSettingsAsync();
+        SendSimultaneously = await LoadSendSimultaneouslyAsync();
         Devices = await LoadDevicesFromSettingsAsync();
         await Task.CompletedTask;
     }
@@ -54,6 +61,12 @@ class LighthouseSettingsService : ILighthouseSettingsService
     {
         PowerDownMode = powerDownMode;
         await SavePowerDownModeInSettingsAsync(PowerDownMode);
+    }
+
+    public async Task SetSendSimultaneously(bool sendSimultaneously)
+    {
+        SendSimultaneously = sendSimultaneously;
+        await SaveSendSendSimultaneouslyAsync(SendSimultaneously);
     }
 
     public async Task SetDevicesAsync(Lighthouse[] devices)
@@ -96,6 +109,20 @@ class LighthouseSettingsService : ILighthouseSettingsService
             return powerDownMode;
         }
         return PowerDownMode.Sleep;
+    }
+
+    #endregion
+
+    #region SendSimultaneously
+
+    private async Task SaveSendSendSimultaneouslyAsync(bool sendSimultaneously)
+    {
+        await _localSettingsService.SaveSettingAsync(SettingsKey_SendSimultaneously, sendSimultaneously);
+    }
+
+    private async Task<bool> LoadSendSimultaneouslyAsync()
+    {
+        return await _localSettingsService.ReadSettingAsync<bool>(SettingsKey_SendSimultaneously);
     }
 
     #endregion
