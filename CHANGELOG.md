@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- `All On` and `All Off` buttons to the base stations list.
-- `Identify` menu button to identify base stations. Their LED will blink white for a while.
+- `All On` and `All Off` buttons to the base stations list. (by @aurycat)
+- `Identify` menu button to identify base stations. Their LED will blink white for a while. (by @aurycat)
 - Option to send messages to multiple base stations simultaneously.
 
 ### Changed
