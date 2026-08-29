@@ -26,8 +26,31 @@ public class Lighthouse
         get; set;
     }
 
+    
+    [JsonIgnore]
+    public int? Channel
+    {
+        get; set;
+    }
+
     [JsonIgnore]
     public ulong BluetoothAddressValue => AddressToStringConverter.StringToAddress(BluetoothAddress);
+
+    public bool MatchesSerial(string? serialNumber)
+    {
+        if (string.IsNullOrEmpty(serialNumber))
+        {
+            return false;
+        }
+
+        return Version switch
+        {
+            LighthouseVersion.V2 => string.Equals(Name, serialNumber, StringComparison.OrdinalIgnoreCase),
+            LighthouseVersion.V1 => !string.IsNullOrEmpty(Id) &&
+                                    serialNumber.EndsWith(Id, StringComparison.OrdinalIgnoreCase),
+            _ => false,
+        };
+    }
 
     [JsonIgnore]
     public LighthouseVersion Version

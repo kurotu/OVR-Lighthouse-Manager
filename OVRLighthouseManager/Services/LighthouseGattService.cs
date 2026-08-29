@@ -16,6 +16,7 @@ class LighthouseGattService : ILighthouseGattService
 
     private static readonly Guid V2ControlService = new("00001523-1212-efde-1523-785feabcd124");
     private static readonly Guid V2PowerCharacteristic = new("00001525-1212-efde-1523-785feabcd124");
+    private static readonly Guid V2ChannelCharacteristic = new("00001524-1212-efde-1523-785feabcd124");
     private static readonly Guid V2IdentifyCharacteristic = new("00008421-1212-efde-1523-785feabcd124");
 
     private static readonly ILogger _log = LogHelper.ForContext<LighthouseGattService>();
@@ -67,6 +68,44 @@ class LighthouseGattService : ILighthouseGattService
             throw new LighthouseGattException("Identify is not supported for V1 lighthouses");
         }
         await WritePowerCharacteristicAsync(lighthouse, V2ControlService, V2IdentifyCharacteristic, new byte[] { 0x01 });
+    }
+
+    public async Task<int?> ReadChannelAsync(Lighthouse lighthouse)
+    {
+        if (lighthouse.Version != LighthouseVersion.V2)
+        {
+            return null;
+        }
+
+        try
+        {
+            using var device = await GetBluetoothLEDeviceAsync(lighthouse.BluetoothAddressValue);
+            using var service = await GetService(device, V2ControlService);
+            var characteristic = await GetCharacteristic(service, V2ChannelCharacteristic);
+            var result = await characteristic.ReadValueAsync(BluetoothCacheMode.Uncached);
+            if (result.Status != GattCommunicationStatus.Success)
+            {
+                _log.Warning($"Failed to read channel for {lighthouse.Name}: {result.Status}");
+                return null;
+            }
+
+            var bytes = result.Value.ToArray();
+            if (bytes.Length == 0)
+            {
+                return null;
+            }
+
+            // Channel is a big-endian uint; for values 1-16 the first byte carries it.
+            var channel = bytes.Length >= 4
+                ? (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]
+                : bytes[0];
+            return channel;
+        }
+        catch (Exception e)
+        {
+            _log.Warning(e, $"Failed to read channel for {lighthouse.Name}");
+            return null;
+        }
     }
 
     private async Task ControlV1Async(Lighthouse lighthouse, bool powerOn)
