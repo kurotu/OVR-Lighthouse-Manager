@@ -8,13 +8,14 @@ using CommunityToolkit.WinUI.Behaviors;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Contracts.Services;
+using OVRLighthouseManager.Contracts.ViewModels;
 using OVRLighthouseManager.Helpers;
 using OVRLighthouseManager.Models;
 using Serilog;
 
 namespace OVRLighthouseManager.ViewModels;
 
-public partial class MainViewModel : ObservableRecipient
+public partial class MainViewModel : ObservableRecipient, INavigationAware
 {
     private readonly ILighthouseDiscoveryService _lighthouseService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
@@ -137,7 +138,16 @@ public partial class MainViewModel : ObservableRecipient
         _channelPollTimer = dispatcherQueue.CreateTimer();
         _channelPollTimer.Interval = TimeSpan.FromSeconds(5);
         _channelPollTimer.Tick += async (sender, args) => await RefreshChannelsAsync();
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
         _channelPollTimer.Start();
+    }
+
+    public void OnNavigatedFrom()
+    {
+        _channelPollTimer.Stop();
     }
 
     private bool _isRefreshingChannels = false;
