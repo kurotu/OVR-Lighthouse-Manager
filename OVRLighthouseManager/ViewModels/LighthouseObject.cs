@@ -17,6 +17,36 @@ public partial class LighthouseObject : INotifyPropertyChanged
 
     public string BluetoothAddress => _lighthouse.BluetoothAddress;
 
+    public LighthouseVersion Version => _lighthouse.Version;
+
+    public string VersionText => _lighthouse.Version switch
+    {
+        LighthouseVersion.V1 => "V1",
+        LighthouseVersion.V2 => "V2",
+        _ => "",
+    };
+
+    public bool IsVersionKnown => _lighthouse.Version != LighthouseVersion.Unknown;
+
+    public int? Channel
+    {
+        get => _lighthouse.Channel;
+        set
+        {
+            if (_lighthouse.Channel != value)
+            {
+                _lighthouse.Channel = value;
+                OnPropertyChanged(nameof(Channel));
+                OnPropertyChanged(nameof(ChannelText));
+                OnPropertyChanged(nameof(IsChannelKnown));
+            }
+        }
+    }
+
+    public string ChannelText => _lighthouse.Channel?.ToString() ?? "";
+
+    public bool IsChannelKnown => _lighthouse.Channel.HasValue;
+
     public bool RequiresId => _lighthouse.Version == LighthouseVersion.V1;
     public bool IsMissingId => RequiresId && string.IsNullOrEmpty(_lighthouse.Id);
 

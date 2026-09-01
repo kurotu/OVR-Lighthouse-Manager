@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,13 +8,14 @@ using CommunityToolkit.WinUI.Behaviors;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using OVRLighthouseManager.Contracts.Services;
+using OVRLighthouseManager.Contracts.ViewModels;
 using OVRLighthouseManager.Helpers;
 using OVRLighthouseManager.Models;
 using Serilog;
 
 namespace OVRLighthouseManager.ViewModels;
 
-public partial class MainViewModel : ObservableRecipient
+public partial class MainViewModel : ObservableRecipient, INavigationAware
 {
     private readonly ILighthouseDiscoveryService _lighthouseService;
     private readonly ILighthouseSettingsService _lighthouseSettingsService;
@@ -36,6 +38,8 @@ public partial class MainViewModel : ObservableRecipient
     public ObservableCollection<LighthouseObject> Devices = new();
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue;
+
+    private readonly Microsoft.UI.Dispatching.DispatcherQueueTimer _channelPollTimer;
 
     public bool CannotUseOpenVR => !_openVRService.IsInitialized;
     public bool CannotUseBluetooth => !BluetoothLEHelper.HasBluetoothLEAdapter();
@@ -130,6 +134,55 @@ public partial class MainViewModel : ObservableRecipient
                 OnPropertyChanged(nameof(IsScanning));
             });
         };
+
+        _channelPollTimer = dispatcherQueue.CreateTimer();
+        _channelPollTimer.Interval = TimeSpan.FromSeconds(5);
+        _channelPollTimer.Tick += async (sender, args) => await RefreshChannelsAsync();
+    }
+
+    public void OnNavigatedTo(object parameter)
+    {
+        _channelPollTimer.Start();
+    }
+
+    public void OnNavigatedFrom()
+    {
+        _channelPollTimer.Stop();
+    }
+
+    private bool _isRefreshingChannels = false;
+
+    private async Task RefreshChannelsAsync()
+    {
+        if (_isRefreshingChannels)
+        {
+            return;
+        }
+
+        _isRefreshingChannels = true;
+
+        try
+        {
+            var gatt = App.GetService<ILighthouseGattService>();
+
+            await Task.WhenAll(Devices.Select(device => Task.Run(async () =>
+            {
+                try
+                {
+                    var channel = await gatt.ReadChannelAsync(device.Lighthouse);
+                    Log.Debug($"Channel read for {device.Name}: {(channel?.ToString() ?? "null")}");
+                    dispatcherQueue.TryEnqueue(() => device.Channel = channel);
+                }
+                catch (Exception e)
+                {
+                    Log.Debug(e, "Failed to read channel for base station");
+                }
+            })));
+        }
+        finally
+        {
+            _isRefreshingChannels = false;
+        }
     }
 
     public async void OnTogglePowerManagement(object sender, RoutedEventArgs e)

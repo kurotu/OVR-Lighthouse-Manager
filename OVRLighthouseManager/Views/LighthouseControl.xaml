@@ -40,10 +40,46 @@
                     Foreground="{ThemeResource AccentFillColorDefaultBrush}"
                 />
 
-        <TextBlock Grid.Column="1"
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="{StaticResource XSmallLeftTopMargin}">
+            <TextBlock
                     Text="{x:Bind LighthouseObject.Name, Mode=OneWay}"
-                    Style="{ThemeResource BaseTextBlockStyle}"
-                    Margin="{StaticResource XSmallLeftTopMargin}"/>
+                    Style="{ThemeResource BaseTextBlockStyle}"/>
+            <Border
+                    VerticalAlignment="Center"
+                    Margin="8,0,0,0"
+                    Padding="6,1"
+                    CornerRadius="4"
+                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                    Visibility="{x:Bind LighthouseObject.IsVersionKnown, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock
+                    Text="{x:Bind LighthouseObject.VersionText, Mode=OneWay}"
+                    Style="{ThemeResource CaptionTextBlockStyle}"
+                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"/>
+            </Border>
+            <Border
+                    VerticalAlignment="Center"
+                    Margin="6,0,0,0"
+                    Padding="6,1"
+                    CornerRadius="4"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    Visibility="{x:Bind LighthouseObject.IsChannelKnown, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon
+                        Glyph="&#xE701;"
+                        FontSize="10"
+                        VerticalAlignment="Center"
+                        Margin="0,0,4,0"/>
+                    <TextBlock
+                        Text="{x:Bind LighthouseObject.ChannelText, Mode=OneWay}"
+                        Style="{ThemeResource CaptionTextBlockStyle}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
         <TextBlock  Grid.Column="1"
                     Grid.Row="1"
                     Text="{x:Bind LighthouseObject.BluetoothAddress, Mode=OneWay}"

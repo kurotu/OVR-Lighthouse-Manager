@@ -26,6 +26,13 @@ public class Lighthouse
         get; set;
     }
 
+    
+    [JsonIgnore]
+    public int? Channel
+    {
+        get; set;
+    }
+
     [JsonIgnore]
     public ulong BluetoothAddressValue => AddressToStringConverter.StringToAddress(BluetoothAddress);
 
