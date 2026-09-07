@@ -19,8 +19,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -45,7 +45,7 @@
                     VerticalAlignment="Center"
                     Margin="{StaticResource XSmallLeftTopMargin}">
             <TextBlock
-                    Text="{x:Bind LighthouseObject.Name, Mode=OneWay}"
+                    Text="{x:Bind LighthouseObject.DisplayName, Mode=OneWay}"
                     Style="{ThemeResource BaseTextBlockStyle}"/>
             <Border
                     VerticalAlignment="Center"
@@ -80,17 +80,28 @@
                 </StackPanel>
             </Border>
         </StackPanel>
+
+        <TextBlock Grid.Column="1"
+                    Grid.Row="1"
+                    Style="{ThemeResource BodyTextBlockStyle}"
+                    Margin="{StaticResource XSmallLeftbottomMargin}"
+                    Visibility="{x:Bind LighthouseObject.IsCustomNamed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Run Text="{x:Bind LighthouseObject.BluetoothAddress, Mode=OneWay}" />
+            <Run Text=" · " Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Run Text="{x:Bind LighthouseObject.Lighthouse.Name, Mode=OneWay}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </TextBlock>
+
         <TextBlock  Grid.Column="1"
                     Grid.Row="1"
                     Text="{x:Bind LighthouseObject.BluetoothAddress, Mode=OneWay}"
                     Style="{ThemeResource BodyTextBlockStyle}"
-                    Margin="{StaticResource XSmallLeftbottomMargin}"/>
+                    Margin="{StaticResource XSmallLeftbottomMargin}"
+                    Visibility="{x:Bind LighthouseObject.IsCustomNamed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=True}"/>
         <Button
             Grid.RowSpan="2"
             Grid.Column="2"
             BorderThickness="0" Background="Transparent"
             Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
-            CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
             Width="32"
             Height="32"
             Padding="0"
@@ -160,13 +171,15 @@
                     <MenuFlyoutItem
                         x:Uid="Menu_EditId"
                         Command="{x:Bind LighthouseObject.EditIdCommand, Mode=OneWay}"
-                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         Visibility="{x:Bind LighthouseObject.RequiresId, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        />
+                    <MenuFlyoutItem
+                        x:Uid="Menu_Rename"
+                        Command="{x:Bind LighthouseObject.RenameCommand, Mode=OneWay}"
                         />
                     <MenuFlyoutItem
                         x:Uid="Menu_Remove"
                         Command="{x:Bind LighthouseObject.RemoveCommand, Mode=OneWay}"
-                        CommandParameter="{x:Bind LighthouseObject, Mode=OneWay}"
                         />
                 </MenuFlyout>
             </Button.Flyout>

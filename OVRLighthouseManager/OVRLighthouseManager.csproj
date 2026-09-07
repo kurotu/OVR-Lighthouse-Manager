@@ -87,6 +87,9 @@
     <Page Update="Views\LighthouseV1IdInputDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Views\LighthouseRenameDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\Spacing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

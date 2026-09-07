@@ -13,9 +13,35 @@ using OVRLighthouseManager.Views;
 namespace OVRLighthouseManager.ViewModels;
 public partial class LighthouseObject : INotifyPropertyChanged
 {
+    /**
+     * Real device name, as reported over BLE. Used for version detection and commands.
+     */
     public string Name => _lighthouse.Name;
 
+    /**
+     * Name shown in the UI: the custom name when set, otherwise the real device name.
+     */
+    public string DisplayName =>
+        !string.IsNullOrWhiteSpace(CustomName) ? CustomName : _lighthouse.Name;
+
     public string BluetoothAddress => _lighthouse.BluetoothAddress;
+
+    public string? CustomName
+    {
+        get => _lighthouse.CustomName;
+        set
+        {
+            if (_lighthouse.CustomName != value)
+            {
+                _lighthouse.CustomName = value;
+                OnPropertyChanged(nameof(CustomName));
+                OnPropertyChanged(nameof(DisplayName));
+                OnPropertyChanged(nameof(IsCustomNamed));
+            }
+        }
+    }
+
+    public bool IsCustomNamed => !string.IsNullOrWhiteSpace(CustomName);
 
     public LighthouseVersion Version => _lighthouse.Version;
 
@@ -90,6 +116,11 @@ public partial class LighthouseObject : INotifyPropertyChanged
         get;
     }
 
+    public ICommand RenameCommand
+    {
+        get;
+    }
+
     public ICommand RemoveCommand
     {
         get;
@@ -97,6 +128,7 @@ public partial class LighthouseObject : INotifyPropertyChanged
 
     public event EventHandler OnClickRemove = delegate { };
     public event EventHandler OnEditId = delegate { };
+    public event EventHandler OnRename = delegate { };
 
     public Lighthouse Lighthouse => _lighthouse;
     private readonly Lighthouse _lighthouse;
@@ -105,21 +137,37 @@ public partial class LighthouseObject : INotifyPropertyChanged
     {
         _lighthouse = device;
         IsFound = isFound;
-        EditIdCommand = new RelayCommand<LighthouseObject>(async (parameter) =>
+        EditIdCommand = new AsyncRelayCommand(async () =>
         {
             var dialog = new LighthouseV1IdInputDialog();
-            dialog.Id = parameter?.Id ?? "";
+            dialog.Id = Id ?? "";
             dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
             var result = await dialog.ShowAsync();
+
             if (result == ContentDialogResult.Primary)
             {
-                parameter!.Id = dialog.Id;
-                OnEditId(parameter, EventArgs.Empty);
+                Id = dialog.Id;
+                OnEditId(this, EventArgs.Empty);
             }
         });
-        RemoveCommand = new RelayCommand<LighthouseObject>((parameter) =>
+        RenameCommand = new AsyncRelayCommand(async () =>
         {
-            parameter?.OnClickRemove(parameter, EventArgs.Empty);
+            var dialog = new LighthouseRenameDialog();
+            dialog.NewName = CustomName ?? "";
+            dialog.RealName = Lighthouse.Name;
+            dialog.XamlRoot = App.MainWindow.Content.XamlRoot;
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var newName = dialog.NewName.Trim();
+                CustomName = string.IsNullOrEmpty(newName) || newName == Lighthouse.Name ? null : newName;
+                OnRename(this, EventArgs.Empty);
+            }
+        });
+        RemoveCommand = new RelayCommand(() =>
+        {
+            OnClickRemove(this, EventArgs.Empty);
         });
     }
 
