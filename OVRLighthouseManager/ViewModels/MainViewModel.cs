@@ -249,7 +249,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware
 
     public async void OnRenameDevice(object? sender, EventArgs args)
     {
-        if (sender is LighthouseObject lh)
+        if (sender is LighthouseObject)
         {
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.Lighthouse).ToArray());
         }
