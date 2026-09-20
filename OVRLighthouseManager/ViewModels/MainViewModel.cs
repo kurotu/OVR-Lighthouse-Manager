@@ -77,6 +77,8 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware
                 {
                     var item = new LighthouseObject(arg, true);
                     item.OnClickRemove += OnClickRemoveDevice;
+                    item.OnEditId += OnEditId;
+                    item.OnRename += OnRenameDevice;
                     item.IsFound = true;
                     Devices.Add(item);
                     var devices = Devices.Select(d => d.Lighthouse).ToArray();
@@ -121,6 +123,7 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware
             var vm = new LighthouseObject(d, true);
             vm.OnClickRemove += OnClickRemoveDevice;
             vm.OnEditId += OnEditId;
+            vm.OnRename += OnRenameDevice;
             vm.IsFound = _lighthouseService.FoundLighthouses.Any(l => l.BluetoothAddressValue == AddressToStringConverter.StringToAddress(d.BluetoothAddress));
             return vm;
         }).ToArray();
@@ -236,6 +239,18 @@ public partial class MainViewModel : ObservableRecipient, INavigationAware
         if (sender is LighthouseObject lh)
         {
             Devices.First(d => d.BluetoothAddress == lh.BluetoothAddress).Id = lh.Id;
+            await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.Lighthouse).ToArray());
+        }
+        else
+        {
+            throw new InvalidProgramException("Sender is not a LighthouseObject");
+        }
+    }
+
+    public async void OnRenameDevice(object? sender, EventArgs args)
+    {
+        if (sender is LighthouseObject)
+        {
             await _lighthouseSettingsService.SetDevicesAsync(Devices.Select(d => d.Lighthouse).ToArray());
         }
         else

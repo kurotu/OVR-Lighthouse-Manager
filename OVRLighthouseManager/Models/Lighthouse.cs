@@ -11,6 +11,12 @@ public class Lighthouse
 {
     public string Name { get; set; } = "";
 
+    /**
+     * Custom display name, only inside this app.
+     * Stations do not support renaming over BLE.
+     */
+    public string? CustomName { get; set; }
+
     public string BluetoothAddress { get; set; } = "";
 
     /**
